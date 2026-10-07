@@ -1,0 +1,47 @@
+{
+  "expo": {
+    "name": "Tiny Giants",
+    "slug": "tiny-giants",
+    "scheme": "tinygiants",
+    "version": "0.1.0",
+    "orientation": "default",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#fff7ea",
+    "ios": {
+      "supportsTablet": true,
+      "requireFullScreen": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#fff7ea",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      [
+        "expo-screen-orientation",
+        {
+          "initialOrientation": "DEFAULT"
+        }
+      ],
+      "expo-splash-screen",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Tiny Giants listens for how strongly you blow, so you can help blow out the candle in the story. Nothing you say is kept or sent anywhere."
+        }
+      ],
+      "expo-video",
+      "expo-asset"
+    ]
+  }
+}
