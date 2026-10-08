@@ -22,14 +22,14 @@ Press `w` in the terminal to open it in a browser instead.
 src/
   app/        Expo Router routes: thin files that point at the pages below
   child/      Child screens (landscape-locked): pages/ + components/
-  adult/      Parent screens (any orientation): pages/ + components/
+  adult/      Parent screens (portrait): pages/ + components/
   shared/     Used by both: components/, data/ (mock), services/api.js, hooks/, theme.js
 ```
 
 - All data goes through `src/shared/services/api.js`. It uses the mock data in
   `src/shared/data/` for now; swap in real backend calls there.
 - Child screens only ever call `getEnabledGamesForChild`, so a parent's choices in
-  **Manage games** (`/adult/children/child-1/games`) apply everywhere.
+  the **Games** page of the parent app (`/adult/games`) apply everywhere.
 - All text goes through `AppText`, which never renders below 16px.
 ## Adding book art
 

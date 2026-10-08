@@ -4,7 +4,7 @@ import AppText from '../../shared/components/AppText.jsx';
 import CoverImage from '../../shared/components/CoverImage.jsx';
 import Icon from '../../shared/components/Icon.jsx';
 import { searchEnabledGamesForChild } from '../../shared/services/api.js';
-import { colors, fonts, radius } from '../../shared/theme.js';
+import { adult, colors, fonts, radius } from '../../shared/theme.js';
 
 /** Title search over this child's enabled games only. */
 export default function SearchBar({ childId, onSelect }) {
@@ -80,9 +80,8 @@ const styles = StyleSheet.create({
   input: {
     height: 64,
     borderRadius: radius.pill,
-    borderWidth: 4,
-    borderColor: colors.sun,
-    backgroundColor: colors.white,
+    borderWidth: 3,
+    borderColor: adult.accent,
     paddingLeft: 60,
     paddingRight: 24,
     fontFamily: fonts.regular,
@@ -97,11 +96,10 @@ const styles = StyleSheet.create({
     padding: 8,
     paddingRight: 24,
     borderRadius: radius.md,
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.inkFaint,
+    borderWidth: 2,
+    borderColor: adult.rule,
   },
-  resultPressed: { backgroundColor: colors.paper, transform: [{ scale: 0.98 }] },
+  resultPressed: { backgroundColor: colors.inkFaint, transform: [{ scale: 0.98 }] },
   thumb: { width: 96, height: 64, borderRadius: radius.sm },
   srOnly: { position: 'absolute', width: 1, height: 1, opacity: 0 },
 });

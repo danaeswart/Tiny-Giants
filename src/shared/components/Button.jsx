@@ -4,8 +4,8 @@ import AppText from './AppText.jsx';
 import Icon from './Icon.jsx';
 
 const VARIANTS = {
-  primary: { bg: colors.sun, fg: colors.ink, edge: colors.sunDeep, border: 'transparent' },
-  secondary: { bg: colors.white, fg: colors.ink, edge: 'rgba(43, 39, 51, 0.15)', border: 'rgba(43, 39, 51, 0.15)' },
+  primary: { bg: '#d7f23a', fg: colors.ink, edge: '#9db815', border: 'transparent' },
+  secondary: { bg: colors.white, fg: colors.ink, edge: 'rgba(36, 20, 71, 0.3)', border: 'transparent' },
 };
 
 // Every size is at least 56px tall — above the 44–48px platform minimums.

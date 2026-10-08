@@ -19,7 +19,8 @@ function paletteFor(id) {
 
 /** A game's thumbnail. Decorative: the title is always shown beside it. */
 export default function CoverImage({ game, style }) {
-  const source = resolveImage(game.coverImage) ?? resolveImage(game.pages?.left);
+  const source =
+    resolveImage(game.coverImage) ?? resolveImage(game.image) ?? resolveImage(game.pages?.left);
 
   if (source) {
     return (

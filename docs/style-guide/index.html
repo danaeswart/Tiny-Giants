@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tiny Giants Style Guide</title>
+<style>
+@font-face { font-family: 'Talina'; font-weight: 400; src: url('fonts/Talina.otf'); unicode-range: U+0020, U+0041-005A, U+0061-007A; }
+@font-face { font-family: 'Talina'; font-weight: 400; src: url('fonts/Poppins_600SemiBold.ttf'); unicode-range: U+0021-002F, U+0030-0040, U+005B-0060, U+007B-00FF, U+2013-2026, U+25B6, U+2260; }
+@font-face { font-family: 'Poppins'; font-weight: 400; src: url('fonts/Poppins_400Regular.ttf'); }
+@font-face { font-family: 'Poppins'; font-weight: 500; src: url('fonts/Poppins_500Medium.ttf'); }
+@font-face { font-family: 'Poppins'; font-weight: 600; src: url('fonts/Poppins_600SemiBold.ttf'); }
+@font-face { font-family: 'DM Mono'; src: url('fonts/DMMono_400Regular.ttf'); }
+
+:root {
+  --cream:#fff6e3; --paper:#fffbf2; --white:#fff; --ink:#241447; --inkSoft:#5d5280;
+  --flame:#ff6b2c; --flameSoft:#ffe6d8; --glow:#ffc933; --glowSoft:#fff1c2;
+  --wave:#14a3d9; --waveSoft:#d6f0fb; --deepSea:#0b4c8c; --deepSeaSoft:#dbe8f5;
+  --berry:#ff4f87; --berrySoft:#ffdbe7; --forest:#22b573; --forestSoft:#d6f3e5;
+  --electric:#2b3bff; --electricSoft:#dfe2ff; --lime:#d7f23a; --limeEdge:#9db815;
+  --page:#fbeccb; --rule:rgba(36,20,71,.2);
+}
+@page { size: 297mm 210mm; margin: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--cream); }
+body { font-family: 'Poppins', sans-serif; color: var(--ink); font-size: 13px; line-height: 1.45; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+.page { width: 297mm; height: 210mm; position: relative; overflow: hidden; page-break-after: always; break-after: page; padding: 16mm 18mm 14mm; background: var(--cream); }
+.page:last-child { page-break-after: auto; break-after: auto; }
+.blue { background: var(--electric); color: #fff; }
+.night { background: var(--ink); color: #fff; }
+
+.display { font-family: 'Talina', 'Poppins'; font-weight: 400; line-height: 1; letter-spacing: .01em; }
+.mono { font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: .12em; font-size: 10px; }
+.soft { color: var(--inkSoft); }
+.blue .soft, .night .soft { color: rgba(255,255,255,.75); }
+b, .b { font-weight: 600; }
+
+h1 { font-size: 52px; }
+h2 { font-size: 38px; }
+h3 { font-size: 22px; }
+p { max-width: 95mm; }
+
+.circle { position: absolute; border-radius: 50%; }
+.ring { position: absolute; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.35); }
+.folio { position: absolute; left: 18mm; right: 18mm; bottom: 7mm; display: flex; justify-content: space-between; }
+.blue .folio, .night .folio { color: rgba(255,255,255,.7); }
+
+.sticker { position: absolute; background: var(--lime); color: var(--ink); padding: 10px 14px; border-radius: 10px; max-width: 62mm; font-weight: 500; font-size: 12px; line-height: 1.35; }
+.sticker .mono { display: block; margin-bottom: 4px; }
+.sticker.rot { transform: rotate(-3deg); }
+
+.head { position: relative; margin-bottom: 8mm; }
+.head .mono { margin-bottom: 4px; display: block; }
+
+.grid { display: grid; gap: 5mm; }
+.cols2 { grid-template-columns: 1fr 1fr; }
+.cols3 { grid-template-columns: repeat(3, 1fr); }
+.cols4 { grid-template-columns: repeat(4, 1fr); }
+.cols5 { grid-template-columns: repeat(5, 1fr); }
+
+/* swatches */
+.sw { border-radius: 14px; overflow: hidden; border: 1.5px solid var(--rule); background: var(--paper); }
+.sw .chip { height: 24mm; padding: 8px 10px; display: flex; align-items: flex-end; font-weight: 600; font-size: 13px; }
+.sw .info { padding: 7px 10px 8px; font-size: 10.5px; line-height: 1.35; }
+.sw .info .mono { font-size: 10px; letter-spacing: .06em; display: block; }
+.sw.small .chip { height: 15mm; }
+
+/* placeholder block */
+.ph { border: 2px dashed rgba(36,20,71,.35); border-radius: 14px; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--inkSoft); background: repeating-linear-gradient(45deg, transparent 0 8px, rgba(36,20,71,.04) 8px 16px); }
+.blue .ph { border-color: rgba(255,255,255,.6); color: #fff; background: repeating-linear-gradient(45deg, transparent 0 8px, rgba(255,255,255,.08) 8px 16px); }
+
+/* buttons: child */
+.kbtn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; border-radius: 999px; border: 2px solid transparent; border-bottom-width: 5px; font-family: 'Talina','Poppins'; font-weight: 400; color: var(--ink); white-space: nowrap; }
+.kbtn.primary { background: var(--lime); border-bottom-color: var(--limeEdge); }
+.kbtn.secondary { background: #fff; border-bottom-color: rgba(36,20,71,.3); }
+.kbtn.pressed { border-bottom-width: 2px; transform: translateY(3px); }
+.kbtn.md { height: 56px; padding: 0 24px; font-size: 18px; }
+.kbtn.lg { height: 64px; padding: 0 28px; font-size: 20px; }
+.kbtn.xl { height: 80px; padding: 0 36px; font-size: 24px; }
+.kbtn.round { padding: 0; width: 64px; }
+/* buttons: grown-up */
+.abtn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 16px; border-radius: 999px; border: 1.5px solid rgba(36,20,71,.3); font-weight: 600; font-size: 16px; color: var(--ink); white-space: nowrap; }
+.abtn.primary { background: var(--electric); border-color: var(--electric); color: #fff; }
+.abtn.pressed { opacity: .75; }
+.abtn.disabled { opacity: .5; }
+.pill { display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1.5px solid var(--rule); font-weight: 600; font-size: 16px; }
+.pill.sel { background: var(--electric); border-color: var(--electric); color: #fff; }
+
+.lbl { font-family: 'DM Mono'; font-size: 9.5px; text-transform: uppercase; letter-spacing: .1em; color: var(--inkSoft); margin-top: 6px; display: block; }
+.card { border: 1.5px solid var(--rule); border-radius: 18px; padding: 14px 16px; background: transparent; }
+.card.fill { background: #fff; border-color: transparent; box-shadow: 0 4px 16px rgba(36,20,71,.06); }
+
+.do, .dont { border-radius: 14px; padding: 12px 14px; font-size: 12px; }
+.do { background: var(--forestSoft); } .dont { background: var(--berrySoft); }
+.do .mono { color: #168a56; } .dont .mono { color: #d62f67; }
+ul.clean { list-style: none; } ul.clean li { padding: 5px 0 5px 18px; position: relative; border-bottom: 1px solid var(--rule); }
+ul.clean li:last-child { border-bottom: 0; }
+ul.clean li::before { content: ''; position: absolute; left: 0; top: 11px; width: 8px; height: 8px; border-radius: 50%; background: var(--flame); }
+.blue ul.clean li, .night ul.clean li { border-color: rgba(255,255,255,.25); }
+
+table { border-collapse: collapse; width: 100%; font-size: 12px; }
+th { text-align: left; font-family: 'DM Mono'; font-weight: 400; text-transform: uppercase; letter-spacing: .1em; font-size: 9.5px; color: var(--inkSoft); padding: 6px 8px; border-bottom: 2px solid var(--ink); }
+td { padding: 7px 8px; border-bottom: 1px solid var(--rule); vertical-align: middle; }
+</style>
+</head>
+<body>
+
+<!-- 1 COVER -->
+<section class="page blue">
+  <div class="ring" style="width:380mm;height:380mm;top:-70mm;right:-190mm;width:120mm;height:120mm;top:-8mm;right:-34mm;"></div>
+  <div class="circle" style="background:var(--flame);width:80mm;height:80mm;top:6mm;right:-14mm;"></div>
+  <div class="circle" style="background:var(--glow);width:26mm;height:26mm;bottom:26mm;right:60mm;"></div>
+  <div class="circle" style="background:var(--berry);width:14mm;height:14mm;bottom:48mm;right:36mm;"></div>
+  <span class="mono" style="color:rgba(255,255,255,.75)">Brand identity &middot; Version 0.1 (draft)</span>
+  <div style="position:absolute;left:18mm;top:42mm;">
+    <div class="ph" style="width:46mm;height:46mm;border-radius:50%;margin-bottom:8mm;font-size:11px;">[ LOGO MARK<br>here ]</div>
+    <h1 class="display" style="font-size:96px;line-height:.95;">Tiny<br>Giants</h1>
+    <p style="margin-top:6mm;font-size:16px;">The style guide for the child app and the grown-up app.</p>
+  </div>
+  <div class="sticker rot" style="right:22mm;bottom:20mm;"><span class="mono">Heads up</span>Placeholder content. Logo, names and copy will be swapped in once final.</div>
+  <div class="folio mono"><span>Tiny Giants</span><span>01</span></div>
+</section>
+
+<!-- 2 CONTENTS + PERSONALITY -->
+<section class="page">
+  <div class="head"><span class="mono soft">Start here</span><h2 class="display">Who we are</h2></div>
+  <div class="grid" style="grid-template-columns:1.1fr 1fr;gap:12mm;">
+    <div>
+      <p style="font-size:15px;max-width:120mm;">Tiny Giants is a storybook-and-games world for small kids, with a calmer control room for the grown-ups looking after them. One brand, two voices: <b>loud and playful</b> for children, <b>clear and quiet</b> for adults.</p>
+      <div class="grid cols3" style="margin-top:8mm;">
+        <div class="card fill"><div class="display" style="font-size:26px;color:var(--flame)">Playful</div><p class="soft" style="font-size:11.5px;margin-top:4px;">Chunky shapes, bright colour, things that squash when you press them.</p></div>
+        <div class="card fill"><div class="display" style="font-size:26px;color:var(--wave)">Safe</div><p class="soft" style="font-size:11.5px;margin-top:4px;">Big targets, no tricks, nothing scary. Kids can never get lost.</p></div>
+        <div class="card fill"><div class="display" style="font-size:26px;color:var(--forest)">Warm</div><p class="soft" style="font-size:11.5px;margin-top:4px;">Cream paper, plum ink, friendly words. Never cold or corporate.</p></div>
+      </div>
+      <div class="sticker rot" style="position:relative;margin-top:9mm;margin-left:6mm;"><span class="mono">Voice in one line</span>Talk to kids like a kind storyteller. Talk to adults like a calm friend.</div>
+    </div>
+    <div>
+      <span class="mono soft">Contents</span>
+      <ul class="clean" style="margin-top:4px;font-size:14px;">
+        <li><b>02</b> &nbsp;Who we are</li>
+        <li><b>03</b> &nbsp;Logo</li>
+        <li><b>04&ndash;05</b> &nbsp;Colour</li>
+        <li><b>06&ndash;07</b> &nbsp;Typography</li>
+        <li><b>08&ndash;09</b> &nbsp;Buttons and when to use them</li>
+        <li><b>10</b> &nbsp;Child side vs grown-up side</li>
+        <li><b>11</b> &nbsp;Spacing, shape and touch</li>
+        <li><b>12</b> &nbsp;Do and don't</li>
+      </ul>
+    </div>
+  </div>
+  <div class="circle" style="background:var(--glow);width:50mm;height:50mm;right:-14mm;bottom:-16mm;"></div>
+  <div class="folio mono soft"><span>Tiny Giants style guide</span><span>02</span></div>
+</section>
+
+<!-- 3 LOGO -->
+<section class="page">
+  <div class="head"><span class="mono soft">Logo</span><h2 class="display">The mark</h2></div>
+  <div class="grid" style="grid-template-columns:1.25fr 1fr;gap:10mm;">
+    <div>
+      <div style="position:relative;height:84mm;border:1.5px solid var(--rule);border-radius:18px;background:var(--paper);">
+        <!-- clear space -->
+        <div style="position:absolute;inset:14mm;border:1.5px dashed var(--flame);border-radius:10px;"></div>
+        <div class="ph" style="position:absolute;inset:26mm 36mm;font-size:12px;">[ PRIMARY LOGO ]<br>name + mark</div>
+        <span class="mono" style="position:absolute;left:50%;top:5mm;transform:translateX(-50%);color:var(--flame);">X</span>
+        <span class="mono" style="position:absolute;left:50%;bottom:5mm;transform:translateX(-50%);color:var(--flame);">X</span>
+        <span class="mono" style="position:absolute;top:50%;left:4mm;color:var(--flame);">X</span>
+        <span class="mono" style="position:absolute;top:50%;right:4mm;color:var(--flame);">X</span>
+      </div>
+      <p class="soft" style="margin-top:3mm;font-size:11.5px;max-width:none;"><b style="color:var(--ink)">Clear space.</b> Keep a margin of <b style="color:var(--ink)">X</b> on every side. X = the height of the lowercase letter in the logo name (set the final value when the logo lands).</p>
+    </div>
+    <div>
+      <span class="mono soft">Versions</span>
+      <div class="grid cols2" style="margin-top:3mm;gap:4mm;">
+        <div><div class="ph" style="height:24mm;background-color:#fff;font-size:10px;">Full colour<br>on cream</div><span class="lbl">Default</span></div>
+        <div><div class="ph" style="height:24mm;background-color:var(--electric);color:#fff;border-color:rgba(255,255,255,.6);font-size:10px;">White<br>on electric blue</div><span class="lbl">Grown-up hero</span></div>
+        <div><div class="ph" style="height:24mm;background-color:var(--ink);color:#fff;border-color:rgba(255,255,255,.6);font-size:10px;">White<br>on night plum</div><span class="lbl">Nav and dark</span></div>
+        <div><div class="ph" style="height:24mm;border-radius:50%;width:24mm;font-size:10px;">Mark<br>only</div><span class="lbl">App icon</span></div>
+      </div>
+      <table style="margin-top:5mm;">
+        <tr><th>Rule</th><th>Value</th></tr>
+        <tr><td>Min size, full logo</td><td><b>[ 120 px ]</b> wide</td></tr>
+        <tr><td>Min size, mark only</td><td><b>[ 32 px ]</b></td></tr>
+        <tr><td>Where it sits</td><td>Top-left, aligned to the 24 px page margin</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="grid cols4" style="margin-top:7mm;">
+    <div class="dont"><span class="mono">Don't</span><br>Stretch, squash or rotate the logo.</div>
+    <div class="dont"><span class="mono">Don't</span><br>Recolour it outside the approved versions.</div>
+    <div class="dont"><span class="mono">Don't</span><br>Place on busy images without a solid backing.</div>
+    <div class="dont"><span class="mono">Don't</span><br>Add shadows, outlines or effects.</div>
+  </div>
+  <div class="folio mono soft"><span>Tiny Giants style guide</span><span>03</span></div>
+</section>
+
+<!-- 4 COLOUR: CORE -->
+<section class="page">
+  <div class="head"><span class="mono soft">Colour &middot; 1 of 2</span><h2 class="display">The palette</h2>
+    <p class="soft" style="position:absolute;right:0;top:4mm;max-width:100mm;font-size:12px;">Drawn from Cami's world: the candle flame, the big wave, the forest and the castle. Every bright colour has a soft tint for backgrounds.</p></div>
+  <div class="grid cols5" style="gap:4mm;">
+    <div class="sw"><div class="chip" style="background:var(--ink);color:#fff">Night</div><div class="info"><span class="mono">#241447</span>Main text, nav, outlines. Never pure black.</div></div>
+    <div class="sw"><div class="chip" style="background:var(--flame);color:#fff">Flame</div><div class="info"><span class="mono">#FF6B2C</span>Energy, highlights, the drifting circle.</div></div>
+    <div class="sw"><div class="chip" style="background:var(--glow)">Glow</div><div class="info"><span class="mono">#FFC933</span>Stars, rewards, warm accents.</div></div>
+    <div class="sw"><div class="chip" style="background:var(--wave);color:#fff">Wave</div><div class="info"><span class="mono">#14A3D9</span>Water, calm, book covers.</div></div>
+    <div class="sw"><div class="chip" style="background:var(--deepSea);color:#fff">Deep Sea</div><div class="info"><span class="mono">#0B4C8C</span>Heavy lifting on adult side, book spine.</div></div>
+    <div class="sw"><div class="chip" style="background:var(--berry);color:#fff">Berry</div><div class="info"><span class="mono">#FF4F87</span>Hearts, favourites, alerts to look at.</div></div>
+    <div class="sw"><div class="chip" style="background:var(--forest);color:#fff">Forest</div><div class="info"><span class="mono">#22B573</span>Success, "on", go.</div></div>
+    <div class="sw"><div class="chip" style="background:var(--cream)">Cream</div><div class="info"><span class="mono">#FFF6E3</span>Default page background.</div></div>
+    <div class="sw"><div class="chip" style="background:var(--paper)">Paper</div><div class="info"><span class="mono">#FFFBF2</span>Raised panels on cream.</div></div>
+    <div class="sw"><div class="chip" style="background:var(--page)">Storybook page</div><div class="info"><span class="mono">#FBECCB</span>Story page background only.</div></div>
+  </div>
+  <span class="mono soft" style="display:block;margin:6mm 0 3mm;">Soft tints &middot; use for backgrounds and chips</span>
+  <div class="grid cols5" style="gap:4mm;">
+    <div class="sw small"><div class="chip" style="background:var(--flameSoft)">Flame Soft</div><div class="info"><span class="mono">#FFE6D8</span></div></div>
+    <div class="sw small"><div class="chip" style="background:var(--glowSoft)">Glow Soft</div><div class="info"><span class="mono">#FFF1C2</span></div></div>
+    <div class="sw small"><div class="chip" style="background:var(--waveSoft)">Wave Soft</div><div class="info"><span class="mono">#D6F0FB</span></div></div>
+    <div class="sw small"><div class="chip" style="background:var(--berrySoft)">Berry Soft</div><div class="info"><span class="mono">#FFDBE7</span></div></div>
+    <div class="sw small"><div class="chip" style="background:var(--forestSoft)">Forest Soft</div><div class="info"><span class="mono">#D6F3E5</span></div></div>
+  </div>
+  <div class="folio mono soft"><span>Tiny Giants style guide</span><span>04</span></div>
+</section>
+
+<!-- 5 COLOUR: GROWN-UP + USAGE -->
+<section class="page blue">
+  <div class="circle" style="background:var(--flame);width:70mm;height:70mm;top:-6mm;right:-18mm;"></div>
+  <div class="ring" style="width:100mm;height:100mm;top:-18mm;right:-34mm;"></div>
+  <div class="head"><span class="mono" style="color:rgba(255,255,255,.75)">Colour &middot; 2 of 2</span><h2 class="display">Grown-up accents</h2>
+    <p style="margin-top:3mm;font-size:13px;">Same hues, quieter. Electric blue and lime belong to the grown-up side only.</p></div>
+  <div class="grid cols4" style="gap:4mm;max-width:215mm;">
+    <div class="sw" style="color:var(--ink)"><div class="chip" style="background:var(--electric);color:#fff">Electric</div><div class="info"><span class="mono">#2B3BFF</span>Hero bands, primary buttons, selected pills.</div></div>
+    <div class="sw" style="color:var(--ink)"><div class="chip" style="background:var(--electricSoft)">Electric Soft</div><div class="info"><span class="mono">#DFE2FF</span>Tinted chips and highlights.</div></div>
+    <div class="sw" style="color:var(--ink)"><div class="chip" style="background:var(--lime)">Lime</div><div class="info"><span class="mono">#D7F23A</span>Sticker notes. Also the child primary button.</div></div>
+    <div class="sw" style="color:var(--ink)"><div class="chip" style="background:var(--limeEdge);color:#fff">Lime Edge</div><div class="info"><span class="mono">#9DB815</span>The 3D edge under lime buttons.</div></div>
+    <div class="sw" style="color:var(--ink)"><div class="chip" style="background:#168a56;color:#fff">Leaf</div><div class="info"><span class="mono">#168A56</span>Darker green for text on cream.</div></div>
+    <div class="sw" style="color:var(--ink)"><div class="chip" style="background:#b34a10;color:#fff">Warm</div><div class="info"><span class="mono">#B34A10</span>Darker orange for text on cream.</div></div>
+    <div class="sw" style="color:var(--ink)"><div class="chip" style="background:#d62f67;color:#fff">Berry (text)</div><div class="info"><span class="mono">#D62F67</span>Darker pink for text on cream.</div></div>
+    <div class="sw" style="color:var(--ink)"><div class="chip" style="background:#9a90b8;color:#fff">Switch Off</div><div class="info"><span class="mono">#9A90B8</span>Toggles in the off position.</div></div>
+  </div>
+  <div style="position:absolute;left:18mm;right:18mm;bottom:20mm;">
+    <span class="mono" style="color:rgba(255,255,255,.75)">Suggested balance of colour on a screen</span>
+    <div style="display:flex;height:14mm;border-radius:10px;overflow:hidden;margin-top:3mm;border:1.5px solid rgba(255,255,255,.6);">
+      <div style="flex:60;background:var(--cream);color:var(--ink);padding:3px 8px;font-size:11px;font-weight:600;">Cream 60%</div>
+      <div style="flex:20;background:var(--ink);padding:3px 8px;font-size:11px;font-weight:600;">Night 20%</div>
+      <div style="flex:12;background:var(--electric);padding:3px 8px;font-size:11px;font-weight:600;">Electric 12%</div>
+      <div style="flex:5;background:var(--flame);padding:3px 8px;font-size:11px;font-weight:600;">Flame</div>
+      <div style="flex:3;background:var(--lime);"></div>
+    </div>
+    <p style="margin-top:2mm;font-size:11px;max-width:none;" class="soft">Child screens flip this: more Flame, Wave, Glow and Lime, and still anchored by Night text on Cream.</p>
+  </div>
+  <div class="folio mono"><span>Tiny Giants style guide</span><span>05</span></div>
+</section>
+
+<!-- 6 TYPE FAMILIES -->
+<section class="page">
+  <div class="head"><span class="mono soft">Typography &middot; 1 of 2</span><h2 class="display">Three typefaces</h2></div>
+  <div class="grid" style="grid-template-columns:1.3fr 1fr 1fr;gap:6mm;">
+    <div class="card fill" style="padding:16px 18px;">
+      <span class="mono soft">Display &middot; Talina</span>
+      <div class="display" style="font-size:78px;margin:4mm 0;color:var(--electric)">Aa Gg</div>
+      <div class="display" style="font-size:26px;">ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz</div>
+      <p style="font-size:11.5px;margin-top:4mm;max-width:none;"><b>Use for:</b> page titles, big labels and all button text.<br><b>Never for:</b> paragraphs or anything under 18 px.</p>
+      <p class="soft" style="font-size:11px;margin-top:2mm;max-width:none;">Note: the demo cut only has letters. Numbers and punctuation automatically switch to Poppins SemiBold.</p>
+    </div>
+    <div class="card fill" style="padding:16px 18px;">
+      <span class="mono soft">Body &middot; Poppins</span>
+      <div style="font-size:78px;font-weight:600;line-height:1;margin:4mm 0;color:var(--flame)">Aa</div>
+      <div style="font-size:15px;line-height:1.7;"><span style="font-weight:400">Regular 400</span><br><span style="font-weight:500">Medium 500</span><br><span style="font-weight:600">SemiBold 600</span></div>
+      <p style="font-size:11.5px;margin-top:4mm;max-width:none;"><b>Use for:</b> paragraphs, labels, form text, numbers.</p>
+    </div>
+    <div class="card fill" style="padding:16px 18px;">
+      <span class="mono soft">Signpost &middot; DM Mono</span>
+      <div style="font-family:'DM Mono';font-size:78px;line-height:1;margin:4mm 0;color:var(--wave)">Aa</div>
+      <div class="mono" style="font-size:12px;">THE GAP &middot; AGE 3-5</div>
+      <p style="font-size:11.5px;margin-top:4mm;max-width:none;"><b>Use for:</b> tiny caps "eyebrow" labels above titles. Always 12 px, uppercase, wide letter spacing.<br><b>Grown-up side only.</b></p>
+    </div>
+  </div>
+  <div class="sticker rot" style="right:20mm;bottom:22mm;"><span class="mono">Rule of thumb</span>Talina shouts, Poppins explains, DM Mono points.</div>
+  <div class="folio mono soft"><span>Tiny Giants style guide</span><span>06</span></div>
+</section>
+
+<!-- 7 TYPE SCALE -->
+<section class="page">
+  <div class="head"><span class="mono soft">Typography &middot; 2 of 2</span><h2 class="display">The scale</h2></div>
+  <div class="grid" style="grid-template-columns:1.6fr 1fr;gap:10mm;">
+    <table>
+      <tr><th style="width:26mm">Style</th><th>Sample</th><th style="width:34mm">Spec</th></tr>
+      <tr><td class="mono">Hero title</td><td class="display" style="font-size:44px;line-height:1.05;">Big title</td><td class="soft">Talina 56 / 60</td></tr>
+      <tr><td class="mono">Heading</td><td class="display" style="font-size:30px;">Section heading</td><td class="soft">Talina 28&ndash;32</td></tr>
+      <tr><td class="mono">Button (child)</td><td class="display" style="font-size:20px;">Play the story</td><td class="soft">Talina 18 / 20 / 24</td></tr>
+      <tr><td class="mono">Subtitle</td><td style="font-size:17px;">A short line under the title.</td><td class="soft">Poppins 400, 17</td></tr>
+      <tr><td class="mono">Body</td><td style="font-size:16px;">Story text and descriptions sit here.</td><td class="soft">Poppins 400, 16&ndash;18</td></tr>
+      <tr><td class="mono">Label</td><td style="font-size:16px;font-weight:600;">Button label or tab</td><td class="soft">Poppins 600, 16</td></tr>
+      <tr><td class="mono">Eyebrow</td><td class="mono" style="font-size:12px;">The gap &middot; Age</td><td class="soft">DM Mono 12, +1.4 spacing</td></tr>
+    </table>
+    <div>
+      <span class="mono soft">Hard rules</span>
+      <ul class="clean" style="margin-top:3mm;font-size:12.5px;">
+        <li><b>16 px is the floor.</b> Nothing renders smaller, even if you ask.</li>
+        <li><b>Line height is 1.3</b> times the size, unless it's a big title.</li>
+        <li><b>Respect system text size</b>, capped at 1.4x so landscape screens don't overflow.</li>
+        <li><b>Left-align</b> paragraphs. Centre only short labels and buttons.</li>
+        <li><b>Text is Night plum</b> on light, white on blue or plum.</li>
+      </ul>
+      <div class="sticker rot" style="position:relative;margin-top:7mm;"><span class="mono">Placeholder</span>[ Sample sentence goes here once final copy is written ]</div>
+    </div>
+  </div>
+  <div class="folio mono soft"><span>Tiny Giants style guide</span><span>07</span></div>
+</section>
+
+<!-- 8 BUTTONS CHILD -->
+<section class="page" style="background:var(--glowSoft);">
+  <div class="circle" style="background:var(--wave);width:70mm;height:70mm;right:-18mm;top:-20mm;"></div>
+  <div class="head"><span class="mono soft">Buttons &middot; Child side</span><h2 class="display">Chunky and squashy</h2></div>
+  <div class="grid" style="grid-template-columns:1.4fr 1fr;gap:10mm;">
+    <div>
+      <div class="card" style="padding:16px 18px;border-color:rgba(36,20,71,.25);">
+        <span class="mono soft">Variants</span>
+        <div style="display:flex;gap:8mm;margin-top:4mm;align-items:flex-start;">
+          <div><span class="kbtn primary lg">Play</span><span class="lbl">Primary &middot; lime</span></div>
+          <div><span class="kbtn secondary lg">Back</span><span class="lbl">Secondary &middot; white</span></div>
+          <div><span class="kbtn primary lg round">&#9654;</span><span class="lbl">Icon only</span></div>
+        </div>
+        <span class="mono soft" style="display:block;margin-top:6mm;">Sizes (all 56 px or taller)</span>
+        <div style="display:flex;gap:6mm;margin-top:4mm;align-items:flex-end;">
+          <div><span class="kbtn primary md">Medium</span><span class="lbl">md &middot; 56</span></div>
+          <div><span class="kbtn primary lg">Large</span><span class="lbl">lg &middot; 64 default</span></div>
+          <div><span class="kbtn primary xl">Extra</span><span class="lbl">xl &middot; 80</span></div>
+        </div>
+        <span class="mono soft" style="display:block;margin-top:6mm;">Press state</span>
+        <div style="display:flex;gap:8mm;margin-top:4mm;align-items:flex-start;">
+          <div><span class="kbtn primary lg">Rest</span><span class="lbl">5 px edge</span></div>
+          <div><span class="kbtn primary lg pressed">Pressed</span><span class="lbl">2 px edge, drops 3 px</span></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <span class="mono soft">When to use</span>
+      <table style="margin-top:2mm;">
+        <tr><th>Button</th><th>Use it for</th></tr>
+        <tr><td><b>Primary</b></td><td>The one thing we want a child to do next: Play, Next page, Start.</td></tr>
+        <tr><td><b>Secondary</b></td><td>Going back, closing, or a second choice.</td></tr>
+        <tr><td><b>Icon only</b></td><td>Familiar actions: sound, home. Must have an accessibility label.</td></tr>
+        <tr><td><b>XL</b></td><td>Hero action on a screen with little else.</td></tr>
+      </table>
+      <ul class="clean" style="margin-top:4mm;font-size:12px;">
+        <li>Fully round pill, never square corners</li>
+        <li>One primary button per screen</li>
+        <li>Label is Talina, Night plum</li>
+      </ul>
+    </div>
+  </div>
+  <div class="folio mono soft"><span>Tiny Giants style guide</span><span>08</span></div>
+</section>
+
+<!-- 9 BUTTONS GROWN-UP -->
+<section class="page">
+  <div class="head"><span class="mono soft">Buttons &middot; Grown-up side</span><h2 class="display">Calm and clear</h2></div>
+  <div class="grid" style="grid-template-columns:1.4fr 1fr;gap:10mm;">
+    <div class="card" style="padding:16px 18px;">
+      <span class="mono soft">Buttons</span>
+      <div style="display:flex;gap:6mm;margin-top:4mm;align-items:flex-start;">
+        <div><span class="abtn primary">Save changes</span><span class="lbl">Primary &middot; electric</span></div>
+        <div><span class="abtn">Cancel</span><span class="lbl">Secondary &middot; outline</span></div>
+        <div><span class="abtn primary disabled">Save</span><span class="lbl">Disabled &middot; 50%</span></div>
+      </div>
+      <div style="display:flex;gap:6mm;margin-top:5mm;align-items:flex-start;">
+        <div><span class="abtn primary pressed">Pressed</span><span class="lbl">75% opacity</span></div>
+      </div>
+      <span class="mono soft" style="display:block;margin-top:6mm;">Filter pills</span>
+      <div style="display:flex;gap:3mm;margin-top:3mm;"><span class="pill sel">All</span><span class="pill">Stories</span><span class="pill">Games</span><span class="pill">Music</span></div>
+      <span class="lbl">Selected fills electric with a 220 ms fade</span>
+    </div>
+    <div>
+      <span class="mono soft">When to use</span>
+      <table style="margin-top:2mm;">
+        <tr><th>Control</th><th>Use it for</th></tr>
+        <tr><td><b>Primary</b></td><td>Confirming: save, add, continue.</td></tr>
+        <tr><td><b>Secondary</b></td><td>Cancel, back, anything optional.</td></tr>
+        <tr><td><b>Pill</b></td><td>Filtering a list. Not for actions.</td></tr>
+      </table>
+      <ul class="clean" style="margin-top:4mm;font-size:12px;">
+        <li>48 px tall minimum, 16 px SemiBold label</li>
+        <li>Flat. No chunky edge, no bounce</li>
+        <li>Pill-shaped, same as child side</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card" style="margin-top:7mm;display:flex;gap:10mm;align-items:center;padding:12px 18px;">
+    <div style="font-size:12.5px;"><b>Never mix them.</b> A chunky lime button in the grown-up area, or a flat blue button in the child area, tells the user they're in the wrong place.</div>
+    <div style="display:flex;gap:6mm;align-items:center;flex-shrink:0;"><span class="kbtn primary md">Child</span><span class="mono">≠</span><span class="abtn primary">Grown-up</span></div>
+  </div>
+  <div class="folio mono soft"><span>Tiny Giants style guide</span><span>09</span></div>
+</section>
+
+<!-- 10 PARENT VS CHILD -->
+<section class="page">
+  <div class="head"><span class="mono soft">Two sides, one brand</span><h2 class="display">Child vs grown-up</h2></div>
+  <div class="grid cols2" style="gap:8mm;">
+    <div style="background:var(--glowSoft);border-radius:20px;padding:14px 18px;height:146mm;position:relative;overflow:hidden;">
+      <div class="circle" style="background:var(--wave);width:44mm;height:44mm;right:-12mm;top:-12mm;"></div>
+      <span class="mono">Child side</span>
+      <div class="display" style="font-size:40px;margin:2mm 0 3mm;">Pick a story!</div>
+      <div style="display:flex;gap:4mm;margin-bottom:4mm;">
+        <div class="ph" style="width:34mm;height:44mm;background-color:var(--wave);color:#fff;border:0;font-size:10px;">[ cover ]</div>
+        <div class="ph" style="width:34mm;height:44mm;background-color:var(--berry);color:#fff;border:0;font-size:10px;">[ cover ]</div>
+      </div>
+      <span class="kbtn primary lg">Play</span>
+      <table style="margin-top:4mm;font-size:11px;">
+        <tr><td class="mono">Mood</td><td>Bright, bouncy, big</td></tr>
+        <tr><td class="mono">Colour</td><td>Flame, Wave, Glow, Berry, Lime</td></tr>
+        <tr><td class="mono">Type</td><td>Talina + Poppins</td></tr>
+        <tr><td class="mono">Buttons</td><td>Chunky lime, 56&ndash;80 px</td></tr>
+        <tr><td class="mono">Layout</td><td>Landscape, few choices</td></tr>
+      </table>
+    </div>
+    <div style="background:var(--cream);border:1.5px solid var(--rule);border-radius:20px;overflow:hidden;height:146mm;position:relative;">
+      <div style="background:var(--electric);padding:12px 18px 14px;color:#fff;position:relative;overflow:hidden;">
+        <div class="circle" style="background:var(--flame);width:36mm;height:36mm;right:-12mm;top:-8mm;"></div>
+        <span class="mono" style="color:rgba(255,255,255,.75)">Child profile</span>
+        <div class="display" style="font-size:40px;margin-top:2mm;">Games</div>
+      </div>
+      <div style="padding:12px 18px;">
+        <div style="display:flex;gap:3mm;margin-bottom:4mm;"><span class="pill sel" style="min-height:34px;font-size:14px;">All</span><span class="pill" style="min-height:34px;font-size:14px;">Active</span></div>
+        <span class="abtn primary">Add game</span>
+        <table style="margin-top:4mm;font-size:11px;">
+          <tr><td class="mono">Mood</td><td>Calm, organised, clear</td></tr>
+          <tr><td class="mono">Colour</td><td>Electric, Night, Lime accents</td></tr>
+          <tr><td class="mono">Type</td><td>Talina titles, Poppins + DM Mono</td></tr>
+          <tr><td class="mono">Buttons</td><td>Flat, 48 px, outline or blue</td></tr>
+          <tr><td class="mono">Layout</td><td>Portrait, lists, no white boxes</td></tr>
+        </table>
+      </div>
+      <span class="mono" style="position:absolute;left:18px;top:auto;bottom:10px;">Grown-up side</span>
+    </div>
+  </div>
+  <div class="folio mono soft"><span>Tiny Giants style guide</span><span>10</span></div>
+</section>
+
+<!-- 11 SPACING -->
+<section class="page night">
+  <div class="circle" style="background:var(--electric);width:90mm;height:90mm;right:-24mm;bottom:-34mm;"></div>
+  <div class="head"><span class="mono" style="color:rgba(255,255,255,.7)">Layout</span><h2 class="display">Space, shape and touch</h2></div>
+  <div class="grid" style="grid-template-columns:1fr 1fr 1fr;gap:10mm;">
+    <div>
+      <span class="mono" style="color:rgba(255,255,255,.7)">Spacing &middot; 4 pt scale</span>
+      <div style="margin-top:3mm;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;"><div style="width:4px;height:12px;background:var(--lime)"></div><span class="mono">xs 4</span></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;"><div style="width:8px;height:12px;background:var(--lime)"></div><span class="mono">sm 8</span></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;"><div style="width:16px;height:12px;background:var(--lime)"></div><span class="mono">md 16</span></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;"><div style="width:24px;height:12px;background:var(--lime)"></div><span class="mono">lg 24</span></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;"><div style="width:32px;height:12px;background:var(--lime)"></div><span class="mono">xl 32</span></div>
+        <div style="display:flex;align-items:center;gap:8px;"><div style="width:48px;height:12px;background:var(--lime)"></div><span class="mono">xxl 48</span></div>
+      </div>
+      <p style="font-size:11.5px;margin-top:4mm;" class="soft">Page side margin is lg (24).</p>
+    </div>
+    <div>
+      <span class="mono" style="color:rgba(255,255,255,.7)">Corner radius</span>
+      <div style="display:flex;gap:4mm;margin-top:3mm;flex-wrap:wrap;">
+        <div><div style="width:18mm;height:18mm;background:var(--cream);border-radius:14px"></div><span class="lbl" style="color:#fff">sm 14</span></div>
+        <div><div style="width:18mm;height:18mm;background:var(--cream);border-radius:20px"></div><span class="lbl" style="color:#fff">md 20</span></div>
+        <div><div style="width:18mm;height:18mm;background:var(--cream);border-radius:28px"></div><span class="lbl" style="color:#fff">lg 28</span></div>
+        <div><div style="width:18mm;height:18mm;background:var(--cream);border-radius:999px"></div><span class="lbl" style="color:#fff">pill</span></div>
+      </div>
+      <span class="mono" style="color:rgba(255,255,255,.7);display:block;margin-top:6mm;">Shadows</span>
+      <div style="display:flex;gap:6mm;margin-top:3mm;">
+        <div><div style="width:26mm;height:16mm;background:var(--cream);border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,.25)"></div><span class="lbl" style="color:#fff">card</span></div>
+        <div><div style="width:26mm;height:16mm;background:var(--cream);border-radius:14px;box-shadow:0 12px 28px rgba(0,0,0,.5)"></div><span class="lbl" style="color:#fff">lifted</span></div>
+      </div>
+    </div>
+    <div>
+      <span class="mono" style="color:rgba(255,255,255,.7)">Touch and access</span>
+      <ul class="clean" style="margin-top:2mm;font-size:12.5px;">
+        <li><b>56 px</b> minimum touch target for children</li>
+        <li><b>48 px</b> minimum for grown-ups</li>
+        <li><b>16 px</b> minimum text</li>
+        <li>Keep <b>8 px</b> clear around every button</li>
+        <li>Every icon-only button needs a label for screen readers</li>
+        <li>Never rely on colour alone to show state</li>
+      </ul>
+      <div class="sticker rot" style="position:relative;margin-top:6mm;"><span class="mono">Icons</span>[ Icon style placeholder: rounded line icons, 2 px stroke ]</div>
+    </div>
+  </div>
+  <div class="folio mono"><span>Tiny Giants style guide</span><span>11</span></div>
+</section>
+
+<!-- 12 DO / DON'T + BACK COVER -->
+<section class="page blue">
+  <div class="ring" style="width:120mm;height:120mm;top:-30mm;right:-40mm;"></div>
+  <div class="circle" style="background:var(--flame);width:80mm;height:80mm;top:-16mm;right:-22mm;"></div>
+  <div class="head"><span class="mono" style="color:rgba(255,255,255,.75)">Quick checks</span><h2 class="display">Do and don't</h2></div>
+  <div class="grid cols2" style="gap:5mm;max-width:225mm;">
+    <div class="do" style="color:var(--ink)"><span class="mono">Do</span><ul class="clean" style="margin-top:2mm;"><li>Keep Night plum for text, never pure black</li><li>Use one primary button per screen</li><li>Give every colour a soft tint partner for backgrounds</li><li>Use Talina large, Poppins small</li></ul></div>
+    <div class="dont" style="color:var(--ink)"><span class="mono">Don't</span><ul class="clean" style="margin-top:2mm;"><li>Put electric blue or DM Mono on the child side</li><li>Use text below 16 px or targets below 48 px</li><li>Put white boxes on the cream background (grown-up)</li><li>Use more than three bright colours in one view</li></ul></div>
+  </div>
+  <div style="position:absolute;left:18mm;bottom:20mm;">
+    <div class="display" style="font-size:54px;">Stay tiny.<br>Think giant.</div>
+  </div>
+  <div class="sticker rot" style="right:22mm;bottom:20mm;"><span class="mono">Questions</span>[ Contact name &middot; email@tinygiants.example ]</div>
+  <div class="folio mono"><span>Tiny Giants style guide &middot; v0.1</span><span>12</span></div>
+</section>
+
+</body>
+</html>

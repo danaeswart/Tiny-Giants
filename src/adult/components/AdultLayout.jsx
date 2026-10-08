@@ -1,19 +1,20 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { colors, fonts } from '../../shared/theme.js';
+import { adult } from '../../shared/theme.js';
 
-/** Adult routes: a normal stack with a header and back button, any orientation. */
+/**
+ * All grown-up routes: the four main pages live in the (tabs) group, and detail pages
+ * (one insight, one game) slide in on top of it. Pages draw their own headers.
+ */
 export default function AdultLayout() {
   return (
     <>
       <StatusBar style="dark" />
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: colors.cream },
-          headerTintColor: colors.seaDeep,
-          headerTitleStyle: { fontFamily: fonts.extrabold, fontSize: 20, color: colors.ink },
-          headerShadowVisible: false,
-          contentStyle: { backgroundColor: colors.white },
+          headerShown: false,
+          animation: 'slide_from_right',
+          contentStyle: { backgroundColor: adult.bg },
         }}
       />
     </>

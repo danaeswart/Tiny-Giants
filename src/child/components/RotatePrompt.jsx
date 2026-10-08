@@ -11,7 +11,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import AppText from '../../shared/components/AppText.jsx';
 import Icon from '../../shared/components/Icon.jsx';
-import { colors } from '../../shared/theme.js';
+import { adult, colors } from '../../shared/theme.js';
 
 export default function RotatePrompt() {
   const rotation = useSharedValue(0);
@@ -33,13 +33,13 @@ export default function RotatePrompt() {
   return (
     <View style={styles.screen} accessibilityLiveRegion="polite">
       <Animated.View style={phoneStyle}>
-        <Icon name="phone" size={112} color={colors.seaDeep} />
+        <Icon name="phone" size={112} color={adult.lime} />
       </Animated.View>
       <View style={styles.text}>
-        <AppText size={30} weight="extrabold" align="center">
+        <AppText size={40} weight="extrabold" color={colors.white} align="center">
           Turn your phone sideways
         </AppText>
-        <AppText size={20} color={colors.inkSoft} align="center">
+        <AppText size={20} color={colors.white} align="center">
           The stories open up wide!
         </AppText>
       </View>
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 32,
     padding: 32,
-    backgroundColor: colors.cream,
+    backgroundColor: adult.hero,
   },
   text: { gap: 8, alignItems: 'center' },
 });

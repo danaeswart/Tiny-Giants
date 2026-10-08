@@ -1,30 +1,27 @@
 import { useEffect } from 'react';
-import {
-  Nunito_400Regular,
-  Nunito_600SemiBold,
-  Nunito_700Bold,
-  Nunito_800ExtraBold,
-  useFonts,
-} from '@expo-google-fonts/nunito';
+import { Poppins_400Regular, Poppins_500Medium, Poppins_600SemiBold } from '@expo-google-fonts/poppins';
+import { DMMono_400Regular } from '@expo-google-fonts/dm-mono';
+import { useFonts } from 'expo-font';
 import { Stack, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useLandscapeLock } from '../shared/hooks/useLandscapeLock.js';
+import { useOrientationLock } from '../shared/hooks/useLandscapeLock.js';
 import { colors } from '../shared/theme.js';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
-    Nunito_400Regular,
-    Nunito_600SemiBold,
-    Nunito_700Bold,
-    Nunito_800ExtraBold,
+    DMMono_400Regular,
+    Poppins_400Regular,
+    Poppins_500Medium,
+    Poppins_600SemiBold,
+    Talina: require('../../assets/fonts/Talina.otf'),
   });
 
-  // Child routes are landscape-only; adult routes rotate freely.
+  // Child routes are landscape-only; adult routes are portrait (the vertical layout).
   const segments = useSegments();
-  useLandscapeLock(segments[0] === 'child');
+  useOrientationLock(segments[0] === 'child' ? 'landscape' : segments[0] === 'adult' ? 'portrait' : null);
 
   const ready = fontsLoaded || fontError;
   useEffect(() => {

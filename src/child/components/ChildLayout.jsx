@@ -2,7 +2,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 import { useIsPortrait } from '../../shared/hooks/useLandscapeLock.js';
-import { colors } from '../../shared/theme.js';
+import { adult } from '../../shared/theme.js';
 import RotatePrompt from './RotatePrompt.jsx';
 
 /**
@@ -15,14 +15,14 @@ export default function ChildLayout() {
   const { isPortrait, showRotatePrompt } = useIsPortrait();
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.cream }}>
+    <View style={{ flex: 1, backgroundColor: adult.hero }}>
       <StatusBar hidden />
       <View style={{ flex: 1, display: isPortrait ? 'none' : 'flex' }}>
         <Stack
           screenOptions={{
             headerShown: false,
             animation: 'fade',
-            contentStyle: { backgroundColor: colors.cream },
+            contentStyle: { backgroundColor: adult.hero },
           }}
         />
       </View>

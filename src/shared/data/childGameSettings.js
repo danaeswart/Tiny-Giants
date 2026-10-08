@@ -7,6 +7,6 @@ export const DEFAULT_CHILD_ID = 'child-1';
 export const childGameSettings = [
   {
     childId: DEFAULT_CHILD_ID,
-    enabledGameIds: games.map((game) => game.id),
+    enabledGameIds: games.filter((game) => !game.comingSoon).map((game) => game.id),
   },
 ];

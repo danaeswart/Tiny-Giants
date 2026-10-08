@@ -5,6 +5,7 @@ import Animated, {
   Easing,
   interpolate,
   useAnimatedStyle,
+  useDerivedValue,
   useReducedMotion,
   useSharedValue,
   withDelay,
@@ -12,6 +13,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 import { colors } from '../../shared/theme.js';
+import SwipeHint from './SwipeHint.jsx';
 
 const TURN_MS = 700;
 const OPEN_MS = 1000;
@@ -154,6 +156,9 @@ export default function PageTurner({
   // Nothing on the left until the cover has swung over.
   const leftStackStyle = useAnimatedStyle(() => ({ opacity: opening.get() >= 1 ? 1 : 0 }));
 
+  // The swipe cue fades away as soon as a page starts moving.
+  const hintFade = useDerivedValue(() => 1 - clamp01(Math.abs(position.get() - index) * 6));
+
   const hasPrev = index > 0;
   const hasNext = index < count - 1;
   const leaf = { pageWidth, pageHeight };
@@ -204,6 +209,11 @@ export default function PageTurner({
         )}
 
         <View style={[styles.spine, { left: pageWidth - 1 }]} />
+
+        {/* Swipe cue, only on the first spread (and mirrored on the last), once the book is open. */}
+        {opened && count > 1 && (index === 0 || index === count - 1) && (
+          <SwipeHint side={index === 0 ? 'right' : 'left'} pageWidth={pageWidth} pageHeight={pageHeight} fade={hintFade} />
+        )}
       </Animated.View>
     </GestureDetector>
   );

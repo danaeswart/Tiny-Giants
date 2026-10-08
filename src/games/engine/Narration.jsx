@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
+import { useSettings } from '../../shared/hooks/useSettings.js';
 import Captions from './Captions.jsx';
 import { estimatedEnd, lineAt, timeLines } from './timing.js';
 
@@ -15,13 +16,17 @@ import { estimatedEnd, lineAt, timeLines } from './timing.js';
  * It starts as soon as it mounts. To play a second set of lines in the same scene,
  * render another <Narration> with a different `key`.
  */
-export default function Narration({ audio = null, lines, onEnd }) {
+export default function Narration({ audio: recording = null, lines, onEnd }) {
+  // A grown-up can turn narration off (quiet reading) or captions off; see the profile menu.
+  // The words always show when there's no voice, so the story is never left blank.
+  const { narration, captions } = useSettings();
+  const audio = narration ? recording : null;
   const timed = useMemo(() => timeLines(lines), [lines]);
   const audioTime = useAudioClock(audio, onEnd);
   const timerTime = useTimerClock(!audio, estimatedEnd(timed), onEnd);
   const time = audio ? audioTime : timerTime;
 
-  return <Captions text={lineAt(timed, time)?.text} />;
+  return <Captions text={lineAt(timed, time)?.text} hidden={!captions && !!audio} />;
 }
 
 // Plays the audio once and reports its position in seconds.

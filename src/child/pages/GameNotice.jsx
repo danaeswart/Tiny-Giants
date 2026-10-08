@@ -5,7 +5,7 @@ import Button from '../../shared/components/Button.jsx';
 import Icon from '../../shared/components/Icon.jsx';
 import { useEnabledGame } from '../../shared/hooks/useChildGames.js';
 import { useCurrentChildId } from '../../shared/hooks/useCurrentChildId.js';
-import { colors, radius } from '../../shared/theme.js';
+import { adult, colors, radius } from '../../shared/theme.js';
 import ChildMessage from '../components/ChildMessage.jsx';
 import ChildScreen from '../components/ChildScreen.jsx';
 
@@ -26,29 +26,29 @@ export default function GameNotice() {
   const sideWidth = Math.min(Math.max(width * 0.24, 150), 240);
 
   return (
-    <ChildScreen style={styles.row}>
-      <ScrollView style={styles.note} contentContainerStyle={styles.noteContent}>
+    <ChildScreen blobs style={styles.row}>
+      <ScrollView style={styles.note} contentContainerStyle={styles.noteContent} showsVerticalScrollIndicator={false}>
         <View style={styles.label}>
-          <Icon name="heart" size={24} color={colors.seaDeep} />
-          <AppText size={18} weight="bold" color={colors.seaDeep}>
+          <Icon name="heart" size={24} color={adult.lime} />
+          <AppText size={18} weight="bold" color={adult.lime}>
             A note for the grown-up nearby
           </AppText>
         </View>
-        <AppText size={30} weight="extrabold" accessibilityRole="header">
+        <AppText size={48} weight="extrabold" color={colors.white} accessibilityRole="header" style={{ lineHeight: 52 }}>
           {game.title}
         </AppText>
-        <AppText size={18}>
-          <AppText size={18} weight="bold">
+        <AppText size={18} color={colors.white}>
+          <AppText size={18} weight="bold" color={colors.white}>
             What it helps with:{' '}
           </AppText>
           {game.teaches}
         </AppText>
-        <AppText size={18} color={colors.inkSoft} style={styles.relaxed}>
+        <AppText size={18} color={colors.white} style={[styles.relaxed, { opacity: 0.85 }]}>
           {game.parentNote}
         </AppText>
-        <AppText size={18} style={styles.relaxed}>
+        <AppText size={18} color={colors.white} style={styles.relaxed}>
           When you’re both ready, your little one can tap{' '}
-          <AppText size={18} weight="extrabold">
+          <AppText size={18} weight="bold" color={adult.lime}>
             Start
           </AppText>
           .
@@ -74,15 +74,14 @@ export default function GameNotice() {
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', gap: 16 },
+  row: { flexDirection: 'row', gap: 24 },
   note: {
     flex: 1,
     borderRadius: radius.lg,
-    backgroundColor: colors.paper,
-    borderWidth: 1,
-    borderColor: colors.inkFaint,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.45)',
   },
-  noteContent: { padding: 24, gap: 12 },
+  noteContent: { padding: 28, gap: 16 },
   label: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   relaxed: { lineHeight: 28 },
   side: { gap: 16 },

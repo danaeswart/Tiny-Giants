@@ -1,5 +1,6 @@
 import { Image, StyleSheet, View } from 'react-native';
 import AppText from '../../shared/components/AppText.jsx';
+import Icon from '../../shared/components/Icon.jsx';
 import { resolveImage } from '../../shared/data/images.js';
 import { colors } from '../../shared/theme.js';
 import PlayButton from './PlayButton.jsx';
@@ -7,15 +8,23 @@ import PlayButton from './PlayButton.jsx';
 const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
 
 /**
- * One page of a game's spread. The page art (if any) fills the page; the left page
- * shows the title until it has art, and the right page carries the Play button on top.
+ * One page of a game's spread. The page art (if any) fills the page; a placeholder shows until it has art, and the right page carries the Play button on top.
  */
 export default function BookPage({ game, side, width, height, onPlay }) {
   const art = resolveImage(game.pages?.[side]);
 
   return (
     <View style={[styles.page, { width, height }]}>
-      {art && <Image source={art} resizeMode="cover" accessible={false} style={StyleSheet.absoluteFill} />}
+      {art ? (
+        <Image source={art} resizeMode="cover" accessible={false} style={StyleSheet.absoluteFill} />
+      ) : (
+        <View style={styles.placeholder}>
+          <Icon name="image" size={width * 0.3} color={colors.inkSoft} strokeWidth={2} />
+          <AppText size={clamp(height * 0.04, 14, 22)} weight="bold" color={colors.inkSoft}>
+            Page image
+          </AppText>
+        </View>
+      )}
 
       {side === 'left' && (
         <AppText
@@ -25,8 +34,8 @@ export default function BookPage({ game, side, width, height, onPlay }) {
           style={[
             styles.title,
             { top: height * 0.11, left: width * 0.14, right: width * 0.08 },
-            // Art usually includes the title, so keep it for screen readers only.
-            art && styles.visuallyHidden,
+            // The page image carries the title, so keep it for screen readers only.
+            styles.visuallyHidden,
           ]}
         >
           {game.title}
@@ -48,4 +57,5 @@ const styles = StyleSheet.create({
   title: { position: 'absolute', textTransform: 'uppercase', letterSpacing: 0.5 },
   visuallyHidden: { opacity: 0 },
   playArea: { position: 'absolute', left: 0, right: 0, alignItems: 'center' },
+  placeholder: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center', gap: 10, backgroundColor: colors.glowSoft },
 });

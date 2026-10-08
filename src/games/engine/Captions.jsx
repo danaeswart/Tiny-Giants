@@ -8,9 +8,9 @@ import { colors, radius } from '../../shared/theme.js';
  * The read-along text box along the bottom of the stage. Purely visual: whatever
  * owns the clock (Narration, or a playing video) decides which line to show.
  */
-export default function Captions({ text }) {
+export default function Captions({ text, hidden = false }) {
   const insets = useSafeAreaInsets();
-  if (!text) return null;
+  if (!text || hidden) return null;
 
   return (
     <View style={[styles.wrap, { bottom: Math.max(insets.bottom, 16) }]}>

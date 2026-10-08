@@ -11,9 +11,9 @@ import ChildMessage from '../components/ChildMessage.jsx';
 import ChildScreen from '../components/ChildScreen.jsx';
 
 const MIN_CARD_WIDTH = 220;
-const GAP = 20;
+const GAP = 28;
 
-/** Every enabled game at a glance. */
+/** Every enabled game at a glance: just the cover and its name, no boxes. */
 export default function AllGamesView() {
   const childId = useCurrentChildId();
   const { games, loading } = useEnabledGames(childId);
@@ -28,10 +28,10 @@ export default function AllGamesView() {
   const cardWidth = width ? (width - GAP * (columns - 1)) / columns : 0;
 
   return (
-    <ChildScreen style={{ gap: 16 }}>
+    <ChildScreen style={{ gap: 28 }}>
       <View style={styles.header}>
         <IconButton icon="home" label="Back to the shelf" onPress={() => router.dismissTo('/child')} />
-        <AppText size={28} weight="extrabold" accessibilityRole="header">
+        <AppText size={48} weight="extrabold" color={colors.white} accessibilityRole="header" style={{ lineHeight: 52 }}>
           All games
         </AppText>
       </View>
@@ -51,7 +51,7 @@ export default function AllGamesView() {
               style={({ pressed }) => [styles.card, { width: cardWidth }, pressed && styles.cardPressed]}
             >
               <CoverImage game={game} style={styles.cover} />
-              <AppText size={20} weight="extrabold" style={styles.title}>
+              <AppText size={24} weight="extrabold" color={colors.white} style={{ lineHeight: 28 }}>
                 {game.title}
               </AppText>
             </Pressable>
@@ -62,17 +62,9 @@ export default function AllGamesView() {
 }
 
 const styles = StyleSheet.create({
-  header: { flexDirection: 'row', alignItems: 'center', gap: 16 },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 20 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: GAP, paddingBottom: 8 },
-  card: {
-    gap: 12,
-    padding: 12,
-    borderRadius: radius.lg,
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.inkFaint,
-  },
-  cardPressed: { transform: [{ scale: 0.97 }] },
-  cover: { width: '100%', aspectRatio: 4 / 3, borderRadius: radius.md },
-  title: { paddingHorizontal: 8, paddingBottom: 4 },
+  card: { gap: 14 },
+  cardPressed: { transform: [{ scale: 0.96 }] },
+  cover: { width: '100%', aspectRatio: 4 / 3, borderRadius: radius.lg, borderWidth: 3, borderColor: 'rgba(255,255,255,0.9)' },
 });

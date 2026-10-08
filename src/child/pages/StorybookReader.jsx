@@ -11,9 +11,11 @@ import ChildMessage from '../components/ChildMessage.jsx';
 import ChildScreen from '../components/ChildScreen.jsx';
 import PageTurner from '../components/PageTurner.jsx';
 
+// Extra height taken off the book so the swipe cue arrow fits below it while the book stays centred.
+const HINT_ROOM = 44;
+
 /**
- * The storybook: an open book, one enabled game per two-page spread. Swipe or tap
- * the arrows to turn. ?game=<id> opens the book at that game's spread.
+ * The storybook: an open book, one enabled game per two-page spread. Swipe to turn pages. ?game=<id> opens the book at that game's spread.
  */
 export default function StorybookReader() {
   const childId = useCurrentChildId();
@@ -25,8 +27,6 @@ export default function StorybookReader() {
 
   const requested = games.findIndex((g) => g.id === gameParam);
   const current = Math.min(index ?? Math.max(requested, 0), Math.max(games.length - 1, 0));
-  const canPrev = current > 0;
-  const canNext = current < games.length - 1;
 
   const handleIndexChange = useCallback(
     (i) => {
@@ -56,19 +56,13 @@ export default function StorybookReader() {
   }
 
   // Fit the open book (two pages side by side) into the space between the side columns.
-  const pageHeight = area ? Math.min(area.height - 8, (area.width - 8) / (2 * PAGE_RATIO)) : 0;
+  const pageHeight = area ? Math.min(area.height - 8 - HINT_ROOM, (area.width - 8) / (2 * PAGE_RATIO)) : 0;
   const pageWidth = pageHeight * PAGE_RATIO;
 
   return (
     <ChildScreen style={styles.row}>
       <View style={styles.side}>
         <IconButton icon="home" label="Back to the shelf" onPress={() => router.dismissTo('/child')} />
-        <View style={styles.sideMiddle}>
-          {canPrev && (
-            <IconButton size="xl" icon="chevron-left" label="Previous page" onPress={() => turner.current?.turn(-1)} />
-          )}
-        </View>
-        <View style={styles.spacer} />
       </View>
 
       <View style={styles.bookArea} onLayout={(e) => setArea(e.nativeEvent.layout)}>
@@ -94,15 +88,8 @@ export default function StorybookReader() {
         )}
       </View>
 
-      <View style={styles.side}>
-        <View style={styles.spacer} />
-        <View style={styles.sideMiddle}>
-          {canNext && (
-            <IconButton size="xl" icon="chevron-right" label="Next page" onPress={() => turner.current?.turn(1)} />
-          )}
-        </View>
-        <View style={styles.spacer} />
-      </View>
+      {/* Matches the left column so the book stays centred */}
+      <View style={styles.side} />
     </ChildScreen>
   );
 }
@@ -110,7 +97,5 @@ export default function StorybookReader() {
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: 8 },
   side: { width: 84, alignItems: 'center' },
-  sideMiddle: { flex: 1, justifyContent: 'center' },
-  spacer: { height: 64 },
   bookArea: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 });

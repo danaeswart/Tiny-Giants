@@ -18,19 +18,19 @@ export default function GamePlaceholder() {
   if (!game) return <ChildMessage title="This story isn't here right now" />;
 
   return (
-    <ChildScreen style={{ gap: 16 }}>
+    <ChildScreen style={{ gap: 20 }}>
       <View style={styles.header}>
         <IconButton
           icon="back"
           label="Back to the storybook"
           onPress={() => router.dismissTo(`/child/story?game=${game.id}`)}
         />
-        <AppText size={28} weight="extrabold" accessibilityRole="header" style={{ flexShrink: 1 }}>
+        <AppText size={44} weight="extrabold" color={colors.white} accessibilityRole="header" style={{ flexShrink: 1, lineHeight: 48 }}>
           {game.title}
         </AppText>
       </View>
       <View style={styles.stage}>
-        <AppText size={24} weight="bold" color={colors.inkSoft}>
+        <AppText size={24} weight="bold" color={colors.white}>
           The game goes here
         </AppText>
       </View>
@@ -45,9 +45,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: radius.lg,
-    borderWidth: 4,
+    borderWidth: 3,
     borderStyle: 'dashed',
-    borderColor: 'rgba(43, 39, 51, 0.2)',
-    backgroundColor: colors.paper,
+    borderColor: 'rgba(255, 255, 255, 0.5)',
   },
 });

@@ -3,18 +3,23 @@ import { Platform, useWindowDimensions } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
 /**
- * Locks the device to landscape while `enabled` (child routes), and releases it
- * otherwise (adult routes rotate freely). Works on iOS and Android, including Expo Go.
- * On web there's no real lock, so callers use `isPortrait` to show a rotate prompt.
+ * Locks the device's orientation: 'landscape' for child routes, 'portrait' for adult
+ * routes (the vertical layout), or null to leave it free. Works on iOS and Android,
+ * including Expo Go. On web there's no real lock, so callers use `isPortrait` to show a
+ * rotate prompt.
  */
-export function useLandscapeLock(enabled) {
+export function useOrientationLock(mode) {
   useEffect(() => {
     if (Platform.OS === 'web') return;
-    const request = enabled
-      ? ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE)
-      : ScreenOrientation.unlockAsync();
+    const lock = ScreenOrientation.OrientationLock;
+    const request =
+      mode === 'landscape'
+        ? ScreenOrientation.lockAsync(lock.LANDSCAPE)
+        : mode === 'portrait'
+          ? ScreenOrientation.lockAsync(lock.PORTRAIT_UP)
+          : ScreenOrientation.unlockAsync();
     request.catch(() => {});
-  }, [enabled]);
+  }, [mode]);
 }
 
 /**
@@ -38,4 +43,4 @@ export function useIsPortrait(settleMs = 500) {
   return { isPortrait: portraitNow, showRotatePrompt: portraitNow && settledSize === size };
 }
 
-export default useLandscapeLock;
+export default useOrientationLock;

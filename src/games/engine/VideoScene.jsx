@@ -84,6 +84,6 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 14,
     borderRadius: radius.pill,
-    backgroundColor: 'rgba(43, 39, 51, 0.6)',
+    backgroundColor: 'rgba(36, 20, 71, 0.6)',
   },
 });
