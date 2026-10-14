@@ -24,7 +24,7 @@ export default function GameCard({ game, active, onPress, onToggle }) {
         style={({ pressed }) => [{ gap: 16 }, pressed && { opacity: 0.7 }]}
       >
         <View style={styles.imageWrap}>
-          <CoverImage game={game} style={styles.image} />
+          <CoverImage game={game} large style={styles.image} />
         </View>
         <Eyebrow color={status === 'Active' ? adult.leaf : colors.inkSoft}>
           {game.category}

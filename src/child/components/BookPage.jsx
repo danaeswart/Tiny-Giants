@@ -8,7 +8,7 @@ import PlayButton from './PlayButton.jsx';
 const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
 
 /**
- * One page of a game's spread. The page art (if any) fills the page; a placeholder shows until it has art, and the right page carries the Play button on top.
+ * One page of a game's spread. The page art (if any) is shown whole, never cropped (square art fills a square page exactly); a placeholder shows until it has art, and the right page carries the Play button on top.
  */
 export default function BookPage({ game, side, width, height, onPlay }) {
   const art = resolveImage(game.pages?.[side]);
@@ -16,7 +16,7 @@ export default function BookPage({ game, side, width, height, onPlay }) {
   return (
     <View style={[styles.page, { width, height }]}>
       {art ? (
-        <Image source={art} resizeMode="cover" accessible={false} style={StyleSheet.absoluteFill} />
+        <Image source={art} resizeMode="contain" accessible={false} style={{ width, height }} />
       ) : (
         <View style={styles.placeholder}>
           <Icon name="image" size={width * 0.3} color={colors.inkSoft} strokeWidth={2} />

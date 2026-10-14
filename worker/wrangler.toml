@@ -1,0 +1,7 @@
+name = "tiny-giants-coach"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+[vars]
+FIREBASE_PROJECT_ID = "tiny-giants-178da"
+# The Gemini key is a secret, not a var: `npx wrangler secret put GEMINI_API_KEY`

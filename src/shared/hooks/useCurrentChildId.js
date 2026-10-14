@@ -9,6 +9,11 @@ export function useCurrentChildId() {
   return useStore(currentChild).childId;
 }
 
+/** The current child's id, read once (for code outside a component). */
+export function getCurrentChildId() {
+  return currentChild.get().childId;
+}
+
 /** Make another child the one playing. Every child screen updates straight away. */
 export function setCurrentChildId(childId) {
   currentChild.set({ childId });

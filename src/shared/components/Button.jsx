@@ -1,11 +1,12 @@
 import { Pressable, StyleSheet, View } from 'react-native';
-import { colors, radius } from '../theme.js';
+import { adult, colors, radius } from '../theme.js';
 import AppText from './AppText.jsx';
 import Icon from './Icon.jsx';
 
 const VARIANTS = {
   primary: { bg: '#d7f23a', fg: colors.ink, edge: '#9db815', border: 'transparent' },
   secondary: { bg: colors.white, fg: colors.ink, edge: 'rgba(36, 20, 71, 0.3)', border: 'transparent' },
+  blue: { bg: adult.accent, fg: colors.white, edge: '#1a26b8', border: 'transparent' },
 };
 
 // Every size is at least 56px tall — above the 44–48px platform minimums.

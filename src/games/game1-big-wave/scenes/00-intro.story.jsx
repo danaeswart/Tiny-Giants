@@ -1,36 +1,21 @@
-// SCENE 00 · STORY · Intro in the woods
-// She introduces herself and her candle, and says she wants to get to the beach to
-// build a sandcastle. Sets up why the child should care about getting her there.
+// SCENE 00 · LOOPING VIDEO · Intro in the woods
+// Cami introduces herself and her candle, and says she wants to get to the beach to
+// build a sandcastle. The clip repeats while a voice reads the lines; Next shows after.
 //
-// To use real art:  background={require('../assets/images/00-intro.png')}  (and remove Art)
-// To add the voice: audio={require('../assets/audio/00-intro.m4a')}  and give each line its `at` second
+// Cami speaks with the phone's built-in voice for now; swap in a real recording later.
 
-import StoryScene from '../../engine/StoryScene.jsx';
-import { useStage } from '../../engine/Stage.js';
-import { ForestBackdrop } from '../art/Backdrops.jsx';
-import Character from '../art/Character.jsx';
-import Place from '../art/Place.jsx';
+import LoopingVideoScene from '../../engine/LoopingVideoScene.jsx';
+
+const SRC = require('../assets/video/00-intro.mp4');
 
 const LINES = [
-  { text: "Hi! I'm so happy you're here." },
-  { text: "I'm walking through the woods with my little candle." },
-  { text: 'When I feel scared or worried, I blow out my candle. It helps me feel calm.' },
-  { text: "Today I'm going to the beach to build a big sandcastle!" },
-  { text: 'Will you help me get there?' },
+  { text: "Hi, I'm Cami!" },
+  { text: 'And this is my candle. She’s a little bit magic.' },
+  { text: 'When I have a big feeling, my candle helps me feel calm again.' },
+  { text: "Today, I'm going on a journey, through the woods, all the way to the beach, to build a sandcastle!" },
+  { text: 'Want to come with me?' },
 ];
 
-function Art() {
-  const { height } = useStage();
-  return (
-    <>
-      <ForestBackdrop />
-      <Place x={0.3} bottom={0.16}>
-        <Character size={height * 0.45} mood="happy" candle="lit" />
-      </Place>
-    </>
-  );
-}
-
 export default function IntroScene({ onDone }) {
-  return <StoryScene Art={Art} audio={null} lines={LINES} onDone={onDone} />;
+  return <LoopingVideoScene src={SRC} lines={LINES} captionPosition="top-right" onDone={onDone} />;
 }

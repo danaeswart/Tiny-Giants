@@ -11,9 +11,10 @@ import Eyebrow from './Eyebrow.jsx';
  * a short line, and an optional lime sticker note. A big flame circle drifts in the corner.
  *   note      { label, text } for the lime sticker
  *   top       something above the eyebrow, e.g. a BackBar
+ *   aside     a row of something floating below the title, in open white space (replaces the drifting circle)
  *   children  extra controls shown inside the band (e.g. the Active / Add games switch)
  */
-export default function Hero({ top, eyebrow, title, subtitle, note, children }) {
+export default function Hero({ top, eyebrow, title, subtitle, note, aside, children, light = false }) {
   const insets = useSafeAreaInsets();
   const breathe = useSharedValue(0);
 
@@ -35,17 +36,30 @@ export default function Hero({ top, eyebrow, title, subtitle, note, children }) 
   const ring = useAnimatedStyle(() => ({ transform: [{ scale: 1.04 - 0.06 * breathe.get() }] }));
 
   return (
-    <View style={[styles.hero, { paddingTop: Math.max(insets.top, 16) + 20 }]}>
-      <Animated.View style={[styles.ring, ring]} />
-      <Animated.View style={[styles.circle, circle]} />
+    <View style={[styles.hero, light && styles.heroLight, { paddingTop: Math.max(insets.top, 16) + 20 }]}>
+      {aside ? (
+        null
+      ) : (
+        <>
+          <Animated.View style={[styles.ring, light && styles.ringLight, ring]} />
+          <Animated.View style={[styles.circle, circle]} />
+        </>
+      )}
 
       {top}
-      {eyebrow ? <Eyebrow color="rgba(255,255,255,0.75)">{eyebrow}</Eyebrow> : null}
-      <AppText size={56} weight="extrabold" color={colors.white} accessibilityRole="header" style={{ lineHeight: 60 }}>
+      {eyebrow ? <Eyebrow color={light ? adult.accent : 'rgba(255,255,255,0.75)'}>{eyebrow}</Eyebrow> : null}
+      <AppText
+        size={aside ? 28 : 56}
+        weight="extrabold"
+        align={aside ? 'center' : undefined}
+        color={light ? adult.accent : colors.white}
+        accessibilityRole="header"
+        style={{ lineHeight: aside ? 32 : 60 }}
+      >
         {title}
       </AppText>
       {subtitle ? (
-        <AppText size={17} color={colors.white} style={styles.subtitle}>
+        <AppText size={17} color={light ? adult.accent : colors.white} style={styles.subtitle}>
           {subtitle}
         </AppText>
       ) : null}
@@ -55,6 +69,7 @@ export default function Hero({ top, eyebrow, title, subtitle, note, children }) 
           <Text style={styles.noteText}>{note.text}</Text>
         </View>
       ) : null}
+      {aside}
       {children}
     </View>
   );
@@ -62,6 +77,8 @@ export default function Hero({ top, eyebrow, title, subtitle, note, children }) 
 
 const styles = StyleSheet.create({
   hero: { backgroundColor: adult.hero, paddingHorizontal: 24, paddingBottom: 36, gap: 16, overflow: 'hidden' },
+  heroLight: { backgroundColor: adult.bg },
+  ringLight: { borderColor: 'rgba(43,59,255,0.3)' },
   circle: {
     position: 'absolute',
     top: 24,

@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { setAudioModeAsync } from 'expo-audio';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import * as Speech from 'expo-speech';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import AppText from '../../shared/components/AppText.jsx';
-import Button from '../../shared/components/Button.jsx';
 import IconButton from '../../shared/components/IconButton.jsx';
-import { colors, radius } from '../../shared/theme.js';
+import { useSettings } from '../../shared/hooks/useSettings.js';
+import { colors } from '../../shared/theme.js';
 import { StageContext } from './Stage.js';
 
 /**
@@ -24,18 +24,37 @@ export default function ScenePlayer({ scenes, onExit, onFinish }) {
   const insets = useSafeAreaInsets();
   const [index, setIndex] = useState(0);
   const [stage, setStage] = useState(null);
+  const { skip } = useSettings();
 
   // Narration should play even when the phone's silent switch is on.
   useEffect(() => {
     setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
   }, []);
 
-  const next = useCallback(() => {
-    if (index >= scenes.length - 1) onFinish();
-    else setIndex(index + 1);
-  }, [index, scenes.length, onFinish]);
-
+  // The scene on screen right now. A scene that has been skipped away from (or finished)
+  // can't move the story on: only a call from the current scene counts.
+  const currentId = useRef(scenes[0].id);
   const current = scenes[index];
+  useEffect(() => {
+    currentId.current = current.id;
+  }, [current.id]);
+
+  const goTo = useCallback((i) => {
+    Speech.stop();
+    setIndex(i);
+  }, []);
+
+  const next = useCallback(
+    (fromId) => {
+      if (fromId !== undefined && fromId !== currentId.current) return;
+      if (index >= scenes.length - 1) {
+        Speech.stop();
+        onFinish();
+      } else goTo(index + 1);
+    },
+    [index, scenes.length, onFinish, goTo],
+  );
+
   const { Scene } = current;
 
   return (
@@ -45,41 +64,47 @@ export default function ScenePlayer({ scenes, onExit, onFinish }) {
     >
       {stage && (
         <StageContext.Provider value={stage}>
-          {/* key = scene id, so each scene starts fresh and cross-fades with the last */}
+          {/* key = scene id, so each scene starts fresh and fades in. The old scene goes at once (no fade-out), so its voice, video and timers stop the moment you leave. */}
           <Animated.View
             key={current.id}
             entering={FadeIn.duration(500)}
-            exiting={FadeOut.duration(500)}
             style={StyleSheet.absoluteFill}
           >
-            <Scene onDone={next} />
+            <Scene onDone={() => next(current.id)} />
           </Animated.View>
         </StageContext.Provider>
       )}
 
+      {/* Leave the story: bottom-left corner */}
       <IconButton
         icon="close"
         label="Leave the story"
         size="md"
-        onPress={onExit}
-        style={{ position: 'absolute', top: Math.max(insets.top, 16), left: Math.max(insets.left, 16) }}
+        onPress={() => {
+          Speech.stop();
+          onExit();
+        }}
+        style={{ position: 'absolute', bottom: Math.max(insets.bottom, 16), left: Math.max(insets.left, 16) }}
       />
 
-      {/* Development only: jump between scenes while building. Never shows in a release build. */}
-      {__DEV__ && (
-        <View style={[styles.dev, { top: Math.max(insets.top, 16), right: Math.max(insets.right, 16) }]}>
-          <Button size="md" variant="secondary" onPress={() => setIndex(Math.max(0, index - 1))}>
-            ‹
-          </Button>
-          <View style={styles.devLabel}>
-            <AppText size={16} weight="bold">
-              {current.id} · {current.type.toUpperCase()}
-            </AppText>
-          </View>
-          <Button size="md" variant="secondary" onPress={next}>
-            ›
-          </Button>
-        </View>
+      {/* Skip buttons only show when a grown-up turns them on (profile menu). Back only after the first scene. */}
+      {skip && (
+        <IconButton
+          icon="chevron-right"
+          label="Skip to the next scene"
+          size="md"
+          onPress={() => next()}
+          style={{ position: 'absolute', top: Math.max(insets.top, 16), right: Math.max(insets.right, 16) }}
+        />
+      )}
+      {skip && index > 0 && (
+        <IconButton
+          icon="chevron-left"
+          label="Back to the last scene"
+          size="md"
+          onPress={() => goTo(index - 1)}
+          style={[styles.back, { left: Math.max(insets.left, 16) }]}
+        />
       )}
     </View>
   );
@@ -87,11 +112,5 @@ export default function ScenePlayer({ scenes, onExit, onFinish }) {
 
 const styles = StyleSheet.create({
   stage: { flex: 1, overflow: 'hidden', backgroundColor: colors.ink },
-  dev: { position: 'absolute', flexDirection: 'row', alignItems: 'center', gap: 8, opacity: 0.85 },
-  devLabel: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: radius.pill,
-    backgroundColor: colors.paper,
-  },
+  back: { position: 'absolute', top: '50%', marginTop: -28 },
 });

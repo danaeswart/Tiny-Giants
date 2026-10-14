@@ -3,11 +3,8 @@ import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import ProfileMenu from '../../adult/components/ProfileMenu.jsx';
 import AppText from '../../shared/components/AppText.jsx';
-import Avatar from '../../shared/components/Avatar.jsx';
 import Button from '../../shared/components/Button.jsx';
 import { book, PAGE_RATIO } from '../../shared/data/book.js';
-import IconButton from '../../shared/components/IconButton.jsx';
-import Modal from '../../shared/components/Modal.jsx';
 import { useEnabledGames } from '../../shared/hooks/useChildGames.js';
 import { useCurrentChildId } from '../../shared/hooks/useCurrentChildId.js';
 import { useProfiles } from '../../shared/hooks/useProfiles.js';
@@ -15,38 +12,29 @@ import { adult, colors, fonts } from '../../shared/theme.js';
 import ChildScreen from '../components/ChildScreen.jsx';
 import BookCover from '../components/BookCover.jsx';
 import BouncingBook from '../components/BouncingBook.jsx';
-import SearchBar from '../components/SearchBar.jsx';
 
 /** Child home: a big friendly hello on the left, the one big book to open on the right. */
 export default function StorybookShelf() {
   const childId = useCurrentChildId();
   const { games, loading } = useEnabledGames(childId);
   const { current: profile } = useProfiles();
-  const [searchOpen, setSearchOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const hasGames = games.length > 0;
 
-  function openGame(game) {
-    setSearchOpen(false);
-    router.push(`/child/games/${game.id}`);
-  }
-
   return (
-    <ChildScreen style={{ gap: 16 }}>
+    <ChildScreen background={colors.white} style={{ gap: 16 }}>
       <View style={styles.header}>
-        <Pressable
+        <Button
+          variant="blue"
+          size="lg"
+          icon="settings"
           onPress={() => setMenuOpen(true)}
-          accessibilityRole="button"
           accessibilityLabel="Profile and settings"
-          hitSlop={8}
-          style={({ pressed }) => ({ transform: [{ scale: pressed ? 0.92 : 1 }] })}
-        >
-          <Avatar profile={profile} size={56} />
-        </Pressable>
+          style={styles.settingsButton}
+        />
         {hasGames && (
           <View style={styles.actions}>
-            <IconButton icon="search" label="Search games" onPress={() => setSearchOpen(true)} />
-            <Button variant="secondary" icon="grid" onPress={() => router.push('/child/games')}>
+            <Button variant="blue" icon="grid" onPress={() => router.push('/child/games')}>
               All games
             </Button>
           </View>
@@ -56,7 +44,7 @@ export default function StorybookShelf() {
       <View style={styles.main}>
         <View style={styles.hello}>
           <Text style={styles.eyebrow}>TINY GIANTS · STORY TIME</Text>
-          <AppText size={72} weight="extrabold" color={colors.white} accessibilityRole="header" style={{ lineHeight: 74 }}>
+          <AppText size={72} weight="extrabold" color={adult.accent} accessibilityRole="header" style={{ lineHeight: 74 }}>
             {profile?.name ? `Hi, ${profile.name}!` : 'Hi there!'}
           </AppText>
           <View style={styles.sticker}>
@@ -69,9 +57,6 @@ export default function StorybookShelf() {
         <View style={styles.bookSide}>{!loading && (hasGames ? <OpenBook /> : <EmptyShelf />)}</View>
       </View>
 
-      <Modal open={searchOpen} onClose={() => setSearchOpen(false)} title="Find a game" align="top">
-        <SearchBar childId={childId} onSelect={openGame} />
-      </Modal>
       <ProfileMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
     </ChildScreen>
   );
@@ -95,6 +80,7 @@ function OpenBook() {
           <View style={styles.pages} />
           <View style={styles.cover}>
             <BookCover width={bookWidth} height={bookHeight} />
+            <View style={styles.spine} />
           </View>
         </View>
       </BouncingBook>
@@ -105,7 +91,7 @@ function OpenBook() {
 function EmptyShelf() {
   return (
     <View style={{ gap: 12, maxWidth: 360 }}>
-      <AppText size={20} color={colors.white}>
+      <AppText size={20} color={colors.ink}>
         Ask a grown-up to choose some stories for you.
       </AppText>
     </View>
@@ -114,11 +100,11 @@ function EmptyShelf() {
 
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 16 },
+  settingsButton: { width: 64 },
   actions: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   main: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 32 },
   hello: { flex: 1, gap: 16, paddingLeft: 40 },
-  eyebrow: { fontFamily: fonts.mono, fontSize: 13, letterSpacing: 1.6, color: 'rgba(255,255,255,0.8)' },
-  sticker: {
+  eyebrow: { fontFamily: fonts.mono, fontSize: 13, letterSpacing: 1.6, color: adult.accent },  sticker: {
     alignSelf: 'flex-start',
     paddingVertical: 12,
     paddingHorizontal: 20,
@@ -138,6 +124,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.inkFaint,
   },
+  spine: { position: 'absolute', top: 0, bottom: 0, left: 0, width: '7%', backgroundColor: adult.accent },
   cover: {
     ...StyleSheet.absoluteFillObject,
     overflow: 'hidden',

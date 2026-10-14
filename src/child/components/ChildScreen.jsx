@@ -7,10 +7,10 @@ import { adult } from '../../shared/theme.js';
  * Full-screen child canvas on electric blue that keeps content clear of notches and
  * rounded corners. `blobs` adds the drifting circles behind the content.
  */
-export default function ChildScreen({ children, style, blobs = false }) {
+export default function ChildScreen({ children, style, blobs = false, background }) {
   const insets = useSafeAreaInsets();
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, background && { backgroundColor: background }]}>
       {blobs && <Blobs />}
       <View
         style={[

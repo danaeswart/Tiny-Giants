@@ -12,7 +12,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 import Icon from '../../shared/components/Icon.jsx';
-import { colors } from '../../shared/theme.js';
+import { adult, colors } from '../../shared/theme.js';
 
 const CORNER = 44;
 const NUDGE = 10;
@@ -70,7 +70,7 @@ export default function SwipeHint({ side, pageWidth, pageHeight, fade }) {
 
       <Animated.View style={[styles.arrow, { top: pageHeight + 4, [side]: 10 }, arrowStyle]}>
         <View style={{ transform: [{ scaleX: mirror }] }}>
-          <Icon name="back" size={26} color="#ffffff" strokeWidth={3} />
+          <Icon name="back" size={26} color={adult.accent} strokeWidth={3} />
         </View>
       </Animated.View>
     </Animated.View>

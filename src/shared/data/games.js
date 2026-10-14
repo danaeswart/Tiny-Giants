@@ -18,12 +18,15 @@ export const games = [
     id: 'big-wave',
     title: 'The Big Wave',
     category: 'Stress',
-    coverImage: null,
-    image: null,
-    pages: { left: null, right: null },
+    coverImage: 'big-wave-small-thumb',
+    image: 'big-wave-large-thumb',
+    pages: { left: 'big-wave-left', right: 'big-wave-right' },
     blurb: 'Help a little hero stay calm when big feelings roll in.',
     tools: ['Paced breathing', 'Small-steps thinking', 'Calming candle'],
     teaches: 'Coping with stress and big feelings',
+    // Extra material for the parent coach (see worker/src/index.js). Add what you want it to know.
+    coachNotes:
+      'Practise the paced breathing away from the game too: breathe in for 4, out for 6, like blowing out a candle. Try it at calm times first so it is familiar when feelings are big. Name the feeling out loud ("that wave feels big") before fixing it.',
     parentNote:
       'This story gently teaches a breathing technique for when feelings feel like too much. Your child guides a character through a calming breathing exercise during a stressful moment in the story.',
   },

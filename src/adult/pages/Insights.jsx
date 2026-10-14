@@ -4,40 +4,33 @@ import { View } from 'react-native';
 import AppText from '../../shared/components/AppText.jsx';
 import { useCurrentChildId } from '../../shared/hooks/useCurrentChildId.js';
 import { useLoad } from '../../shared/hooks/useLoad.js';
-import { getChild, getInsights } from '../../shared/services/api.js';
+import { getChild, getPlayedGames } from '../../shared/services/api.js';
 import { colors } from '../../shared/theme.js';
 import AdultScreen from '../components/AdultScreen.jsx';
-import Hero from '../components/Hero.jsx';
-import InsightCard from '../components/InsightCard.jsx';
+import PageHeader from '../components/PageHeader.jsx';
+import PlayedGameRow from '../components/PlayedGameRow.jsx';
 
-/** Every insight, newest first, with more of each one's story than the dashboard shows. */
+/** Play together: the games the child has played, with how often they played and finished each. Opens a game for ideas. */
 export default function Insights() {
   const childId = useCurrentChildId();
-  const load = useCallback(() => Promise.all([getInsights(childId), getChild(childId)]), [childId]);
+  const load = useCallback(() => Promise.all([getChild(childId), getPlayedGames(childId)]), [childId]);
   const { data } = useLoad(load);
 
   if (!data) return <AdultScreen />;
-  const [insights, child] = data;
+  const [child, played] = data;
+  const name = child?.name ?? 'your child';
 
   return (
-    <AdultScreen
-      hero={
-        <Hero
-          eyebrow="Insights"
-          title="What we're noticing"
-          subtitle={`Patterns from ${child?.name ?? 'your child'}'s play, and ideas to try together.`}
-          note={{ label: 'So far', text: `${insights.length} ${insights.length === 1 ? 'insight' : 'insights'} to read` }}
-        />
-      }
-    >
-      {insights.length === 0 ? (
+    <AdultScreen>
+      <PageHeader eyebrow="Play together" title={`${name}'s games`} subtitle="Pick a game to see what it teaches and get ideas for playing it together." />
+      {played.length === 0 ? (
         <AppText size={17} color={colors.inkSoft}>
-          Nothing yet. Insights appear after a story has been played.
+          No games played yet. When {name} plays a story, it shows up here with ideas for playing it together.
         </AppText>
       ) : (
-        <View style={{ gap: 32 }}>
-          {insights.map((insight) => (
-            <InsightCard key={insight.id} insight={insight} onPress={() => router.push(`/adult/insight/${insight.id}`)} />
+        <View style={{ gap: 20 }}>
+          {played.map((entry) => (
+            <PlayedGameRow key={entry.game.id} entry={entry} onPress={() => router.push(`/adult/game/${entry.game.id}?from=play`)} />
           ))}
         </View>
       )}

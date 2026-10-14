@@ -5,12 +5,13 @@ import AppText from '../../shared/components/AppText.jsx';
 import CoverImage from '../../shared/components/CoverImage.jsx';
 import { useCurrentChildId } from '../../shared/hooks/useCurrentChildId.js';
 import { useLoad } from '../../shared/hooks/useLoad.js';
-import { getChildGameSettings, getGameById, getInsightsForGame, toggleGameActive } from '../../shared/services/api.js';
+import { getChild, getChildGameSettings, getGameById, getInsightsForGame, getPlayedGames, toggleGameActive } from '../../shared/services/api.js';
 import { colors, radius } from '../../shared/theme.js';
 import AdultButton from '../components/AdultButton.jsx';
 import AdultScreen from '../components/AdultScreen.jsx';
 import BackBar from '../components/BackBar.jsx';
 import Chip from '../components/Chip.jsx';
+import CoachChat from '../components/CoachChat.jsx';
 import Eyebrow from '../components/Eyebrow.jsx';
 import Hero from '../components/Hero.jsx';
 import InsightCard from '../components/InsightCard.jsx';
@@ -24,7 +25,7 @@ export default function GameDetail() {
   const { gameId, from } = useLocalSearchParams();
   const childId = useCurrentChildId();
   const load = useCallback(
-    () => Promise.all([getGameById(gameId), getChildGameSettings(childId), getInsightsForGame(childId, gameId)]),
+    () => Promise.all([getGameById(gameId), getChildGameSettings(childId), getInsightsForGame(childId, gameId), getChild(childId), getPlayedGames(childId)]),
     [gameId, childId],
   );
   const { data, loading } = useLoad(load);
@@ -32,7 +33,7 @@ export default function GameDetail() {
   const [notice, setNotice] = useState('');
 
   if (loading) return <AdultScreen withNav={false} />;
-  const [game, settings, insights] = data ?? [];
+  const [game, settings, insights, child, played] = data ?? [];
   if (!game) {
     return (
       <AdultScreen withNav={false}>
@@ -46,6 +47,7 @@ export default function GameDetail() {
 
   const active = override ?? settings.enabledGameIds.includes(game.id);
   const fromInsight = from === 'insight';
+  const fromPlay = from === 'play';
 
   async function toggle() {
     const next = !active;
@@ -57,6 +59,42 @@ export default function GameDetail() {
       setOverride(!next);
       setNotice(error.message);
     }
+  }
+
+  if (fromPlay) {
+    return (
+      <AdultScreen withNav={false}>
+        <BackBar label="Play together" />
+        <View style={{ gap: 12 }}>
+          <Eyebrow>{game.category}</Eyebrow>
+          <AppText size={48} weight="extrabold" accessibilityRole="header" style={{ lineHeight: 52 }}>
+            {game.title}
+          </AppText>
+        </View>
+
+        <View style={styles.cover}>
+          <CoverImage game={game} large style={{ width: '100%', height: '100%' }} />
+        </View>
+
+        <Section label="Teaches">
+          <AppText size={18}>{game.teaches}</AppText>
+        </Section>
+
+        <Section label="Tools">
+          <View style={styles.chips}>
+            {game.tools.map((tool) => (
+              <Chip key={tool} label={tool} />
+            ))}
+          </View>
+        </Section>
+
+        {!game.comingSoon && (
+          <Section label="Play together" stacked>
+            <CoachChat game={game} child={child} plays={played.find((p) => p.game.id === game.id)} />
+          </Section>
+        )}
+      </AdultScreen>
+    );
   }
 
   return (
@@ -71,7 +109,7 @@ export default function GameDetail() {
       }
     >
       <View style={styles.cover}>
-        <CoverImage game={game} style={{ width: '100%', height: '100%' }} />
+        <CoverImage game={game} large style={{ width: '100%', height: '100%' }} />
       </View>
 
       <AppText size={22} weight="semibold" style={{ lineHeight: 30 }}>
@@ -89,6 +127,12 @@ export default function GameDetail() {
           ))}
         </View>
       </Section>
+
+      {!game.comingSoon && (
+        <Section label="Play together" stacked>
+          <CoachChat game={game} child={child} plays={played.find((p) => p.game.id === game.id)} />
+        </Section>
+      )}
 
       {fromInsight ? (
         <AdultButton variant="primary" onPress={() => router.back()} style={{ alignSelf: 'stretch' }}>

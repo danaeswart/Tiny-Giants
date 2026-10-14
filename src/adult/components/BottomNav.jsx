@@ -1,102 +1,128 @@
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedProps,
+  useAnimatedStyle,
+  useSharedValue,
+  withSequence,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Svg, { Path } from 'react-native-svg';
 import Icon from '../../shared/components/Icon.jsx';
-import { adult, colors, fonts, radius } from '../../shared/theme.js';
+import { adult, colors, fonts } from '../../shared/theme.js';
 
 // The four tabs, in order. `name` is the route file in app/adult/(tabs)/.
 const TABS = [
   { name: 'index', label: 'Dashboard', icon: 'home' },
-  { name: 'insights', label: 'Insights', icon: 'chart' },
+  { name: 'insights', label: 'Play together', icon: 'sparkle' },
   { name: 'games', label: 'Games', icon: 'grid' },
   { name: 'settings', label: 'Settings', icon: 'user' },
 ];
 
-const IDLE = 'rgba(255, 255, 255, 0.6)';
-const CIRCLE = 44;
-// Outer gutter + bar padding always sum to 52, so the bar can grow wider without moving the links.
-const WRAP_PAD_X = 16;
-const BAR_PAD_X = 36;
-const BAR_PAD_Y = 8;
+const AnimatedPath = Animated.createAnimatedComponent(Path);
+
+const BAR_PAD_X = 12;
+const LINE_W = 56;
+const LINE_H = 14;
+const STEPS = 28;
+const REST_AMP = 0;
+const TRAVEL_AMP = 5.5;
+
+// A sine wave across the line's width, sampled into a polyline. `phase` slides the crests along
+// the line; `amp` is how tall they get.
+function wavePath(phase, amp) {
+  'worklet';
+  let d = '';
+  for (let i = 0; i <= STEPS; i++) {
+    const px = (i / STEPS) * LINE_W;
+    const py = LINE_H / 2 + Math.sin((i / STEPS) * Math.PI * 4 + phase) * amp;
+    d += `${i === 0 ? 'M' : 'L'}${px.toFixed(1)} ${py.toFixed(1)} `;
+  }
+  return d;
+}
 
 /**
- * Floating, rounded tab bar in Night plum. Each tab is an icon with a small label under it.
- * One flame circle glides along behind the active tab's icon on a gentle spring; the active
- * icon and label turn white and bold. Plugged into the router with <Tabs tabBar={...}>.
+ * Solid tab bar attached to the bottom edge, on the same cream paper as the pages.
+ * A flame-coloured wavy line sits under the active link. When the tab changes the line
+ * springs across to the new link while its ripples swell and flow, then flattens back to a straight line.
+ * Plugged into the router with <Tabs tabBar={...}>.
  */
 export default function BottomNav({ state, navigation }) {
   const insets = useSafeAreaInsets();
   const [width, setWidth] = useState(0);
   const itemW = (width - BAR_PAD_X * 2) / TABS.length;
-  const target = BAR_PAD_X + state.index * itemW + (itemW - CIRCLE) / 2;
+  const target = BAR_PAD_X + state.index * itemW + (itemW - LINE_W) / 2;
   const x = useSharedValue(target);
+  const amp = useSharedValue(REST_AMP);
   const placed = width > 0;
 
   useEffect(() => {
-    // A soft spring: glides in, overshoots a touch, then settles, instead of stopping dead.
-    x.set(withSpring(target, { damping: 14, stiffness: 110, mass: 0.9 }));
-  }, [target, x]);
+    x.set(withSpring(target, { damping: 12, stiffness: 90, mass: 1 }));
+    amp.set(withSequence(withTiming(TRAVEL_AMP, { duration: 160 }), withTiming(REST_AMP, { duration: 700 })));
+  }, [target, x, amp]);
 
-  const sweep = useAnimatedStyle(() => ({ transform: [{ translateX: x.get() }] }));
+  // The wave's phase is tied to x too, so the crests visibly roll along while the line travels.
+  const lineProps = useAnimatedProps(() => ({ d: wavePath(-x.get() * 0.12, amp.get()) }));
+  const lineStyle = useAnimatedStyle(() => ({ transform: [{ translateX: x.get() }] }));
 
   return (
-    <View style={[styles.wrap, { bottom: Math.max(insets.bottom, 12) + 8 }]}>
-      <View style={styles.bar} onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
-        {placed && <Animated.View style={[styles.circle, sweep]} />}
-        {state.routes.map((route, i) => {
-          const tab = TABS.find((t) => t.name === route.name);
-          if (!tab) return null;
-          const focused = i === state.index;
+    <View style={[styles.bar, { paddingBottom: Math.max(insets.bottom, 8) }]} onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
+      {state.routes.map((route, i) => {
+        const tab = TABS.find((t) => t.name === route.name);
+        if (!tab) return null;
+        const focused = i === state.index;
 
-          function onPress() {
-            const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
-            if (!focused && !event.defaultPrevented) navigation.navigate(route.name);
-          }
+        function onPress() {
+          const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
+          if (!focused && !event.defaultPrevented) navigation.navigate(route.name);
+        }
 
-          return (
-            <Pressable
-              key={route.key}
-              onPress={onPress}
-              accessibilityRole="tab"
-              accessibilityLabel={tab.label}
-              accessibilityState={{ selected: focused }}
-              style={styles.item}
-            >
-              <View style={styles.iconWrap}>
-                <Icon name={tab.icon} size={22} color={focused ? colors.white : IDLE} strokeWidth={focused ? 2.6 : 2} />
-              </View>
-              <Text style={[styles.label, focused && styles.labelOn]}>{tab.label}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
+        return (
+          <Pressable
+            key={route.key}
+            onPress={onPress}
+            accessibilityRole="tab"
+            accessibilityLabel={tab.label}
+            accessibilityState={{ selected: focused }}
+            style={styles.item}
+          >
+            <Icon name={tab.icon} size={22} color={focused ? adult.flame : colors.inkSoft} strokeWidth={focused ? 2.6 : 2} />
+            <Text style={[styles.label, focused && styles.labelOn]}>{tab.label}</Text>
+          </Pressable>
+        );
+      })}
+      {placed && (
+        <Animated.View pointerEvents="none" style={[styles.line, { bottom: Math.max(insets.bottom, 8) - 4 }, lineStyle]}>
+          <Svg width={LINE_W} height={LINE_H}>
+            <AnimatedPath
+              animatedProps={lineProps}
+              stroke={adult.flame}
+              strokeWidth={3}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+            />
+          </Svg>
+        </Animated.View>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { position: 'absolute', left: 0, right: 0, paddingHorizontal: WRAP_PAD_X, pointerEvents: 'box-none' },
   bar: {
     flexDirection: 'row',
-    paddingVertical: BAR_PAD_Y,
+    paddingTop: 8,
     paddingHorizontal: BAR_PAD_X,
-    borderRadius: radius.pill,
-    backgroundColor: adult.nav,
-    boxShadow: '0 12px 28px rgba(36, 20, 71, 0.28)',
+    backgroundColor: adult.bg,
+    borderTopWidth: 1,
+    borderTopColor: colors.inkFaint,
   },
-  item: { flex: 1, minHeight: 64, alignItems: 'center', justifyContent: 'center', gap: 2 },
-  iconWrap: { width: CIRCLE, height: CIRCLE, alignItems: 'center', justifyContent: 'center' },
-  circle: {
-    position: 'absolute',
-    top: BAR_PAD_Y,
-    left: 0,
-    width: CIRCLE,
-    height: CIRCLE,
-    borderRadius: CIRCLE / 2,
-    backgroundColor: adult.flame,
-  },
+  item: { flex: 1, minHeight: 64, alignItems: 'center', justifyContent: 'center', gap: 4, paddingBottom: 8 },
+  line: { position: 'absolute', left: 0, width: LINE_W, height: LINE_H },
   // Deliberately below the 16px AppText floor: small captions, regular weight until active.
-  label: { fontFamily: fonts.regular, fontSize: 12, color: IDLE },
-  labelOn: { fontFamily: fonts.bold, color: colors.white },
+  label: { fontFamily: fonts.regular, fontSize: 12, color: colors.inkSoft },
+  labelOn: { fontFamily: fonts.bold, color: colors.ink },
 });

@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { router } from 'expo-router';
-import { Modal, Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
+import { Modal, Platform, Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AppText from '../../shared/components/AppText.jsx';
 import Avatar from '../../shared/components/Avatar.jsx';
@@ -9,7 +9,9 @@ import { setCurrentChildId } from '../../shared/hooks/useCurrentChildId.js';
 import { useProfiles } from '../../shared/hooks/useProfiles.js';
 import { setSetting, useSettings } from '../../shared/hooks/useSettings.js';
 import { adult, colors, radius } from '../../shared/theme.js';
+import { hasParentPin, PIN_LENGTH, verifyParentPin } from '../../shared/services/pin.js';
 import AdultButton from './AdultButton.jsx';
+import TextField from './TextField.jsx';
 
 /**
  * Full-screen profile menu, opened from the picture beside the title on the child's
@@ -23,14 +25,48 @@ export default function ProfileMenu({ open, onClose }) {
   const settings = useSettings();
   const [view, setView] = useState('main'); // 'main' | 'accounts'
 
+  // Where to go once the modal has finished dismissing. Navigating while the native modal is
+  // still on its way out leaves it swallowing every touch on this screen when we come back.
+  const pendingRoute = useRef(null);
+  const fallbackTimer = useRef(null);
+
+  useEffect(() => () => clearTimeout(fallbackTimer.current), []);
+
   function close() {
     setView('main');
     onClose();
   }
 
-  function openDashboard() {
+  function goAfterClose(href) {
+    pendingRoute.current = href;
     close();
-    router.push('/adult');
+    // iOS reports the end of the dismissal through onDismiss; Android has no such event.
+    clearTimeout(fallbackTimer.current);
+    fallbackTimer.current = setTimeout(flushRoute, Platform.OS === 'ios' ? 1000 : 350);
+  }
+
+  function flushRoute() {
+    clearTimeout(fallbackTimer.current);
+    const href = pendingRoute.current;
+    pendingRoute.current = null;
+    if (href) router.push(href);
+  }
+
+  async function openDashboard() {
+    try {
+      // An account made before PINs existed has none yet: make one before going on.
+      if (!(await hasParentPin())) {
+        goAfterClose('/create-pin');
+        return;
+      }
+    } catch {
+      // Can't tell (offline): the PIN screen below will report the problem.
+    }
+    setView('pin');
+  }
+
+  function unlocked() {
+    goAfterClose('/adult');
   }
 
   function choose(profile) {
@@ -42,7 +78,8 @@ export default function ProfileMenu({ open, onClose }) {
     <Modal
       visible={open}
       animationType="fade"
-      onRequestClose={view === 'accounts' ? () => setView('main') : close}
+      onDismiss={flushRoute}
+      onRequestClose={view !== 'main' ? () => setView('main') : close}
       // iOS modals default to portrait-only, which would rotate the landscape child screen.
       supportedOrientations={['portrait', 'landscape', 'landscape-left', 'landscape-right']}
       statusBarTranslucent
@@ -61,9 +98,9 @@ export default function ProfileMenu({ open, onClose }) {
       >
         <View style={styles.topBar}>
           <AppText size={22} weight="extrabold" accessibilityRole="header" style={{ flexShrink: 1 }}>
-            {view === 'accounts' ? 'Switch account' : 'Profile & settings'}
+            {view === 'accounts' ? 'Switch account' : view === 'pin' ? 'Grown-ups only' : 'Profile & settings'}
           </AppText>
-          {view === 'accounts' ? (
+          {view !== 'main' ? (
             <AdultButton icon="back" onPress={() => setView('main')}>
               Back
             </AdultButton>
@@ -75,7 +112,9 @@ export default function ProfileMenu({ open, onClose }) {
         </View>
 
         <ScrollView contentContainerStyle={styles.content}>
-          {view === 'accounts' ? (
+          {view === 'pin' ? (
+            <PinEntry onUnlock={unlocked} />
+          ) : view === 'accounts' ? (
             <Section title="Who's playing?">
               {profiles.map((profile, i) => (
                 <AccountRow
@@ -118,22 +157,72 @@ export default function ProfileMenu({ open, onClose }) {
                   hint="Shows the words on screen while a story is read. Always on when narration is off."
                   value={settings.captions}
                   onChange={(v) => setSetting('captions', v)}
+                />
+                <SettingRow
+                  label="Skip buttons"
+                  hint="Shows skip-forward and back buttons while a game is playing, so scenes can be moved through quickly."
+                  value={settings.skip}
+                  onChange={(v) => setSetting('skip', v)}
                   last
                 />
               </Section>
+
+              {/* The only way from the child side to the parent side, so it's the PIN's one checkpoint.
+                  Sits at the very end of the scrolling page, not pinned to the screen. */}
+              <AdultButton variant="primary" onPress={openDashboard} style={{ alignSelf: 'stretch' }}>
+                Parent dashboard
+              </AdultButton>
             </>
           )}
         </ScrollView>
-
-        {view === 'main' && (
-          <View style={styles.footer}>
-            <AdultButton variant="primary" onPress={openDashboard} style={{ alignSelf: 'stretch' }}>
-              Parent dashboard
-            </AdultButton>
-          </View>
-        )}
       </View>
     </Modal>
+  );
+}
+
+/** Asks for the grown-up PIN and calls onUnlock once it's right. Checks as soon as the last digit is typed. */
+function PinEntry({ onUnlock }) {
+  const [pin, setPin] = useState('');
+  const [error, setError] = useState('');
+  const [checking, setChecking] = useState(false);
+
+  async function change(text) {
+    const digits = text.replace(/\D/g, '');
+    setPin(digits);
+    setError('');
+    if (digits.length < PIN_LENGTH) return;
+    setChecking(true);
+    try {
+      if (await verifyParentPin(digits)) return onUnlock();
+      setError('That PIN is not right.');
+    } catch (e) {
+      setError(e.message || 'Could not check the PIN. Check your connection.');
+    }
+    setPin('');
+    setChecking(false);
+  }
+
+  return (
+    <View style={{ gap: 12 }}>
+      <AppText size={17} color={colors.inkSoft}>
+        Enter your {PIN_LENGTH}-digit PIN to open the parent area.
+      </AppText>
+      <TextField
+        label="PIN"
+        value={pin}
+        onChangeText={change}
+        keyboardType="number-pad"
+        secureTextEntry
+        maxLength={PIN_LENGTH}
+        editable={!checking}
+        autoFocus
+      />
+      {error ? (
+        <AppText size={16} color={adult.berry} accessibilityLiveRegion="assertive">
+          {error}
+        </AppText>
+      ) : null}
+    </View>
   );
 }
 

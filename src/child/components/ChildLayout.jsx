@@ -2,7 +2,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 import { useIsPortrait } from '../../shared/hooks/useLandscapeLock.js';
-import { adult } from '../../shared/theme.js';
+import { adult, colors } from '../../shared/theme.js';
 import RotatePrompt from './RotatePrompt.jsx';
 
 /**
@@ -22,7 +22,7 @@ export default function ChildLayout() {
           screenOptions={{
             headerShown: false,
             animation: 'fade',
-            contentStyle: { backgroundColor: adult.hero },
+            contentStyle: { backgroundColor: colors.white },
           }}
         />
       </View>

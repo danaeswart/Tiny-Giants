@@ -87,3 +87,16 @@ export const shadows = {
   card: '0 4px 16px rgba(36, 20, 71, 0.06)',
   lifted: '0 12px 28px rgba(36, 20, 71, 0.16)',
 };
+
+// Colours for the floating skill words on the grown-up dashboard. Each skill takes the next
+// colour in this list (wrapping round), so edit, add or remove entries freely. All are dark
+// enough to read on the cream background.
+export const skillColors = [
+  '#2b3bff', // electric blue
+  '#e0561b', // flame
+  '#168a56', // leaf
+  '#d62f67', // berry
+  '#8a3fd1', // violet
+  '#0b7fb3', // sea
+  '#b57f00', // gold
+];

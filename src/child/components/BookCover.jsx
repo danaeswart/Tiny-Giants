@@ -16,8 +16,8 @@ export default function BookCover({ width, height }) {
   return (
     <View style={[styles.cover, { width, height, paddingLeft: width * 0.12 }]}>
       <View style={[styles.spine, { width: width * 0.12 }]} />
-      <Icon name="image" size={width * 0.34} color={colors.white} strokeWidth={2} />
-      <AppText size={Math.max(14, height * 0.05)} weight="bold" color={colors.white} align="center">
+      <Icon name="image" size={width * 0.34} color={colors.inkSoft} strokeWidth={2} />
+      <AppText size={Math.max(14, height * 0.05)} weight="bold" color={colors.inkSoft} align="center">
         Cover image
       </AppText>
     </View>
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 12,
     paddingRight: 8,
-    backgroundColor: colors.sea,
+    backgroundColor: colors.page,
   },
-  spine: { position: 'absolute', top: 0, bottom: 0, left: 0, backgroundColor: colors.seaDeep },
+  spine: { position: 'absolute', top: 0, bottom: 0, left: 0, backgroundColor: colors.page },
 });

@@ -1,0 +1,57 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // A parent can only touch their own record and everything under it.
+    match /parents/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      // name + email, plus the salted hash of the grown-up PIN (never the PIN itself).
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['name', 'email', 'pinHash', 'pinSalt'])
+        && (!('name' in request.resource.data)
+            || (request.resource.data.name is string && request.resource.data.name.size() <= 100));
+      // Parents can delete their own record (the delete-account button removes everything under it).
+      allow delete: if request.auth != null && request.auth.uid == uid;
+
+      // Child profiles and their game settings.
+      match /children/{childId} {
+        allow read, delete: if request.auth != null && request.auth.uid == uid;
+        allow create, update: if request.auth != null && request.auth.uid == uid
+          && request.resource.data.name is string
+          && request.resource.data.name.size() > 0
+          && request.resource.data.name.size() <= 50
+          && request.resource.data.age is int
+          && request.resource.data.age >= 1
+          && request.resource.data.age <= 17
+          // which character the parent picked, e.g. 'avatar2' (optional)
+          && (!('avatar' in request.resource.data)
+              || request.resource.data.avatar == null
+              || (request.resource.data.avatar is string && request.resource.data.avatar.size() <= 20));
+
+        // One document per time a child plays a game (finished or left early). Not editable:
+        // a session can be read and created by the parent, never edited.
+        match /sessions/{sessionId} {
+          allow read: if request.auth != null && request.auth.uid == uid;
+          allow create: if request.auth != null && request.auth.uid == uid
+            && request.resource.data.keys().hasOnly(['gameId', 'completed', 'durationSeconds', 'playedAt'])
+            && request.resource.data.gameId is string
+            && request.resource.data.gameId.size() > 0
+            && request.resource.data.gameId.size() <= 50
+            && request.resource.data.completed is bool
+            && request.resource.data.durationSeconds is int
+            && request.resource.data.durationSeconds >= 0
+            && request.resource.data.durationSeconds <= 36000
+            && request.resource.data.playedAt == request.time;
+          allow update: if false;
+          allow delete: if request.auth != null && request.auth.uid == uid; // only used when the whole account is deleted
+        }
+      }
+    }
+
+    // Everything else is closed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

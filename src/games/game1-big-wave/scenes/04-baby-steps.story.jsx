@@ -1,34 +1,13 @@
-// SCENE 04 · STORY · "Baby steps"
-// Calm again, she looks at the logs and decides to move them slowly, one at a time.
+// SCENE 04 · SPOKEN STILL · Baby steps
+// Calm again, Cami looks at the logs and decides to move them one at a time.
+// Moves on by itself when she's done; nothing to tap.
 
-import StoryScene from '../../engine/StoryScene.jsx';
-import { useStage } from '../../engine/Stage.js';
-import { ForestBackdrop } from '../art/Backdrops.jsx';
-import Character from '../art/Character.jsx';
-import { LogPile } from '../art/Logs.jsx';
-import Place from '../art/Place.jsx';
+import SpokenStillScene from '../../engine/SpokenStillScene.jsx';
 
-const LINES = [
-  { text: 'Those logs are too big to move all at once.' },
-  { text: "So let's start small." },
-  { text: "We'll take baby steps, and move them one at a time." },
-];
+const BACKGROUND = require('../../../../assets/book/games/game1/text-pile-of-wood.png');
 
-function Art() {
-  const { height } = useStage();
-  return (
-    <>
-      <ForestBackdrop />
-      <Place x={0.66} bottom={0.14}>
-        <LogPile logHeight={height * 0.09} />
-      </Place>
-      <Place x={0.24} bottom={0.14}>
-        <Character size={height * 0.42} mood="calm" candle="out" />
-      </Place>
-    </>
-  );
-}
+const LINES = [{ text: 'When a task seems very large, we need to take baby steps. Let’s remove the logs one by one.' }];
 
 export default function BabyStepsScene({ onDone }) {
-  return <StoryScene Art={Art} audio={null} lines={LINES} onDone={onDone} />;
+  return <SpokenStillScene background={BACKGROUND} lines={LINES} onDone={onDone} />;
 }

@@ -2,54 +2,102 @@
  * The app's only data-access layer. Every screen reads and writes through these
  * functions, never the mock data files directly.
  *
- * For now they work against shared/data/*. When the backend exists, replace the
- * function bodies here with real requests — the signatures (all async) already
- * match a network API, so no screen needs to change.
+ * Accounts, child profiles and game choices are stored in Firestore. Play sessions and
+ * insights are still mock data from shared/data/* until they get a backend too.
  */
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, setDoc } from 'firebase/firestore';
+import { isAvatarId } from '../data/avatars.js';
 import { games as catalogue } from '../data/games.js';
-import { childGameSettings as seedSettings } from '../data/childGameSettings.js';
-import { children, MOCK_PARENT_PASSWORD, parentAccount } from '../data/children.js';
 import { insights as insightData } from '../data/insights.js';
 import { sessions as sessionData } from '../data/sessions.js';
 import { daysAgo, weekdayShort } from '../utils/dates.js';
-
-// Mock persistence: keeps a parent's choices across app restarts during development.
-const STORAGE_KEY = 'tiny-giants:mock-child-game-settings';
+import { changeEmail, changeName, changePassword, MIN_PASSWORD_LENGTH } from './auth.js';
+import { auth, db } from './firebase.js';
 
 const copy = (value) => JSON.parse(JSON.stringify(value));
 
-let settingsPromise = null;
-
-function loadSettings() {
-  settingsPromise ??= AsyncStorage.getItem(STORAGE_KEY)
-    .then((saved) => (saved ? JSON.parse(saved) : copy(seedSettings)))
-    .catch(() => copy(seedSettings));
-  return settingsPromise;
+// parents/{uid} is the parent; parents/{uid}/children/{childId} is one child's profile plus
+// the games the parent has switched on. firestore.rules lets a parent reach only their own branch.
+function childrenRef() {
+  const uid = auth.currentUser?.uid;
+  if (!uid) throw new Error('Not signed in.');
+  return collection(db, 'parents', uid, 'children');
 }
 
-async function saveSettings(settings) {
-  try {
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-  } catch {
-    // Non-fatal: changes still apply for this session.
-  }
+function toChild(snapshot) {
+  const { name, age, avatar = null, joinedDate } = snapshot.data();
+  return { id: snapshot.id, name, age, avatar, joinedDate };
 }
 
-// A child with no saved settings sees every game that's ready to play.
+// A child with no saved choice sees every game that's ready to play.
 async function settingsFor(childId) {
-  const settings = await loadSettings();
-  let entry = settings.find((s) => s.childId === childId);
-  if (!entry) {
-    entry = { childId, enabledGameIds: catalogue.filter((g) => !g.comingSoon).map((g) => g.id) };
-    settings.push(entry);
-  }
-  return entry;
+  const snapshot = await getDoc(doc(childrenRef(), childId));
+  const saved = snapshot.exists() ? snapshot.data().enabledGameIds : null;
+  return {
+    childId,
+    enabledGameIds: saved ?? catalogue.filter((g) => !g.comingSoon).map((g) => g.id),
+  };
 }
 
-/** The child profiles on this device: [{ id, name, avatar }]. */
+/** The signed-in parent's child profiles: [{ id, name, age, avatar, joinedDate }]. */
 export async function getProfiles() {
-  return children.map(({ id, name, avatar }) => ({ id, name, avatar }));
+  const snapshot = await getDocs(query(childrenRef(), orderBy('joinedDate')));
+  return snapshot.docs.map(toChild);
+}
+
+/** Choose which character (an id from data/avatars.js, e.g. 'avatar2') represents a child. */
+export async function setChildAvatar(childId, avatar) {
+  if (!isAvatarId(avatar)) throw new Error('Unknown character.');
+  await setDoc(doc(childrenRef(), childId), { avatar }, { merge: true });
+}
+
+/** Add a child to the signed-in parent's account. Returns the new profile. */
+export async function addChild({ name, age, avatar = null }) {
+  if (avatar !== null && !isAvatarId(avatar)) throw new Error('Unknown character.');
+  const joinedDate = new Date().toISOString().slice(0, 10);
+  const child = { name: name.trim(), age, avatar, joinedDate };
+  const ref = await addDoc(childrenRef(), { ...child, createdAt: serverTimestamp() });
+  return { id: ref.id, ...child };
+}
+
+// parents/{uid}/children/{childId}/sessions/{id}: one document each time a child plays a game.
+function sessionsRef(childId) {
+  const uid = auth.currentUser?.uid;
+  if (!uid) throw new Error('Not signed in.');
+  return collection(db, 'parents', uid, 'children', childId, 'sessions');
+}
+
+/** Save that a child played a game. `completed` = they reached the end of the story. */
+export async function recordSession(childId, { gameId, completed, durationSeconds }) {
+  if (!catalogue.some((g) => g.id === gameId)) throw new Error(`Unknown game: ${gameId}`);
+  await addDoc(sessionsRef(childId), {
+    gameId,
+    completed: Boolean(completed),
+    durationSeconds: Math.min(Math.max(Math.round(durationSeconds) || 0, 0), 36000),
+    playedAt: serverTimestamp(),
+  });
+}
+
+/**
+ * The games a child has actually played, most recently played first:
+ * [{ game, plays, completedCount, totalSeconds, lastPlayedAt }]. lastPlayedAt is a Date or null.
+ */
+export async function getPlayedGames(childId) {
+  const snapshot = await getDocs(sessionsRef(childId));
+  const byGame = new Map();
+  for (const entry of snapshot.docs) {
+    const { gameId, completed, durationSeconds = 0, playedAt } = entry.data();
+    const game = catalogue.find((g) => g.id === gameId);
+    if (!game) continue;
+    const row = byGame.get(gameId) ?? { game: copy(game), plays: 0, completedCount: 0, totalSeconds: 0, lastPlayedAt: null };
+    const at = playedAt?.toDate?.() ?? null;
+    row.plays += 1;
+    row.completedCount += completed ? 1 : 0;
+    row.totalSeconds += durationSeconds;
+    if (at && (!row.lastPlayedAt || at > row.lastPlayedAt)) row.lastPlayedAt = at;
+    byGame.set(gameId, row);
+  }
+  return [...byGame.values()].sort((a, b) => (b.lastPlayedAt?.getTime() ?? 0) - (a.lastPlayedAt?.getTime() ?? 0));
 }
 
 /** Every game in the catalogue. Adult side only. */
@@ -98,7 +146,7 @@ export async function setGameEnabledForChild(childId, gameId, enabled) {
   if (enabled) ids.add(gameId);
   else ids.delete(gameId);
   entry.enabledGameIds = catalogue.filter((g) => ids.has(g.id)).map((g) => g.id);
-  await saveSettings(await loadSettings());
+  await setDoc(doc(childrenRef(), childId), { enabledGameIds: entry.enabledGameIds }, { merge: true });
   return copy(entry);
 }
 
@@ -117,41 +165,32 @@ function withGameTitle(insight) {
 
 /** One child's profile: { id, name, age, avatar, joinedDate }, or null. */
 export async function getChild(childId) {
-  const child = children.find((c) => c.id === childId);
-  return child ? copy(child) : null;
+  const snapshot = await getDoc(doc(childrenRef(), childId));
+  return snapshot.exists() ? toChild(snapshot) : null;
 }
 
-const ACCOUNT_KEY = 'tiny-giants:mock-parent-account';
-
-// Mock account: the email is saved on the device so a change survives restarts. The mock
-// password only lives in memory (a real one belongs on the server, never in local storage).
-let mockPassword = MOCK_PARENT_PASSWORD;
-
-/** The signed-in parent: { name, email }. (No real login yet.) */
+/** The signed-in parent: { name, email }. */
 export async function getParentAccount() {
-  try {
-    const saved = JSON.parse((await AsyncStorage.getItem(ACCOUNT_KEY)) ?? 'null');
-    if (saved?.email) return { ...copy(parentAccount), email: saved.email };
-  } catch {
-    // fall through to the seed account
-  }
-  return copy(parentAccount);
+  const { displayName, email } = auth.currentUser;
+  return { name: displayName ?? '', email };
 }
 
-/** Change the parent's email. Needs the current password. Throws an Error with a message to show. */
+/** Change the parent's display name. */
+export async function updateParentName({ name }) {
+  if (!name.trim()) throw new Error('Enter a name.');
+  await changeName(name);
+}
+
+/** Ask to change the parent's email. Needs the current password; the new address must be confirmed by link. */
 export async function updateParentEmail({ email, currentPassword }) {
-  if (currentPassword !== mockPassword) throw new Error('That password is not right.');
-  const next = email.trim();
-  if (!/^S+@S+.S+$/.test(next)) throw new Error('Enter a valid email address.');
-  await AsyncStorage.setItem(ACCOUNT_KEY, JSON.stringify({ email: next }));
-  return { email: next };
+  if (!/^\S+@\S+\.\S+$/.test(email.trim())) throw new Error('Enter a valid email address.');
+  await changeEmail({ email, currentPassword });
 }
 
 /** Change the parent's password. Needs the current one. Throws an Error with a message to show. */
 export async function updateParentPassword({ currentPassword, newPassword }) {
-  if (currentPassword !== mockPassword) throw new Error('Your current password is not right.');
-  if (newPassword.length < 8) throw new Error('Use at least 8 characters.');
-  mockPassword = newPassword;
+  if (newPassword.length < MIN_PASSWORD_LENGTH) throw new Error(`Use at least ${MIN_PASSWORD_LENGTH} characters.`);
+  await changePassword({ currentPassword, newPassword });
 }
 
 /** A child's play history, newest first, each with its game's title. */

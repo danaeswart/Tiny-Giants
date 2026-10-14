@@ -5,14 +5,13 @@ import AppText from '../../shared/components/AppText.jsx';
 import { useCurrentChildId } from '../../shared/hooks/useCurrentChildId.js';
 import { useLoad } from '../../shared/hooks/useLoad.js';
 import { getChildGameSettings, getGameCategories, getGames, toggleGameActive } from '../../shared/services/api.js';
-import { adult, colors } from '../../shared/theme.js';
+import { colors } from '../../shared/theme.js';
 import ActiveToggle from '../components/ActiveToggle.jsx';
 import AdultScreen from '../components/AdultScreen.jsx';
 import CategoryFilter, { ALL } from '../components/CategoryFilter.jsx';
 import GameCard from '../components/GameCard.jsx';
 import Hero from '../components/Hero.jsx';
 import SearchBar from '../components/SearchBar.jsx';
-import Section from '../components/Section.jsx';
 
 const MODES = [
   { key: 'active', label: 'Active' },
@@ -20,8 +19,8 @@ const MODES = [
 ];
 
 /**
- * Browse and manage the game library. The switch at the top picks the view: "Active" is an
- * overview plus only the games the child can play right now; "Add games" has search, themes
+ * Browse and manage the game library. The switch at the top picks the view: "Active" is
+ * only the games the child can play right now (the overview lives on the Dashboard); "Add games" has search, themes
  * and every game with an Activate button. Changes apply to the child's own screens immediately.
  */
 export default function Games() {
@@ -68,9 +67,6 @@ export default function Games() {
       (!q || [g.title, g.blurb, g.category, ...g.tools].join(' ').toLowerCase().includes(q)),
   );
 
-  const activeGames = games.filter((g) => isActive(g.id));
-  const skillCount = new Set(activeGames.flatMap((g) => g.tools)).size;
-
   return (
     <AdultScreen
       hero={
@@ -84,17 +80,7 @@ export default function Games() {
           <SearchBar value={query} onChangeText={setQuery} />
           <CategoryFilter categories={categories} value={category} onChange={setCategory} />
         </View>
-      ) : (
-        <Section label="Overview">
-          <AppText size={72} weight="bold" color={adult.accent} style={{ lineHeight: 78 }}>
-            {activeGames.length}
-          </AppText>
-          <AppText size={17} color={colors.inkSoft}>
-            {activeGames.length === 1 ? 'game is' : 'games are'} active
-            {skillCount > 0 ? `, practising ${skillCount} ${skillCount === 1 ? 'skill' : 'skills'}.` : '.'}
-          </AppText>
-        </Section>
-      )}
+      ) : null}
 
       {notice ? (
         <AppText size={16} color={colors.inkSoft} accessibilityLiveRegion="polite">

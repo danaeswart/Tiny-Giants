@@ -17,10 +17,13 @@ function paletteFor(id) {
   return PALETTES[hash % PALETTES.length];
 }
 
-/** A game's thumbnail. Decorative: the title is always shown beside it. */
-export default function CoverImage({ game, style }) {
-  const source =
-    resolveImage(game.coverImage) ?? resolveImage(game.image) ?? resolveImage(game.pages?.left);
+/**
+ * A game's thumbnail. Decorative: the title is always shown beside it.
+ * `large` prefers the big card art (games.js `image`) over the small thumbnail (`coverImage`).
+ */
+export default function CoverImage({ game, style, large = false }) {
+  const [first, second] = large ? [game.image, game.coverImage] : [game.coverImage, game.image];
+  const source = resolveImage(first) ?? resolveImage(second) ?? resolveImage(game.pages?.left);
 
   if (source) {
     return (

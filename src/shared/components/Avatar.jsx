@@ -1,4 +1,5 @@
 import { Image, StyleSheet, View } from 'react-native';
+import { getAvatar } from '../data/avatars.js';
 import { resolveImage } from '../data/images.js';
 import { colors } from '../theme.js';
 import Icon from './Icon.jsx';
@@ -9,11 +10,12 @@ import Icon from './Icon.jsx';
  * wraps it carries the accessible label.
  */
 export default function Avatar({ profile, size = 56 }) {
-  const source = resolveImage(profile?.avatar);
+  const character = getAvatar(profile?.avatar);
+  const source = character?.source ?? resolveImage(profile?.avatar);
   return (
     <View style={[styles.circle, { width: size, height: size, borderRadius: size / 2 }]}>
       {source ? (
-        <Image source={source} style={StyleSheet.absoluteFill} resizeMode="cover" />
+        <Image source={source} style={StyleSheet.absoluteFill} resizeMode={character ? 'contain' : 'cover'} />
       ) : (
         <Icon name="user" size={size * 0.55} color={colors.ink} strokeWidth={2.2} />
       )}

@@ -33,7 +33,7 @@ export default function AdultTabs() {
       }}
     >
       <Tabs.Screen name="index" options={{ title: 'Dashboard' }} />
-      <Tabs.Screen name="insights" options={{ title: 'Insights' }} />
+      <Tabs.Screen name="insights" options={{ title: 'Play together' }} />
       <Tabs.Screen name="games" options={{ title: 'Games' }} />
       <Tabs.Screen name="settings" options={{ title: 'Settings' }} />
     </Tabs>
