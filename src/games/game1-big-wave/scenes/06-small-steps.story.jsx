@@ -4,7 +4,7 @@
 
 import SpokenStillScene from '../../engine/SpokenStillScene.jsx';
 
-const BACKGROUND = require('../../../../assets/book/games/game1/logs-removed.PNG');
+const BACKGROUND = require('../../../../assets/book/games/game1/logs-removed.png');
 
 const LINES = [
   { text: 'Thank you! See? Small steps make a big difference.' },

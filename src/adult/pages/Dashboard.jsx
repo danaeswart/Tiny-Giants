@@ -3,13 +3,15 @@ import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeInUp, FadeOutUp } from 'react-native-reanimated';
 import AppText from '../../shared/components/AppText.jsx';
+import Modal from '../../shared/components/Modal.jsx';
 import { setCurrentChildId } from '../../shared/hooks/useCurrentChildId.js';
 import { useLoad } from '../../shared/hooks/useLoad.js';
-import { useProfiles } from '../../shared/hooks/useProfiles.js';
-import { getChildGameSettings, getGames, getPlayedGames } from '../../shared/services/api.js';
+import { refreshProfiles, useProfiles } from '../../shared/hooks/useProfiles.js';
+import { getChildGameSettings, getGames, getPlayedGames, setChildAvatar } from '../../shared/services/api.js';
 import { adult, colors } from '../../shared/theme.js';
 import AdultScreen from '../components/AdultScreen.jsx';
 import AdultButton from '../components/AdultButton.jsx';
+import AvatarPicker from '../components/AvatarPicker.jsx';
 import Eyebrow from '../components/Eyebrow.jsx';
 import FloatingChildren from '../components/FloatingChildren.jsx';
 import FloatingSkills from '../components/FloatingSkills.jsx';
@@ -26,6 +28,8 @@ import Section from '../components/Section.jsx';
 export default function Dashboard() {
   const { profiles } = useProfiles();
   const [selectedId, setSelectedId] = useState(null);
+  const [picking, setPicking] = useState(false);
+  const [pickError, setPickError] = useState('');
   const load = useCallback(
     async () => {
       const games = await getGames();
@@ -43,6 +47,27 @@ export default function Dashboard() {
     router.push(path);
   }
 
+  // The setup buttons act on the child whose info is open, or the first child.
+  const focusIndex = Math.max(0, profiles.findIndex((p) => p.id === selectedId));
+  const focus = profiles[focusIndex];
+  const focusHasGames = (data?.settings[focusIndex]?.enabledGameIds.length ?? 1) > 0;
+
+  async function chooseAvatar(avatar) {
+    setPickError('');
+    try {
+      await setChildAvatar(focus.id, avatar);
+      refreshProfiles();
+      setPicking(false);
+    } catch {
+      setPickError('Could not save the character. Check your connection and try again.');
+    }
+  }
+
+  function openChildView(childId) {
+    setCurrentChildId(childId);
+    router.dismissTo('/child');
+  }
+
   return (
     <AdultScreen
       hero={
@@ -50,9 +75,21 @@ export default function Dashboard() {
           light
           title="Let's see what the little ones have been up to"
           aside={
-            <FloatingChildren selectedId={selectedId} onSelect={(id) => setSelectedId((cur) => (cur === id ? null : id))}>
-              {profiles}
-            </FloatingChildren>
+            <View style={styles.setup}>
+              <FloatingChildren selectedId={selectedId} onSelect={(id) => setSelectedId((cur) => (cur === id ? null : id))}>
+                {profiles}
+              </FloatingChildren>
+              {focus && !focus.avatar ? (
+                <AdultButton variant="primary" onPress={() => setPicking(true)}>
+                  {`Click here to add ${focus.name}'s icon`}
+                </AdultButton>
+              ) : null}
+              {focus && data && !focusHasGames ? (
+                <AdultButton variant={focus.avatar ? 'primary' : 'secondary'} onPress={() => goTo(focus.id, '/adult/games')}>
+                  Add games to child view
+                </AdultButton>
+              ) : null}
+            </View>
           }
         />
       }
@@ -111,16 +148,31 @@ export default function Dashboard() {
                     ))}
                   </View>
                 )}
+
+                {child.avatar ? (
+                  <AdultButton variant="primary" icon="swap" onPress={() => openChildView(child.id)} style={styles.left}>
+                    {`Swap to ${child.name}'s child view`}
+                  </AdultButton>
+                ) : null}
               </Section>
               </Animated.View>
             );
           })
         : null}
+      <Modal open={picking} onClose={() => setPicking(false)} title={`Choose ${focus?.name ?? 'your child'}'s character`}>
+        <AvatarPicker value={focus?.avatar ?? null} onChange={chooseAvatar} />
+        {pickError ? (
+          <AppText size={16} color={adult.berry} accessibilityLiveRegion="assertive">
+            {pickError}
+          </AppText>
+        ) : null}
+      </Modal>
     </AdultScreen>
   );
 }
 
 const styles = StyleSheet.create({
+  setup: { gap: 12, alignItems: 'center' },
   left: { alignSelf: 'flex-start' },
   count: { flexDirection: 'row', alignItems: 'center', gap: 16 },
   countText: { flex: 1 },

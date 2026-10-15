@@ -29,14 +29,11 @@ function toChild(snapshot) {
   return { id: snapshot.id, name, age, avatar, joinedDate };
 }
 
-// A child with no saved choice sees every game that's ready to play.
+// A child with no saved choice has no games: a parent adds them from the Games tab.
 async function settingsFor(childId) {
   const snapshot = await getDoc(doc(childrenRef(), childId));
   const saved = snapshot.exists() ? snapshot.data().enabledGameIds : null;
-  return {
-    childId,
-    enabledGameIds: saved ?? catalogue.filter((g) => !g.comingSoon).map((g) => g.id),
-  };
+  return { childId, enabledGameIds: saved ?? [] };
 }
 
 /** The signed-in parent's child profiles: [{ id, name, age, avatar, joinedDate }]. */

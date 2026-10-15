@@ -4,7 +4,7 @@
 
 import SpokenStillScene from '../../engine/SpokenStillScene.jsx';
 
-const BACKGROUND = require('../../../../assets/book/games/game1/logs-jump.PNG');
+const BACKGROUND = require('../../../../assets/book/games/game1/logs-jump.png');
 
 const LINES = [{ text: 'Let’s jump over these logs.' }];
 

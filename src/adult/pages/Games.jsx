@@ -2,15 +2,17 @@ import { useCallback, useState } from 'react';
 import { router } from 'expo-router';
 import { View } from 'react-native';
 import AppText from '../../shared/components/AppText.jsx';
-import { useCurrentChildId } from '../../shared/hooks/useCurrentChildId.js';
+import { setCurrentChildId, useCurrentChildId } from '../../shared/hooks/useCurrentChildId.js';
 import { useLoad } from '../../shared/hooks/useLoad.js';
+import { useProfiles } from '../../shared/hooks/useProfiles.js';
 import { getChildGameSettings, getGameCategories, getGames, toggleGameActive } from '../../shared/services/api.js';
 import { colors } from '../../shared/theme.js';
 import ActiveToggle from '../components/ActiveToggle.jsx';
 import AdultScreen from '../components/AdultScreen.jsx';
 import CategoryFilter, { ALL } from '../components/CategoryFilter.jsx';
+import ChildTitleDropdown from '../components/ChildTitleDropdown.jsx';
+import Eyebrow from '../components/Eyebrow.jsx';
 import GameCard from '../components/GameCard.jsx';
-import Hero from '../components/Hero.jsx';
 import SearchBar from '../components/SearchBar.jsx';
 
 const MODES = [
@@ -25,6 +27,7 @@ const MODES = [
  */
 export default function Games() {
   const childId = useCurrentChildId();
+  const { profiles, current } = useProfiles();
   const load = useCallback(
     () => Promise.all([getGames(), getChildGameSettings(childId), getGameCategories()]),
     [childId],
@@ -68,15 +71,19 @@ export default function Games() {
   );
 
   return (
-    <AdultScreen
-      hero={
-        <Hero eyebrow="Library" title="Games" subtitle="Choose which stories your child can play.">
-          <ActiveToggle options={MODES} value={mode} onChange={setMode} />
-        </Hero>
-      }
-    >
+    <AdultScreen>
+      <View style={{ gap: 10 }}>
+        <Eyebrow>Library</Eyebrow>
+        <ChildTitleDropdown profiles={profiles} current={current} onSelect={setCurrentChildId} noun="library" />
+        <AppText size={17} color={colors.inkSoft}>
+          Choose which stories {current?.name ?? 'your child'} can play.
+        </AppText>
+      </View>
+
+      <ActiveToggle options={MODES} value={mode} onChange={setMode} />
+
       {adding ? (
-        <View style={{ gap: 20 }}>
+        <View style={{ gap: 16 }}>
           <SearchBar value={query} onChangeText={setQuery} />
           <CategoryFilter categories={categories} value={category} onChange={setCategory} />
         </View>
@@ -95,7 +102,7 @@ export default function Games() {
             : 'No games are active yet. Switch to "Add games" to choose some.'}
         </AppText>
       ) : (
-        <View style={{ gap: 32 }}>
+        <View style={{ gap: 24 }}>
           {shown.map((game) => (
             <GameCard
               key={game.id}

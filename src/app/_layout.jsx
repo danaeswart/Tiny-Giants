@@ -45,6 +45,7 @@ export default function RootLayout() {
           <Stack.Screen name="add-child" />
         </Stack.Protected>
         <Stack.Protected guard={!user}>
+          <Stack.Screen name="welcome" />
           <Stack.Screen name="login" />
           <Stack.Screen name="signup" />
         </Stack.Protected>

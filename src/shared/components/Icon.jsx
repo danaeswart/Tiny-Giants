@@ -8,6 +8,7 @@ const SHAPES = {
   back: () => <Path d="M19 12H5m6-7-7 7 7 7" />,
   'chevron-left': () => <Path d="m15 5-7 7 7 7" />,
   'chevron-right': () => <Path d="m9 5 7 7-7 7" />,
+  'chevron-down': () => <Path d="m5 9 7 7 7-7" />,
   search: () => (
     <>
       <Circle cx="10.5" cy="10.5" r="6.5" />

@@ -18,8 +18,9 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import Svg, { Circle, Ellipse, Path, Rect } from 'react-native-svg';
+import Svg, { Ellipse, Rect } from 'react-native-svg';
 import { useStage } from '../../engine/Stage.js';
+import DrawnLog from '../art/DrawnLog.jsx';
 
 const DRAG_AWAY = 0.18; // dragged this far (fraction of screen height) and let go: the log goes
 const FLICK_SPEED = 700; // px per second: a quick flick sends it away even after a short drag
@@ -104,25 +105,6 @@ function Forest({ width, height }) {
   );
 }
 
-// One log lying on its side, its cut end showing on the right.
-function LogArt({ width, height, bark }) {
-  const r = height / 2;
-  const endX = width - r * 0.55; // centre of the cut end
-  const grain = { stroke: '#000', strokeOpacity: 0.22, strokeWidth: 3, strokeLinecap: 'round' };
-  return (
-    <Svg width={width} height={height} style={{ pointerEvents: 'none' }}>
-      <Rect x={0} y={0} width={endX} height={height} rx={r * 0.35} fill={bark} />
-      <Rect x={0} y={height * 0.62} width={endX} height={height * 0.38} rx={r * 0.35} fill="#000" opacity={0.18} />
-      <Path d={`M${width * 0.08} ${height * 0.3} H${width * 0.5}`} {...grain} />
-      <Path d={`M${width * 0.28} ${height * 0.55} H${width * 0.74}`} {...grain} />
-      <Path d={`M${width * 0.12} ${height * 0.78} H${width * 0.4}`} {...grain} />
-      <Ellipse cx={endX} cy={r} rx={r * 0.55} ry={r} fill="#dcae78" stroke="#a7744a" strokeWidth={2.5} />
-      <Ellipse cx={endX} cy={r} rx={r * 0.32} ry={r * 0.6} fill="none" stroke="#a7744a" strokeWidth={2} />
-      <Circle cx={endX} cy={r} r={r * 0.12} fill="#a7744a" />
-    </Svg>
-  );
-}
-
 function DraggableLog({ active, log, width, height, awayDistance, farAway, onAway }) {
   const tx = useSharedValue(0);
   const ty = useSharedValue(0);
@@ -189,7 +171,7 @@ function DraggableLog({ active, log, width, height, awayDistance, farAway, onAwa
             style={[styles.glow, { borderRadius: height / 2, left: halo, right: halo, top: halo, bottom: halo }, glowStyle]}
           />
         )}
-        <LogArt width={width} height={height} bark={log.bark} />
+        <DrawnLog width={width} height={height} bark={log.bark} />
       </Animated.View>
     </GestureDetector>
   );

@@ -10,7 +10,7 @@ const SRC = require('../assets/video/00-intro.mp4');
 
 const LINES = [
   { text: "Hi, I'm Cami!" },
-  { text: 'And this is my candle. She’s a little bit magic.' },
+  { text: 'And this is my magic candle.' },
   { text: 'When I have a big feeling, my candle helps me feel calm again.' },
   { text: "Today, I'm going on a journey, through the woods, all the way to the beach, to build a sandcastle!" },
   { text: 'Want to come with me?' },

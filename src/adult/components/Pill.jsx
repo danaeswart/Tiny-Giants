@@ -33,7 +33,7 @@ export function FadeLabel({ label, sel, idleColor = colors.ink, activeColor = co
   );
 }
 
-/** A rounded filter chip that fills with the accent colour when selected. */
+/** A small rounded filter chip that fills with ink when selected. */
 export default function Pill({ label, selected, onPress }) {
   const sel = useSelection(selected);
   const fill = useAnimatedStyle(() => ({ opacity: sel.get() }));
@@ -48,14 +48,14 @@ export default function Pill({ label, selected, onPress }) {
 
 const styles = StyleSheet.create({
   pill: {
-    minHeight: 40,
-    paddingHorizontal: 16,
+    minHeight: 36,
+    paddingHorizontal: 14,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: radius.pill,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: adult.rule,
     overflow: 'hidden',
   },
-  fill: { backgroundColor: adult.accent },
+  fill: { backgroundColor: colors.ink },
 });

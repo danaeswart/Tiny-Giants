@@ -1,10 +1,13 @@
 // SCENE 08 · GAME · Jump the logs (tap)
-// Logs roll toward her one at a time; the child taps anywhere to make her jump.
-// No way to fail: if the child doesn't tap, the log just waits in front of her.
-// On the LAST log she trips and falls, which leads into scene 09.
+// Cami (seen from the side) stands on the path while logs roll toward her one at a time.
+// The child taps anywhere to make her jump. No way to fail: if the child doesn't tap, the
+// log just waits in front of her. On the LAST log she doesn't jump high enough, trips and
+// falls, which leads into scene 09.
+//
+// The scenery and the logs are drawn in code; Cami is character-side.png.
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Image, Pressable, StyleSheet } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -12,13 +15,15 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
+import Svg, { Path, Rect } from 'react-native-svg';
 import Captions from '../../engine/Captions.jsx';
 import { useStage } from '../../engine/Stage.js';
-import { ForestBackdrop } from '../art/Backdrops.jsx';
-import Character from '../art/Character.jsx';
-import { Log } from '../art/Logs.jsx';
+import DrawnLog from '../art/DrawnLog.jsx';
 
-const LOG_COUNT = 5;
+const CAMI = require('../../../../assets/book/games/game1/character-side.png'); // faces right
+const CAMI_ASPECT = 1073 / 1682;
+
+const LOG_COUNT = 7;
 const ROLL_IN_MS = 2200; // how long a log takes to reach her
 const JUMP_MS = 380; // up, then the same back down
 
@@ -28,12 +33,12 @@ export default function JumpLogsScene({ onDone }) {
   const [fallen, setFallen] = useState(false);
   const busy = useRef(false); // mid-jump (or fallen): ignore taps
 
-  const charSize = height * 0.34;
-  const charW = charSize * 0.75;
+  const charH = height * 0.36;
+  const charW = charH * CAMI_ASPECT;
   const charX = width * 0.2;
-  const ground = height * 0.16; // her feet / the logs sit this far above the bottom
-  const logH = height * 0.09;
-  const logW = logH * 2.4;
+  const ground = height * 0.2; // her feet sit this far above the bottom
+  const logH = height * 0.11;
+  const logW = logH * 2.8;
   const waitX = charX + charW * 0.9; // where a log stops if she hasn't jumped yet
 
   const logX = useSharedValue(width + 40);
@@ -63,24 +68,28 @@ export default function JumpLogsScene({ onDone }) {
 
     if (!logIsClose) {
       // Log's still far away: a happy little hop, nothing else.
-      jumpY.set(withSequence(
-        withTiming(-height * 0.12, { duration: JUMP_MS * 0.7, easing: Easing.out(Easing.quad) }),
-        withTiming(0, { duration: JUMP_MS * 0.7, easing: Easing.in(Easing.quad) }),
-      ));
+      jumpY.set(
+        withSequence(
+          withTiming(-height * 0.12, { duration: JUMP_MS * 0.7, easing: Easing.out(Easing.quad) }),
+          withTiming(0, { duration: JUMP_MS * 0.7, easing: Easing.in(Easing.quad) }),
+        ),
+      );
       setTimeout(() => (busy.current = false), JUMP_MS * 1.4);
       return;
     }
 
     // Jump, and the log rolls underneath her.
     const peak = isLast ? -height * 0.1 : -height * 0.3; // last jump is too low: she catches her foot
-    jumpY.set(withSequence(
-      withTiming(peak, { duration: JUMP_MS, easing: Easing.out(Easing.quad) }),
-      withTiming(0, { duration: JUMP_MS, easing: Easing.in(Easing.quad) }),
-    ));
+    jumpY.set(
+      withSequence(
+        withTiming(peak, { duration: JUMP_MS, easing: Easing.out(Easing.quad) }),
+        withTiming(0, { duration: JUMP_MS, easing: Easing.in(Easing.quad) }),
+      ),
+    );
     logX.set(withTiming(charX - logW - 60, { duration: JUMP_MS * 2, easing: Easing.linear }));
 
     if (isLast) {
-      // Trip: she tips forward and lands on the ground.
+      // Trip: she tips forward (clockwise, onto her toes) and lands on the ground.
       tilt.set(withSequence(withTiming(0, { duration: JUMP_MS }), withTiming(80, { duration: 350 })));
       setTimeout(() => setFallen(true), JUMP_MS * 2);
       return;
@@ -99,32 +108,39 @@ export default function JumpLogsScene({ onDone }) {
   const logStyle = useAnimatedStyle(() => ({ transform: [{ translateX: logX.get() }] }));
 
   return (
-    <Pressable style={StyleSheet.absoluteFill} onPress={onTap} accessibilityRole="button" accessibilityLabel="Jump">
-      <ForestBackdrop />
-      <Animated.View style={[styles.abs, { left: 0, bottom: ground - logH * 0.2 }, logStyle]}>
-        <Log width={logW} height={logH} />
+    <Pressable style={[StyleSheet.absoluteFill, styles.sky]} onPress={onTap} accessibilityRole="button" accessibilityLabel="Jump">
+      <Scenery width={width} height={height} />
+      <Animated.View style={[styles.abs, { left: 0, bottom: ground - logH * 0.25 }, logStyle]}>
+        <DrawnLog width={logW} height={logH} bark="#5a410c" cut="#b8963f" ring="#7a5f1c" />
       </Animated.View>
-      <Animated.View
-        style={[styles.abs, { left: charX, bottom: ground, transformOrigin: 'bottom right' }, charStyle]}
-      >
-        <Character size={charSize} mood={fallen ? 'ouch' : 'happy'} candle="out" />
+      <Animated.View style={[styles.abs, { left: charX, bottom: ground, transformOrigin: 'bottom right' }, charStyle]}>
+        <Image source={CAMI} style={{ width: charW, height: charH }} />
       </Animated.View>
 
-      {/* how many logs are left */}
-      <View style={styles.counter}>
-        {Array.from({ length: LOG_COUNT }, (_, i) => (
-          <View key={i} style={[styles.dot, i < jumped && styles.dotDone]} />
-        ))}
-      </View>
-
-      <Captions text={fallen ? 'Oh no!' : 'Tap to jump over the logs!'} />
+      {/* a hint until she's made her first jump */}
+      <Captions text={jumped === 0 && !fallen ? 'Tap to jump over the logs!' : null} />
     </Pressable>
   );
 }
 
+// Sky, rolling hills and the dark grass she walks on, in the same colours as the book's art.
+function Scenery({ width, height }) {
+  return (
+    <Svg style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]} width={width} height={height}>
+      <Rect width={width} height={height} fill="#b8e0dc" />
+      <Path
+        d={`M0 ${height * 0.66} Q${width * 0.25} ${height * 0.62} ${width * 0.5} ${height * 0.64} T${width} ${height * 0.62} V${height} H0 Z`}
+        fill="#4e7a3f"
+      />
+      <Path
+        d={`M0 ${height * 0.73} Q${width * 0.3} ${height * 0.71} ${width * 0.6} ${height * 0.73} T${width} ${height * 0.71} V${height} H0 Z`}
+        fill="#19330f"
+      />
+    </Svg>
+  );
+}
+
 const styles = StyleSheet.create({
+  sky: { backgroundColor: '#b8e0dc' },
   abs: { position: 'absolute', pointerEvents: 'none' },
-  counter: { position: 'absolute', top: 96, alignSelf: 'center', flexDirection: 'row', gap: 10 },
-  dot: { width: 22, height: 22, borderRadius: 11, borderWidth: 3, borderColor: '#fff7ea', backgroundColor: 'rgba(43, 39, 51, 0.25)' },
-  dotDone: { backgroundColor: '#ffc24b' },
 });

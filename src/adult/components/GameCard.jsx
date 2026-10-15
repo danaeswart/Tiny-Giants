@@ -7,7 +7,7 @@ import Chip from './Chip.jsx';
 import Eyebrow from './Eyebrow.jsx';
 
 /**
- * A game as an open row under a thin rule: picture, theme, big title, what it's about,
+ * A game as an open row above a thin rule: picture, theme, big title, what it's about,
  * and the skills it teaches.
  *   active    is it switched on for this child?
  *   onToggle  if given, shows a quick Activate / Deactivate button (no need to open the game first)
@@ -59,7 +59,7 @@ export default function GameCard({ game, active, onPress, onToggle }) {
 }
 
 const styles = StyleSheet.create({
-  row: { gap: 20, paddingTop: 24, borderTopWidth: 1.5, borderTopColor: adult.rule },
+  row: { gap: 20, paddingBottom: 32, borderBottomWidth: 1.5, borderBottomColor: adult.rule },
   imageWrap: { height: 180, borderRadius: radius.lg, overflow: 'hidden' },
   image: { width: '100%', height: '100%' },
   tools: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
