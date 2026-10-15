@@ -36,7 +36,7 @@ export default function PlayGame() {
     );
   }
 
-  const backToBook = () => router.dismissTo(`/child/story?game=${game.id}`);
+  const backToBook = () => router.dismissTo(`/child/games/${game.id}`);
   return (
     <ScenePlayer
       scenes={scenes}

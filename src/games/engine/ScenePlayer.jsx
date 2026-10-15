@@ -80,6 +80,7 @@ export default function ScenePlayer({ scenes, onExit, onFinish }) {
         icon="close"
         label="Leave the story"
         size="md"
+        variant="blue"
         onPress={() => {
           Speech.stop();
           onExit();
@@ -103,7 +104,7 @@ export default function ScenePlayer({ scenes, onExit, onFinish }) {
           label="Back to the last scene"
           size="md"
           onPress={() => goTo(index - 1)}
-          style={[styles.back, { left: Math.max(insets.left, 16) }]}
+          style={{ position: 'absolute', top: Math.max(insets.top, 16), left: Math.max(insets.left, 16) }}
         />
       )}
     </View>
@@ -112,5 +113,4 @@ export default function ScenePlayer({ scenes, onExit, onFinish }) {
 
 const styles = StyleSheet.create({
   stage: { flex: 1, overflow: 'hidden', backgroundColor: colors.ink },
-  back: { position: 'absolute', top: '50%', marginTop: -28 },
 });

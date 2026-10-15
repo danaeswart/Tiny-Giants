@@ -1,8 +1,8 @@
 // SCENE 08 · GAME · Jump the logs (tap)
 // Cami (seen from the side) stands on the path while logs roll toward her one at a time.
 // The child taps anywhere to make her jump. No way to fail: if the child doesn't tap, the
-// log just waits in front of her. On the LAST log she doesn't jump high enough, trips and
-// falls, which leads into scene 09.
+// log just waits in front of her. As soon as she lands the last jump, the tripping video
+// (scene 08b) takes over.
 //
 // The scenery and the logs are drawn in code; Cami is character-side.png.
 
@@ -30,8 +30,8 @@ const JUMP_MS = 380; // up, then the same back down
 export default function JumpLogsScene({ onDone }) {
   const { width, height } = useStage();
   const [jumped, setJumped] = useState(0);
-  const [fallen, setFallen] = useState(false);
-  const busy = useRef(false); // mid-jump (or fallen): ignore taps
+  const [finished, setFinished] = useState(false);
+  const busy = useRef(false); // mid-jump (or finished): ignore taps
 
   const charH = height * 0.36;
   const charW = charH * CAMI_ASPECT;
@@ -43,7 +43,6 @@ export default function JumpLogsScene({ onDone }) {
 
   const logX = useSharedValue(width + 40);
   const jumpY = useSharedValue(0);
-  const tilt = useSharedValue(0);
 
   const rollIn = useCallback(() => {
     logX.set(width + 40);
@@ -55,10 +54,8 @@ export default function JumpLogsScene({ onDone }) {
   }, [rollIn]);
 
   useEffect(() => {
-    if (!fallen) return;
-    const t = setTimeout(onDone, 1800);
-    return () => clearTimeout(t);
-  }, [fallen, onDone]);
+    if (finished) onDone();
+  }, [finished, onDone]);
 
   const onTap = () => {
     if (busy.current) return;
@@ -79,19 +76,17 @@ export default function JumpLogsScene({ onDone }) {
     }
 
     // Jump, and the log rolls underneath her.
-    const peak = isLast ? -height * 0.1 : -height * 0.3; // last jump is too low: she catches her foot
     jumpY.set(
       withSequence(
-        withTiming(peak, { duration: JUMP_MS, easing: Easing.out(Easing.quad) }),
+        withTiming(-height * 0.3, { duration: JUMP_MS, easing: Easing.out(Easing.quad) }),
         withTiming(0, { duration: JUMP_MS, easing: Easing.in(Easing.quad) }),
       ),
     );
     logX.set(withTiming(charX - logW - 60, { duration: JUMP_MS * 2, easing: Easing.linear }));
 
     if (isLast) {
-      // Trip: she tips forward (clockwise, onto her toes) and lands on the ground.
-      tilt.set(withSequence(withTiming(0, { duration: JUMP_MS }), withTiming(80, { duration: 350 })));
-      setTimeout(() => setFallen(true), JUMP_MS * 2);
+      // Cleared the last one: the tripping clip plays right away.
+      setTimeout(() => setFinished(true), JUMP_MS * 2);
       return;
     }
 
@@ -103,7 +98,7 @@ export default function JumpLogsScene({ onDone }) {
   };
 
   const charStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: jumpY.get() }, { rotate: `${tilt.get()}deg` }],
+    transform: [{ translateY: jumpY.get() }],
   }));
   const logStyle = useAnimatedStyle(() => ({ transform: [{ translateX: logX.get() }] }));
 
@@ -118,7 +113,7 @@ export default function JumpLogsScene({ onDone }) {
       </Animated.View>
 
       {/* a hint until she's made her first jump */}
-      <Captions text={jumped === 0 && !fallen ? 'Tap to jump over the logs!' : null} />
+      <Captions text={jumped === 0 && !finished ? 'Tap to jump over the logs!' : null} />
     </Pressable>
   );
 }

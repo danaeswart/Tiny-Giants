@@ -10,11 +10,11 @@ export default function ChildMessage({ title, children }) {
   return (
     <ChildScreen blobs style={{ alignItems: 'center', justifyContent: 'center' }}>
       <View style={{ alignItems: 'center', gap: 20, maxWidth: 560 }}>
-        <AppText size={44} weight="extrabold" color={colors.white} align="center" accessibilityRole="header" style={{ lineHeight: 48 }}>
+        <AppText size={44} weight="extrabold" color={colors.ink} align="center" accessibilityRole="header" style={{ lineHeight: 48 }}>
           {title}
         </AppText>
         {children && (
-          <AppText size={20} color={colors.white} align="center">
+          <AppText size={20} color={colors.ink} align="center">
             {children}
           </AppText>
         )}

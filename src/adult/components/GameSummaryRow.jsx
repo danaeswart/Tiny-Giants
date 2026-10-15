@@ -6,13 +6,13 @@ import { adult, colors, radius } from '../../shared/theme.js';
 import Eyebrow from './Eyebrow.jsx';
 
 /** A game as a compact row: thumbnail, theme, title and a one-line blurb. Opens the game. */
-export default function GameSummaryRow({ game, onPress }) {
+export default function GameSummaryRow({ game, onPress, bare = false }) {
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={`${game.title}. ${game.blurb}`}
-      style={({ pressed }) => [styles.row, pressed && { opacity: 0.7 }]}
+      style={({ pressed }) => [styles.row, bare && styles.bare, pressed && { opacity: 0.7 }]}
     >
       <View style={styles.thumb}>
         <CoverImage game={game} style={{ width: '100%', height: '100%' }} />
@@ -40,5 +40,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1.5,
     borderTopColor: adult.rule,
   },
+  bare: { paddingTop: 0, borderTopWidth: 0 },
   thumb: { width: 72, height: 72, borderRadius: radius.md, overflow: 'hidden' },
 });

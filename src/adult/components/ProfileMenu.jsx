@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { router } from 'expo-router';
-import { Modal, Platform, Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
+import { Image, Modal, Platform, Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AppText from '../../shared/components/AppText.jsx';
 import Avatar from '../../shared/components/Avatar.jsx';
 import Icon from '../../shared/components/Icon.jsx';
+import { getAvatar } from '../../shared/data/avatars.js';
 import { setCurrentChildId } from '../../shared/hooks/useCurrentChildId.js';
 import { useProfiles } from '../../shared/hooks/useProfiles.js';
 import { setSetting, useSettings } from '../../shared/hooks/useSettings.js';
@@ -130,7 +131,7 @@ export default function ProfileMenu({ open, onClose }) {
             <>
               <Section title="Account">
                 <View style={styles.accountRow}>
-                  <Avatar profile={current} size={52} />
+                  <AccountPicture profile={current} />
                   <View style={{ flex: 1 }}>
                     <AppText size={18} weight="bold">
                       {current?.name ?? 'Player'}
@@ -256,6 +257,21 @@ function SettingRow({ label, hint, value, onChange, last }) {
         thumbColor={colors.white}
       />
     </View>
+  );
+}
+
+/** The playing child's character on its own, no circle. Falls back to the round avatar if they have none. */
+function AccountPicture({ profile }) {
+  const character = getAvatar(profile?.avatar);
+  if (!character) return <Avatar profile={profile} size={52} />;
+  const height = 72;
+  return (
+    <Image
+      source={character.source}
+      resizeMode="contain"
+      accessible={false}
+      style={{ width: height * character.ratio, height }}
+    />
   );
 }
 

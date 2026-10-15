@@ -70,6 +70,7 @@ export default function Dashboard() {
 
   return (
     <AdultScreen
+      bottomPad={8}
       hero={
         <Hero
           light
@@ -125,14 +126,14 @@ export default function Dashboard() {
 
                 <FloatingSkills skills={skills} />
 
-                <AdultButton variant="primary" onPress={() => goTo(child.id, '/adult/games')} style={styles.left}>
+                <AdultButton block variant="secondary" trailingIcon="chevron-right" onPress={() => goTo(child.id, '/adult/games')}>
                   See all games
                 </AdultButton>
 
-                <View style={{ gap: 12 }}>
+                <View style={styles.group}>
                   <Eyebrow>Recent games</Eyebrow>
                   {recent ? (
-                    <PlayedGameRow entry={recent} onPress={() => goTo(child.id, `/adult/game/${recent.game.id}?from=play`)} />
+                    <PlayedGameRow bare entry={recent} onPress={() => goTo(child.id, `/adult/game/${recent.game.id}?from=play`)} />
                   ) : (
                     <AppText size={17} color={colors.inkSoft}>
                       Nothing played yet. When {child.name} plays a story, it shows up here.
@@ -141,18 +142,20 @@ export default function Dashboard() {
                 </View>
 
                 {recommended.length > 0 && (
-                  <View style={{ gap: 20 }}>
+                  <View style={[styles.group, { gap: 20 }]}>
                     <Eyebrow>Try next for {child.name}</Eyebrow>
                     {recommended.map((game) => (
-                      <GameSummaryRow key={game.id} game={game} onPress={() => goTo(child.id, `/adult/game/${game.id}?from=games`)} />
+                      <GameSummaryRow bare key={game.id} game={game} onPress={() => goTo(child.id, `/adult/game/${game.id}?from=games`)} />
                     ))}
                   </View>
                 )}
 
                 {child.avatar ? (
-                  <AdultButton variant="primary" icon="swap" onPress={() => openChildView(child.id)} style={styles.left}>
-                    {`Swap to ${child.name}'s child view`}
-                  </AdultButton>
+                  <View style={styles.group}>
+                    <AdultButton block variant="primary" icon="swap" onPress={() => openChildView(child.id)}>
+                      {`Swap to ${child.name}'s child view`}
+                    </AdultButton>
+                  </View>
                 ) : null}
               </Section>
               </Animated.View>
@@ -173,7 +176,8 @@ export default function Dashboard() {
 
 const styles = StyleSheet.create({
   setup: { gap: 12, alignItems: 'center' },
-  left: { alignSelf: 'flex-start' },
+  // A labelled block with its rule above the label.
+  group: { gap: 12, paddingTop: 20, borderTopWidth: 1.5, borderTopColor: adult.rule },
   count: { flexDirection: 'row', alignItems: 'center', gap: 16 },
   countText: { flex: 1 },
 });

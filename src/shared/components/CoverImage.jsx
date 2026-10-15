@@ -21,7 +21,7 @@ function paletteFor(id) {
  * A game's thumbnail. Decorative: the title is always shown beside it.
  * `large` prefers the big card art (games.js `image`) over the small thumbnail (`coverImage`).
  */
-export default function CoverImage({ game, style, large = false }) {
+export default function CoverImage({ game, style, large = false, resizeMode = 'cover' }) {
   const [first, second] = large ? [game.image, game.coverImage] : [game.coverImage, game.image];
   const source = resolveImage(first) ?? resolveImage(second) ?? resolveImage(game.pages?.left);
 
@@ -29,7 +29,7 @@ export default function CoverImage({ game, style, large = false }) {
     return (
       <Image
         source={source}
-        resizeMode="cover"
+        resizeMode={resizeMode}
         accessible={false}
         style={[{ overflow: 'hidden' }, style]}
       />

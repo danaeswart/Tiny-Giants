@@ -34,19 +34,19 @@ export default function GameNotice() {
             A note for the grown-up nearby
           </AppText>
         </View>
-        <AppText size={48} weight="extrabold" color={colors.white} accessibilityRole="header" style={{ lineHeight: 52 }}>
+        <AppText size={48} weight="extrabold" color={colors.ink} accessibilityRole="header" style={{ lineHeight: 52 }}>
           {game.title}
         </AppText>
-        <AppText size={18} color={colors.white}>
-          <AppText size={18} weight="bold" color={colors.white}>
+        <AppText size={18} color={colors.ink}>
+          <AppText size={18} weight="bold" color={colors.ink}>
             What it helps with:{' '}
           </AppText>
           {game.teaches}
         </AppText>
-        <AppText size={18} color={colors.white} style={[styles.relaxed, { opacity: 0.85 }]}>
+        <AppText size={18} color={colors.ink} style={[styles.relaxed, { opacity: 0.85 }]}>
           {game.parentNote}
         </AppText>
-        <AppText size={18} color={colors.white} style={styles.relaxed}>
+        <AppText size={18} color={colors.ink} style={styles.relaxed}>
           When you’re both ready, your little one can tap{' '}
           <AppText size={18} weight="bold" color={adult.lime}>
             Start
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: radius.lg,
     borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.45)',
+    borderColor: 'rgba(36, 20, 71, 0.3)',
   },
   noteContent: { padding: 28, gap: 16 },
   label: { flexDirection: 'row', alignItems: 'center', gap: 8 },

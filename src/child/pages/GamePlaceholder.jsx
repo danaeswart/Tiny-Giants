@@ -23,14 +23,14 @@ export default function GamePlaceholder() {
         <IconButton
           icon="back"
           label="Back to the storybook"
-          onPress={() => router.dismissTo(`/child/story?game=${game.id}`)}
+          onPress={() => router.dismissTo(`/child/games/${game.id}`)}
         />
-        <AppText size={44} weight="extrabold" color={colors.white} accessibilityRole="header" style={{ flexShrink: 1, lineHeight: 48 }}>
+        <AppText size={44} weight="extrabold" color={colors.ink} accessibilityRole="header" style={{ flexShrink: 1, lineHeight: 48 }}>
           {game.title}
         </AppText>
       </View>
       <View style={styles.stage}>
-        <AppText size={24} weight="bold" color={colors.white}>
+        <AppText size={24} weight="bold" color={colors.ink}>
           The game goes here
         </AppText>
       </View>
@@ -47,6 +47,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     borderWidth: 3,
     borderStyle: 'dashed',
-    borderColor: 'rgba(255, 255, 255, 0.5)',
+    borderColor: 'rgba(36, 20, 71, 0.3)',
   },
 });

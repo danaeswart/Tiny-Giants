@@ -49,7 +49,7 @@ export default function CoachChat({ game, child, plays }) {
 
   if (!started) {
     return (
-      <View style={styles.chat}>
+      <View style={[styles.chat, { minHeight: 0 }]}>
         <View style={styles.intro}>
           <Icon name="sparkle" size={28} color={adult.accent} strokeWidth={2.2} />
           <AppText size={20} weight="semibold" style={{ lineHeight: 28 }}>

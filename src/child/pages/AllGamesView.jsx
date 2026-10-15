@@ -5,7 +5,7 @@ import CoverImage from '../../shared/components/CoverImage.jsx';
 import IconButton from '../../shared/components/IconButton.jsx';
 import { useEnabledGames } from '../../shared/hooks/useChildGames.js';
 import { useCurrentChildId } from '../../shared/hooks/useCurrentChildId.js';
-import { colors, radius } from '../../shared/theme.js';
+import { adult, colors, radius } from '../../shared/theme.js';
 import ChildMessage from '../components/ChildMessage.jsx';
 import ChildScreen from '../components/ChildScreen.jsx';
 
@@ -27,11 +27,11 @@ export default function AllGamesView() {
   return (
     <ChildScreen style={{ gap: 28 }}>
       <View style={styles.header}>
-        <IconButton icon="home" label="Back to the shelf" onPress={() => router.dismissTo('/child')} />
+        <IconButton icon="home" variant="blue" label="Back to the shelf" onPress={() => router.dismissTo('/child')} />
         <AppText
           size={48}
           weight="extrabold"
-          color={colors.white}
+          color={adult.accent}
           accessibilityRole="header"
           style={{ lineHeight: 52 }}
         >
@@ -43,7 +43,7 @@ export default function AllGamesView() {
         {games.map((game) => (
           <Pressable
             key={game.id}
-            onPress={() => router.push(`/child/games/${game.id}/play`)}
+            onPress={() => router.push(`/child/games/${game.id}`)}
             accessibilityRole="button"
             accessibilityLabel={game.title}
             style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
@@ -51,7 +51,7 @@ export default function AllGamesView() {
             <View style={styles.coverFrame}>
               <CoverImage game={game} large style={styles.cover} />
             </View>
-            <AppText size={24} weight="extrabold" color={colors.white} style={{ lineHeight: 28 }}>
+            <AppText size={24} weight="extrabold" color={adult.accent} align="center" style={{ lineHeight: 28 }}>
               {game.title}
             </AppText>
           </Pressable>
@@ -64,15 +64,15 @@ export default function AllGamesView() {
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', gap: 20 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: GAP, paddingBottom: 8 },
-  card: { width: CARD_WIDTH, gap: 14 },
+  card: { width: CARD_WIDTH, gap: 14, alignItems: 'center' },
   cardPressed: { transform: [{ scale: 0.96 }] },
   coverFrame: {
     width: CARD_WIDTH,
     height: COVER_HEIGHT,
     borderRadius: radius.lg,
-    borderWidth: 3,
-    borderColor: 'rgba(255,255,255,0.9)',
+    borderWidth: 2,
+    borderColor: colors.ink,
     overflow: 'hidden',
   },
-  cover: { width: CARD_WIDTH - 6, height: COVER_HEIGHT - 6 },
+  cover: { width: CARD_WIDTH - 4, height: COVER_HEIGHT - 4 },
 });

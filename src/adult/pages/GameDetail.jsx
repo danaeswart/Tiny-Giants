@@ -1,12 +1,13 @@
 import { useCallback, useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import AppText from '../../shared/components/AppText.jsx';
 import CoverImage from '../../shared/components/CoverImage.jsx';
+import Icon from '../../shared/components/Icon.jsx';
 import { useCurrentChildId } from '../../shared/hooks/useCurrentChildId.js';
 import { useLoad } from '../../shared/hooks/useLoad.js';
 import { getChild, getChildGameSettings, getGameById, getInsightsForGame, getPlayedGames, toggleGameActive } from '../../shared/services/api.js';
-import { colors, radius } from '../../shared/theme.js';
+import { adult, colors, radius } from '../../shared/theme.js';
 import AdultButton from '../components/AdultButton.jsx';
 import AdultScreen from '../components/AdultScreen.jsx';
 import BackBar from '../components/BackBar.jsx';
@@ -61,32 +62,33 @@ export default function GameDetail() {
     }
   }
 
+  // The full game page (what it teaches, its tools, the description), as reached from the Games tab.
+  function openInfo() {
+    router.push(`/adult/game/${game.id}?from=info`);
+  }
+
   if (fromPlay) {
     return (
-      <AdultScreen withNav={false}>
-        <BackBar label="Play together" />
-        <View style={{ gap: 12 }}>
+      <AdultScreen withNav={false} gap={16}>
+        <BackBar label="More games" />
+        <View style={{ gap: 4 }}>
           <Eyebrow>{game.category}</Eyebrow>
           <AppText size={48} weight="extrabold" accessibilityRole="header" style={{ lineHeight: 52 }}>
             {game.title}
           </AppText>
         </View>
 
-        <View style={styles.cover}>
-          <CoverImage game={game} large style={{ width: '100%', height: '100%' }} />
+        <View style={{ gap: 8 }}>
+          <Pressable onPress={openInfo} accessibilityRole="button" accessibilityLabel={`${game.title}. More info.`} style={({ pressed }) => [styles.cover, pressed && { opacity: 0.85 }]}>
+            <CoverImage game={game} large style={{ width: '100%', height: '100%' }} />
+          </Pressable>
+          <Pressable onPress={openInfo} accessibilityRole="button" accessibilityLabel="More info" style={({ pressed }) => [styles.moreInfo, pressed && { opacity: 0.7 }]}>
+            <AppText size={17} weight="bold" color={adult.accent}>
+              More info
+            </AppText>
+            <Icon name="chevron-right" size={20} color={adult.accent} strokeWidth={2.4} />
+          </Pressable>
         </View>
-
-        <Section label="Teaches">
-          <AppText size={18}>{game.teaches}</AppText>
-        </Section>
-
-        <Section label="Tools">
-          <View style={styles.chips}>
-            {game.tools.map((tool) => (
-              <Chip key={tool} label={tool} />
-            ))}
-          </View>
-        </Section>
 
         {!game.comingSoon && (
           <Section label="Play together" stacked>
@@ -102,7 +104,7 @@ export default function GameDetail() {
       withNav={false}
       hero={
         <Hero
-          top={<BackBar label={fromInsight ? 'Insight' : 'Games'} onDark />}
+          top={<BackBar label={fromInsight ? 'Insight' : from === 'info' ? 'Back' : 'Games'} onDark />}
           eyebrow={game.category + (game.comingSoon ? ' · Coming soon' : active ? ' · Active' : '')}
           title={game.title}
         />
@@ -170,5 +172,16 @@ export default function GameDetail() {
 
 const styles = StyleSheet.create({
   cover: { height: 220, borderRadius: radius.lg, overflow: 'hidden' },
+  // A flat, square-cornered bar: label on the left, arrow at the edge.
+  moreInfo: {
+    minHeight: 48,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1.5,
+    borderColor: adult.rule,
+    borderRadius: 0,
+  },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
 });

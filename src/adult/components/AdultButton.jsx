@@ -10,6 +10,8 @@ import { adult, colors, radius } from '../../shared/theme.js';
 export default function AdultButton({
   children,
   icon,
+  trailingIcon,
+  block = false,
   variant = 'secondary',
   onPress,
   disabled = false,
@@ -28,6 +30,7 @@ export default function AdultButton({
       style={({ pressed }) => [
         styles.base,
         primary ? styles.primary : styles.secondary,
+        block && styles.block,
         pressed && { opacity: 0.75 },
         disabled && { opacity: 0.5 },
         style,
@@ -39,6 +42,7 @@ export default function AdultButton({
           {children}
         </AppText>
       )}
+      {trailingIcon && <Icon name={trailingIcon} size={20} color={fg} strokeWidth={2.2} />}
     </Pressable>
   );
 }
@@ -54,6 +58,8 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     borderWidth: 1.5,
   },
+  // Full-width bar: icon and label centred together.
+  block: { alignSelf: 'stretch', minHeight: 56, paddingHorizontal: 20 },
   primary: { backgroundColor: adult.accent, borderColor: adult.accent },
   secondary: { borderColor: 'rgba(36, 20, 71, 0.3)' },
 });

@@ -22,6 +22,7 @@ import ClearLogs from './scenes/05-clear-logs.game.jsx';
 import SmallSteps from './scenes/06-small-steps.story.jsx';
 import LogsJump from './scenes/06b-logs-jump.still.jsx';
 import JumpLogs from './scenes/08-jump-logs.game.jsx';
+import TrippingLog from './scenes/08b-tripping-log.video.jsx';
 import TheFall from './scenes/09-the-fall.story.jsx';
 import BlowCandleAgain from './scenes/10-blow-candle-again.game.jsx';
 import TheBeach from './scenes/11-the-beach.video.jsx';
@@ -47,6 +48,7 @@ export const bigWaveScenes = [
   { id: '06', type: 'story', title: 'Small steps make a difference', Scene: SmallSteps },
   { id: '06b', type: 'story', title: 'Logs to jump over (still)', Scene: LogsJump },
   { id: '08', type: 'game', title: 'Jump the 7 logs (tap)', Scene: JumpLogs },
+  { id: '08b', type: 'video', title: 'Tripping over the log (video)', Scene: TrippingLog },
   { id: '09', type: 'story', title: 'The fall', Scene: TheFall },
   { id: '10', type: 'game', title: 'Blow out the candle, again (mic)', Scene: BlowCandleAgain },
   { id: '11', type: 'video', title: 'The beach', Scene: TheBeach },

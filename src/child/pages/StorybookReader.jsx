@@ -5,7 +5,6 @@ import IconButton from '../../shared/components/IconButton.jsx';
 import { PAGE_RATIO } from '../../shared/data/book.js';
 import { useEnabledGames } from '../../shared/hooks/useChildGames.js';
 import { useCurrentChildId } from '../../shared/hooks/useCurrentChildId.js';
-import { colors } from '../../shared/theme.js';
 import BookCover from '../components/BookCover.jsx';
 import BookPage from '../components/BookPage.jsx';
 import ChildMessage from '../components/ChildMessage.jsx';
@@ -51,7 +50,7 @@ export default function StorybookReader() {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  if (loading) return <ChildScreen background={colors.white} />;
+  if (loading) return <ChildScreen />;
   if (games.length === 0) {
     return <ChildMessage title="No stories here yet">Ask a grown-up to choose some stories for you.</ChildMessage>;
   }
@@ -61,7 +60,7 @@ export default function StorybookReader() {
   const pageWidth = pageHeight * PAGE_RATIO;
 
   return (
-    <ChildScreen background={colors.white} style={styles.row}>
+    <ChildScreen style={styles.row}>
       <View style={styles.side}>
         <IconButton icon="home" label="Back to the shelf" variant="blue" onPress={() => router.dismissTo('/child')} />
       </View>

@@ -12,7 +12,7 @@ const KEYBOARD_GAP = 16;
  * When the keyboard opens, the page gains room beneath the content and scrolls so the
  * focused text box stays visible above the keyboard.
  */
-export default function AdultScreen({ children, hero, withNav = true }) {
+export default function AdultScreen({ children, hero, withNav = true, bottomPad = 32, gap = 32 }) {
   const insets = useSafeAreaInsets();
   const scrollRef = useRef(null);
   const offsetY = useRef(0);
@@ -58,9 +58,9 @@ export default function AdultScreen({ children, hero, withNav = true }) {
           width: '100%',
           maxWidth: 720,
           alignSelf: 'center',
-          gap: 32,
+          gap,
           paddingTop: hero ? 32 : Math.max(insets.top, 16) + 20,
-          paddingBottom: 32 + (withNav ? 0 : Math.max(insets.bottom, 0)) + keyboardHeight,
+          paddingBottom: bottomPad +(withNav ? 0 : Math.max(insets.bottom, 0)) + keyboardHeight,
           paddingLeft: Math.max(insets.left, 24),
           paddingRight: Math.max(insets.right, 24),
         }}

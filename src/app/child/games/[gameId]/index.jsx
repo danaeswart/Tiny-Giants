@@ -1,1 +1,1 @@
-export { default } from '../../../../child/pages/GameNotice.jsx';
+export { default } from '../../../../child/pages/GameIntro.jsx';

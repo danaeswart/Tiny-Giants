@@ -77,7 +77,7 @@ export default function Hero({ top, eyebrow, title, subtitle, note, aside, child
 
 const styles = StyleSheet.create({
   hero: { backgroundColor: adult.hero, paddingHorizontal: 24, paddingBottom: 36, gap: 16, overflow: 'hidden' },
-  heroLight: { backgroundColor: adult.bg },
+  heroLight: { backgroundColor: adult.bg, paddingBottom: 4 },
   ringLight: { borderColor: 'rgba(43,59,255,0.3)' },
   circle: {
     position: 'absolute',

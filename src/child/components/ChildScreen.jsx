@@ -4,7 +4,7 @@ import Blobs from '../../shared/components/Blobs.jsx';
 import { adult } from '../../shared/theme.js';
 
 /**
- * Full-screen child canvas on electric blue that keeps content clear of notches and
+ * Full-screen child canvas on the same cream as the grown-up side that keeps content clear of notches and
  * rounded corners. `blobs` adds the drifting circles behind the content.
  */
 export default function ChildScreen({ children, style, blobs = false, background }) {
@@ -31,5 +31,5 @@ export default function ChildScreen({ children, style, blobs = false, background
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: adult.hero, overflow: 'hidden' },
+  root: { flex: 1, backgroundColor: adult.bg, overflow: 'hidden' },
 });

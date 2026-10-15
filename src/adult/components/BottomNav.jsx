@@ -15,7 +15,7 @@ import { adult, colors, fonts } from '../../shared/theme.js';
 
 // The four tabs, in order. `name` is the route file in app/adult/(tabs)/.
 const TABS = [
-  { name: 'index', label: 'Dashboard', icon: 'home' },
+  { name: 'index', label: 'Overview', icon: 'home' },
   { name: 'insights', label: 'Play together', icon: 'sparkle' },
   { name: 'games', label: 'Games', icon: 'grid' },
   { name: 'settings', label: 'Settings', icon: 'user' },

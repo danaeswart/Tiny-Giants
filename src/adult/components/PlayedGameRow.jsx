@@ -8,7 +8,7 @@ import Eyebrow from './Eyebrow.jsx';
 const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
 
 /** A game the child has played: how often, how many times they finished it, and when last. Opens the game. */
-export default function PlayedGameRow({ entry, onPress }) {
+export default function PlayedGameRow({ entry, onPress, bare = false }) {
   const { game, plays, completedCount, lastPlayedAt } = entry;
   const last = lastPlayedAt?.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
 
@@ -17,10 +17,10 @@ export default function PlayedGameRow({ entry, onPress }) {
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={`${game.title}. Played ${plural(plays, 'time')}. Open for ideas to play together.`}
-      style={({ pressed }) => [styles.row, pressed && { opacity: 0.7 }]}
+      style={({ pressed }) => [styles.row, bare && styles.bare, pressed && { opacity: 0.7 }]}
     >
       <View style={styles.thumb}>
-        <CoverImage game={game} style={{ width: '100%', height: '100%' }} />
+        <CoverImage game={game} resizeMode="contain" style={{ width: '100%', height: '100%' }} />
       </View>
       <View style={{ flex: 1, gap: 4 }}>
         <Eyebrow>{game.category}</Eyebrow>
@@ -46,5 +46,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1.5,
     borderTopColor: adult.rule,
   },
+  // No rule of its own: the section around it draws the rule above its label instead.
+  bare: { paddingTop: 0, borderTopWidth: 0 },
   thumb: { width: 72, height: 72, borderRadius: radius.md, overflow: 'hidden' },
 });
