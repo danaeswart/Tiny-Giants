@@ -22,7 +22,7 @@ export default function PlayHistory() {
 
   return (
     <AdultScreen withNav={false}>
-      <BackBar label="Settings" />
+      <BackBar label="Profile" />
       <PageHeader
         eyebrow="Play history"
         title={child ? `${child.name}’s stories` : 'Play history'}

@@ -25,8 +25,8 @@ function childrenRef() {
 }
 
 function toChild(snapshot) {
-  const { name, age, avatar = null, joinedDate } = snapshot.data();
-  return { id: snapshot.id, name, age, avatar, joinedDate };
+  const { name, age, avatar = null, birthday = null, joinedDate } = snapshot.data();
+  return { id: snapshot.id, name, age, avatar, birthday, joinedDate };
 }
 
 // A child with no saved choice has no games: a parent adds them from the Games tab.
@@ -36,7 +36,7 @@ async function settingsFor(childId) {
   return { childId, enabledGameIds: saved ?? [] };
 }
 
-/** The signed-in parent's child profiles: [{ id, name, age, avatar, joinedDate }]. */
+/** The signed-in parent's child profiles: [{ id, name, age, avatar, birthday, joinedDate }]. */
 export async function getProfiles() {
   const snapshot = await getDocs(query(childrenRef(), orderBy('joinedDate')));
   return snapshot.docs.map(toChild);
@@ -46,6 +46,28 @@ export async function getProfiles() {
 export async function setChildAvatar(childId, avatar) {
   if (!isAvatarId(avatar)) throw new Error('Unknown character.');
   await setDoc(doc(childrenRef(), childId), { avatar }, { merge: true });
+}
+
+/**
+ * Change a child's details: name, age, birthday ('YYYY-MM-DD' or null) and character.
+ * Only the fields given are changed.
+ */
+export async function updateChild(childId, { name, age, birthday, avatar }) {
+  const changes = {};
+  if (name !== undefined) {
+    if (!name.trim()) throw new Error('Enter a name.');
+    changes.name = name.trim();
+  }
+  if (age !== undefined) {
+    if (!Number.isInteger(age) || age < 1 || age > 17) throw new Error('Enter an age between 1 and 17.');
+    changes.age = age;
+  }
+  if (birthday !== undefined) changes.birthday = birthday;
+  if (avatar !== undefined) {
+    if (avatar !== null && !isAvatarId(avatar)) throw new Error('Unknown character.');
+    changes.avatar = avatar;
+  }
+  await setDoc(doc(childrenRef(), childId), changes, { merge: true });
 }
 
 /** Add a child to the signed-in parent's account. Returns the new profile. */

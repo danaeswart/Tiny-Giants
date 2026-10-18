@@ -7,7 +7,7 @@ import CoverImage from '../../shared/components/CoverImage.jsx';
 import IconButton from '../../shared/components/IconButton.jsx';
 import { useEnabledGame } from '../../shared/hooks/useChildGames.js';
 import { useCurrentChildId } from '../../shared/hooks/useCurrentChildId.js';
-import { adult, radius } from '../../shared/theme.js';
+import { adult, colors, radius } from '../../shared/theme.js';
 import ChildMessage from '../components/ChildMessage.jsx';
 import ChildScreen from '../components/ChildScreen.jsx';
 
@@ -71,10 +71,11 @@ const styles = StyleSheet.create({
   main: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 32 },
   imageFrame: {
     flex: 1.2,
-    aspectRatio: 4 / 3,
-    maxHeight: '100%',
+    alignSelf: 'stretch',
+    marginBottom: 8,
     borderRadius: radius.lg,
     overflow: 'hidden',
+    backgroundColor: colors.waveSoft,
   },
   info: { flex: 1, justifyContent: 'center', paddingBottom: 96 },
   play: { position: 'absolute', right: 32, bottom: 24 },

@@ -6,6 +6,7 @@ import { colors } from '../theme.js';
 const SHAPES = {
   home: () => <Path d="M3.5 11 12 4l8.5 7M6 9.5V20h12V9.5" />,
   back: () => <Path d="M19 12H5m6-7-7 7 7 7" />,
+  edit: () => <Path d="M4 20h4L19 9a2.83 2.83 0 0 0-4-4L4 16v4ZM13.5 6.5l4 4" />,
   'chevron-left': () => <Path d="m15 5-7 7 7 7" />,
   'chevron-right': () => <Path d="m9 5 7 7-7 7" />,
   'chevron-down': () => <Path d="m5 9 7 7 7-7" />,

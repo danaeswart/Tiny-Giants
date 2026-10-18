@@ -71,9 +71,11 @@ export default function FloatingChildren({ children: kids, selectedId, onSelect 
           <Floater key={child.id} child={child} index={i} height={height} selected={child.id === selectedId} onSelect={onSelect} />
         ))}
       </View>
-      <AppText size={16} color={colors.inkSoft} align="center">
-        Tap a character to see their info
-      </AppText>
+      {kids.length > 1 ? (
+        <AppText size={16} color={colors.inkSoft} align="center">
+          Tap a character to see their info
+        </AppText>
+      ) : null}
     </View>
   );
 }

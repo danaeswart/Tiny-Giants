@@ -18,7 +18,7 @@ const TABS = [
   { name: 'index', label: 'Overview', icon: 'home' },
   { name: 'insights', label: 'Play together', icon: 'sparkle' },
   { name: 'games', label: 'Games', icon: 'grid' },
-  { name: 'settings', label: 'Settings', icon: 'user' },
+  { name: 'settings', label: 'Profile', icon: 'user' },
 ];
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);

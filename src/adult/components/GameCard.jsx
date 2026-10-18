@@ -13,8 +13,6 @@ import Eyebrow from './Eyebrow.jsx';
  *   onToggle  if given, shows a quick Activate / Deactivate button (no need to open the game first)
  */
 export default function GameCard({ game, active, onPress, onToggle }) {
-  const status = game.comingSoon ? 'Coming soon' : active ? 'Active' : null;
-
   return (
     <View style={styles.row}>
       <Pressable
@@ -23,13 +21,13 @@ export default function GameCard({ game, active, onPress, onToggle }) {
         accessibilityLabel={`${game.title}. ${game.blurb}`}
         style={({ pressed }) => [{ gap: 16 }, pressed && { opacity: 0.7 }]}
       >
+        <Eyebrow color={colors.inkSoft}>
+          {game.category}
+          {game.comingSoon ? '  ·  Coming soon' : ''}
+        </Eyebrow>
         <View style={styles.imageWrap}>
           <CoverImage game={game} large style={styles.image} />
         </View>
-        <Eyebrow color={status === 'Active' ? adult.leaf : colors.inkSoft}>
-          {game.category}
-          {status ? `  ·  ${status}` : ''}
-        </Eyebrow>
         <AppText size={34} weight="extrabold" style={{ lineHeight: 38 }}>
           {game.title}
         </AppText>

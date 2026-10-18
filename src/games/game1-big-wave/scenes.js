@@ -23,13 +23,11 @@ import SmallSteps from './scenes/06-small-steps.story.jsx';
 import LogsJump from './scenes/06b-logs-jump.still.jsx';
 import JumpLogs from './scenes/08-jump-logs.game.jsx';
 import TrippingLog from './scenes/08b-tripping-log.video.jsx';
-import TheFall from './scenes/09-the-fall.story.jsx';
-import BlowCandleAgain from './scenes/10-blow-candle-again.game.jsx';
 import TheBeach from './scenes/11-the-beach.video.jsx';
 import BuildCastle from './scenes/12-build-castle.game.jsx';
-import CandleOnCastle from './scenes/13-candle-on-castle.story.jsx';
-import TheWave from './scenes/14-the-wave.video.jsx';
-import BreatheTogether from './scenes/15-breathe-together.game.jsx';
+import WaveApproaching from './scenes/12c-wave-approaching.video.jsx';
+import BigWave from './scenes/12d-big-wave.video.jsx';
+import BreathingWithoutCandle from './scenes/12e-breathing-without-candle.video.jsx';
 import NeverNeededCandle from './scenes/16-never-needed-candle.story.jsx';
 import SunsetEnding from './scenes/17-sunset-ending.story.jsx';
 
@@ -49,13 +47,12 @@ export const bigWaveScenes = [
   { id: '06b', type: 'story', title: 'Logs to jump over (still)', Scene: LogsJump },
   { id: '08', type: 'game', title: 'Jump the 7 logs (tap)', Scene: JumpLogs },
   { id: '08b', type: 'video', title: 'Tripping over the log (video)', Scene: TrippingLog },
-  { id: '09', type: 'story', title: 'The fall', Scene: TheFall },
-  { id: '10', type: 'game', title: 'Blow out the candle, again (mic)', Scene: BlowCandleAgain },
+  { id: '08c', type: 'video', title: 'Breathe and blow out the candle after the fall (video)', Scene: CandleBlow },
   { id: '11', type: 'video', title: 'The beach', Scene: TheBeach },
   { id: '12', type: 'game', title: 'Build the sandcastle (tap)', Scene: BuildCastle },
-  { id: '13', type: 'story', title: 'The candle on the castle', Scene: CandleOnCastle },
-  { id: '14', type: 'video', title: 'The wave', Scene: TheWave },
-  { id: '15', type: 'game', title: 'Breathing without the candle', Scene: BreatheTogether },
+  { id: '12c', type: 'video', title: 'The wave is approaching (video)', Scene: WaveApproaching },
+  { id: '12d', type: 'video', title: 'The big wave (video)', Scene: BigWave },
+  { id: '12e', type: 'video', title: 'Breathing without the candle (video)', Scene: BreathingWithoutCandle },
   { id: '16', type: 'story', title: 'I never needed the candle', Scene: NeverNeededCandle },
   { id: '17', type: 'story', title: 'Sunset ending', Scene: SunsetEnding },
 ];

@@ -5,6 +5,8 @@ import Icon from '../../shared/components/Icon.jsx';
 import { askCoach } from '../../shared/services/coach.js';
 import { adult, colors, fonts, radius } from '../../shared/theme.js';
 import AdultButton from './AdultButton.jsx';
+import Eyebrow from './Eyebrow.jsx';
+import CoachMessage from './CoachMessage.jsx';
 
 const MAX_LENGTH = 500;
 
@@ -66,13 +68,20 @@ export default function CoachChat({ game, child, plays }) {
   return (
     <View style={styles.chat}>
       <View style={styles.messages}>
-        {messages.map((m, i) => (
-          <View key={i} style={[styles.bubble, m.role === 'user' ? styles.mine : styles.coach]}>
-            <AppText size={17} color={m.role === 'user' ? colors.white : colors.ink} selectable>
-              {m.content}
-            </AppText>
-          </View>
-        ))}
+        {messages.map((m, i) =>
+          m.role === 'user' ? (
+            <View key={i} style={styles.question}>
+              <Eyebrow color={adult.accent}>You asked</Eyebrow>
+              <AppText size={17} weight="semibold" selectable>
+                {m.content}
+              </AppText>
+            </View>
+          ) : (
+            <View key={i} style={i > 0 && styles.reply}>
+              <CoachMessage content={m.content} />
+            </View>
+          ),
+        )}
 
         {busy && (
           <View style={styles.thinking} accessibilityLiveRegion="polite">
@@ -120,10 +129,10 @@ export default function CoachChat({ game, child, plays }) {
 const styles = StyleSheet.create({
   chat: { gap: 20, minHeight: 420 },
   intro: { gap: 12 },
-  messages: { flex: 1, gap: 12 },
-  bubble: { padding: 14, borderRadius: radius.md, maxWidth: '92%' },
-  coach: { alignSelf: 'flex-start', backgroundColor: adult.accentSoft },
-  mine: { alignSelf: 'flex-end', backgroundColor: adult.accent },
+  messages: { flex: 1, gap: 16 },
+  // A follow-up question is a labelled line with a rule above it, and the answer reads on from it.
+  question: { gap: 4, paddingTop: 16, borderTopWidth: 1.5, borderTopColor: adult.rule },
+  reply: { paddingBottom: 4 },
   thinking: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   inputRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   input: {

@@ -33,14 +33,15 @@ export function FadeLabel({ label, sel, idleColor = colors.ink, activeColor = co
   );
 }
 
-/** A small rounded filter chip that fills with ink when selected. */
+/** A small rounded filter chip. The whole chip, edge to edge, fills with the accent colour when selected. */
 export default function Pill({ label, selected, onPress }) {
   const sel = useSelection(selected);
   const fill = useAnimatedStyle(() => ({ opacity: sel.get() }));
 
   return (
     <Pressable onPress={onPress} accessibilityRole="button" accessibilityState={{ selected }} style={styles.pill}>
-      <Animated.View style={[StyleSheet.absoluteFill, styles.fill, fill]} />
+      <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.outline]} />
+      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.fill, fill]} />
       <FadeLabel label={label} sel={sel} />
     </Pressable>
   );
@@ -53,9 +54,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: radius.pill,
-    borderWidth: 1,
-    borderColor: adult.rule,
     overflow: 'hidden',
   },
-  fill: { backgroundColor: colors.ink },
+  // The border is its own layer so the fill can cover the full pill instead of sitting inside it.
+  outline: { borderRadius: radius.pill, borderWidth: 1, borderColor: adult.rule },
+  fill: { borderRadius: radius.pill, backgroundColor: adult.accent },
 });

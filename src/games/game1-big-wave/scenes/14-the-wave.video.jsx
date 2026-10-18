@@ -56,7 +56,7 @@ function WaveArt() {
         <Character size={height * 0.4} mood={washed ? 'worried' : 'happy'} candle={null} />
       </Place>
       <Place x={0.6} bottom={0.1}>
-        <Castle size={castleSize} step={washed ? 2 : 5} />
+        <Castle size={castleSize} step={washed ? 2 : undefined} />
       </Place>
       {!washed && (
         <Place x={0.6} bottom={0.1 + 0.55 * 0.8 * 0.74}>

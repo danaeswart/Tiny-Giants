@@ -9,9 +9,13 @@ import AdultScreen from '../components/AdultScreen.jsx';
 import BackBar from '../components/BackBar.jsx';
 import DangerZone from '../components/DangerZone.jsx';
 import PageHeader from '../components/PageHeader.jsx';
+import ParentPinGate from '../components/ParentPinGate.jsx';
 import Section from '../components/Section.jsx';
 
-/** Account settings: username, email, password and PIN (each changed in place), then sign out and delete. */
+/**
+ * Account settings, opened with the grown-up PIN: username, email, password and PIN (each
+ * changed in place), then the no-no zone (sign out and delete).
+ */
 export default function AccountSettings() {
   const load = useCallback(() => getParentAccount(), []);
   const { data: parent } = useLoad(load);
@@ -20,8 +24,9 @@ export default function AccountSettings() {
 
   return (
     <AdultScreen withNav={false}>
-      <BackBar label="Settings" />
+      <BackBar label="Profile" />
       <PageHeader eyebrow="Account" title="Account settings" subtitle="Your sign-in details." />
+      <ParentPinGate>
       <Section label="Sign-in" stacked>
         <AccountRow
           label="Username"
@@ -100,6 +105,7 @@ export default function AccountSettings() {
       </Section>
 
       <DangerZone />
+      </ParentPinGate>
     </AdultScreen>
   );
 }

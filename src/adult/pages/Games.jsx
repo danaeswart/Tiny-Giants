@@ -65,7 +65,7 @@ export default function Games() {
   const q = adding ? query.trim().toLowerCase() : '';
   const shown = games.filter(
     (g) =>
-      (adding || isActive(g.id)) &&
+      (adding ? !isActive(g.id) : isActive(g.id)) &&
       (!adding || category === ALL || g.category === category) &&
       (!q || [g.title, g.blurb, g.category, ...g.tools].join(' ').toLowerCase().includes(q)),
   );
@@ -98,7 +98,7 @@ export default function Games() {
       {shown.length === 0 ? (
         <AppText size={17} color={colors.inkSoft}>
           {adding
-            ? 'No games match. Try a different search or theme.'
+            ? 'No games to add. Try a different search or theme, or every game is already active.'
             : 'No games are active yet. Switch to "Add games" to choose some.'}
         </AppText>
       ) : (

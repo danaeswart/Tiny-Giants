@@ -1,16 +1,16 @@
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import AppText from '../../shared/components/AppText.jsx';
 import { deleteAccount, signOut } from '../../shared/services/auth.js';
-import { adult, radius } from '../../shared/theme.js';
+import { adult } from '../../shared/theme.js';
 import AdultButton from './AdultButton.jsx';
 import Eyebrow from './Eyebrow.jsx';
 import TextField from './TextField.jsx';
 
 /**
- * The "no-no zone" at the bottom of the account pages: sign out, and delete the account for
- * good. Deleting asks for the password first and says plainly what will be lost. When it
- * succeeds the sign-in disappears and the app returns to the login screen by itself.
+ * The "no-no zone" at the bottom of the account page, kept deliberately plain: a rule, then
+ * two text links. Deleting asks for the password first and says plainly what will be lost.
+ * When it succeeds the sign-in disappears and the app returns to the login screen by itself.
  */
 export default function DangerZone() {
   const [confirming, setConfirming] = useState(false);
@@ -39,9 +39,12 @@ export default function DangerZone() {
   return (
     <View style={styles.zone}>
       <Eyebrow color={adult.berry}>The no-no zone</Eyebrow>
-      <AdultButton icon="swap" onPress={signOut} disabled={busy} style={styles.button}>
-        Sign out
-      </AdultButton>
+
+      <Pressable onPress={signOut} disabled={busy} accessibilityRole="button" style={styles.link}>
+        <AppText size={17} weight="bold">
+          Sign out
+        </AppText>
+      </Pressable>
 
       {confirming ? (
         <View style={{ gap: 16 }}>
@@ -72,18 +75,19 @@ export default function DangerZone() {
           </View>
         </View>
       ) : (
-        <AdultButton onPress={() => setConfirming(true)} style={[styles.button, styles.destroyOutline]}>
-          Delete account
-        </AdultButton>
+        <Pressable onPress={() => setConfirming(true)} accessibilityRole="button" style={styles.link}>
+          <AppText size={17} weight="bold" color={adult.berry}>
+            Delete account
+          </AppText>
+        </Pressable>
       )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  zone: { gap: 16, padding: 24, borderRadius: radius.lg, borderWidth: 1.5, borderColor: adult.berry, backgroundColor: adult.berrySoft },
-  button: { alignSelf: 'flex-start' },
+  zone: { gap: 4, paddingTop: 20, borderTopWidth: 1.5, borderTopColor: adult.berry },
+  link: { alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center' },
   destroy: { backgroundColor: adult.berry, borderColor: adult.berry },
-  destroyOutline: { borderColor: adult.berry },
   actions: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
 });

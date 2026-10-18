@@ -27,7 +27,9 @@ import Section from '../components/Section.jsx';
  */
 export default function Dashboard() {
   const { profiles } = useProfiles();
-  const [selectedId, setSelectedId] = useState(null);
+  const [pickedId, setSelectedId] = useState(null);
+  // With only one child there's nothing to choose between, so their info is always open.
+  const selectedId = profiles.length === 1 ? profiles[0].id : pickedId;
   const [picking, setPicking] = useState(false);
   const [pickError, setPickError] = useState('');
   const load = useCallback(

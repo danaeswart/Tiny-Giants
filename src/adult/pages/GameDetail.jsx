@@ -14,8 +14,8 @@ import BackBar from '../components/BackBar.jsx';
 import Chip from '../components/Chip.jsx';
 import CoachChat from '../components/CoachChat.jsx';
 import Eyebrow from '../components/Eyebrow.jsx';
-import Hero from '../components/Hero.jsx';
 import InsightCard from '../components/InsightCard.jsx';
+import PageHeader from '../components/PageHeader.jsx';
 import Section from '../components/Section.jsx';
 
 /**
@@ -78,7 +78,7 @@ export default function GameDetail() {
           </AppText>
         </View>
 
-        <View style={{ gap: 8 }}>
+        <View style={{ gap: 8, marginBottom: -8 }}>
           <Pressable onPress={openInfo} accessibilityRole="button" accessibilityLabel={`${game.title}. More info.`} style={({ pressed }) => [styles.cover, pressed && { opacity: 0.85 }]}>
             <CoverImage game={game} large style={{ width: '100%', height: '100%' }} />
           </Pressable>
@@ -100,16 +100,17 @@ export default function GameDetail() {
   }
 
   return (
-    <AdultScreen
-      withNav={false}
-      hero={
-        <Hero
-          top={<BackBar label={fromInsight ? 'Insight' : from === 'info' ? 'Back' : 'Games'} onDark />}
-          eyebrow={game.category + (game.comingSoon ? ' · Coming soon' : active ? ' · Active' : '')}
+    <AdultScreen withNav={false}>
+      <BackBar label={fromInsight ? 'Insight' : from === 'info' ? 'Back' : 'Games'} />
+      {/* PageHeader pads 20px underneath; the negative margin pulls the image up under the title. */}
+      <View style={{ marginBottom: -32 }}>
+        <PageHeader
+          eyebrow={game.category + (game.comingSoon ? ' · Coming soon' : active ? ' · Active' : ' · Inactive')}
           title={game.title}
+          rule={false}
         />
-      }
-    >
+      </View>
+
       <View style={styles.cover}>
         <CoverImage game={game} large style={{ width: '100%', height: '100%' }} />
       </View>
@@ -141,7 +142,7 @@ export default function GameDetail() {
           Back to this insight
         </AdultButton>
       ) : (
-        <View style={{ gap: 16 }}>
+        <View style={styles.actionRow}>
           <AdultButton
             variant={active ? 'secondary' : 'primary'}
             onPress={toggle}
@@ -174,14 +175,14 @@ const styles = StyleSheet.create({
   cover: { height: 220, borderRadius: radius.lg, overflow: 'hidden' },
   // A flat, square-cornered bar: label on the left, arrow at the edge.
   moreInfo: {
-    minHeight: 48,
+    minHeight: 44,
     paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderWidth: 1.5,
-    borderColor: adult.rule,
     borderRadius: 0,
   },
+  // The Activate / Deactivate button, under a rule like the other sections.
+  actionRow: { gap: 16, paddingTop: 20, borderTopWidth: 1.5, borderTopColor: adult.rule },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
 });

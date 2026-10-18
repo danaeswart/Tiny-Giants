@@ -27,7 +27,11 @@ service cloud.firestore {
           // which character the parent picked, e.g. 'avatar2' (optional)
           && (!('avatar' in request.resource.data)
               || request.resource.data.avatar == null
-              || (request.resource.data.avatar is string && request.resource.data.avatar.size() <= 20));
+              || (request.resource.data.avatar is string && request.resource.data.avatar.size() <= 20))
+          // birthday as 'YYYY-MM-DD' (optional)
+          && (!('birthday' in request.resource.data)
+              || request.resource.data.birthday == null
+              || (request.resource.data.birthday is string && request.resource.data.birthday.size() == 10));
 
         // One document per time a child plays a game (finished or left early). Not editable:
         // a session can be read and created by the parent, never edited.
