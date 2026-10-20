@@ -32,6 +32,7 @@ const SMOOTH = Easing.out(Easing.cubic);
  *
  *   tone          'success', 'confirm' (a friendly question) or 'danger' (a careful question)
  *   icon / art    the badge picture: an Icon name, or `art` for your own node (e.g. a child's character)
+ *   badge         false hides the round sticker on a child popup (default true)
  *   title         two to four words
  *   message       one short sentence
  *   confirmLabel  the main button. With no cancelLabel the popup has just this one button
@@ -63,6 +64,7 @@ export default function Popup({
   onDismiss,
   onClosed,
   choice = false,
+  badge = true,
   audience = 'parent',
   busy = false,
 }) {
@@ -160,7 +162,7 @@ export default function Popup({
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
             >
-              <Badge tone={t} reduceMotion={reduceMotion} art={art} icon={icon ?? t.icon} />
+              {badge && <Badge tone={t} reduceMotion={reduceMotion} art={art} icon={icon ?? t.icon} />}
   
               <View style={[styles.text, sideBySide && { flex: 1, alignItems: 'flex-start' }]}>
                 <AppText

@@ -1,10 +1,12 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
-import { StyleSheet, View } from 'react-native';
+import { useState } from 'react';
+import { Image, StyleSheet, View } from 'react-native';
 import AppText from '../../shared/components/AppText.jsx';
 import Button from '../../shared/components/Button.jsx';
 import CoverImage from '../../shared/components/CoverImage.jsx';
 import IconButton from '../../shared/components/IconButton.jsx';
+import { resolveImage } from '../../shared/data/images.js';
 import { useEnabledGame } from '../../shared/hooks/useChildGames.js';
 import { useCurrentChildId } from '../../shared/hooks/useCurrentChildId.js';
 import { adult, colors, radius } from '../../shared/theme.js';
@@ -21,7 +23,31 @@ function IntroVideo({ source }) {
   return <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls={false} />;
 }
 
-/** The step between the games grid and a game: its picture (or clip), name and Play. */
+/**
+ * The game's large picture, shown whole: measured against its box and sized to the picture's own
+ * shape, so it is never cropped or zoomed. Games without art get the generated placeholder cover.
+ */
+function FullCover({ game }) {
+  const [box, setBox] = useState({ width: 0, height: 0 });
+  const source = resolveImage(game.image) ?? resolveImage(game.coverImage) ?? resolveImage(game.pages?.left);
+  const real = source ? Image.resolveAssetSource(source) : null;
+  const ratio = real?.width && real?.height ? real.width / real.height : 4 / 3;
+  const width = Math.min(box.width, box.height * ratio);
+  const height = width / ratio;
+
+  return (
+    <View
+      style={styles.imageBox}
+      onLayout={({ nativeEvent: { layout } }) => setBox({ width: layout.width, height: layout.height })}
+    >
+      {width > 0 && (
+        <CoverImage game={game} large resizeMode="contain" style={{ width, height, borderRadius: radius.lg }} />
+      )}
+    </View>
+  );
+}
+
+/** The step between the games grid and a game: its picture (or clip) on the left, and its name with the Play button under it on the right. */
 export default function GameIntro() {
   const { gameId } = useLocalSearchParams();
   const childId = useCurrentChildId();
@@ -39,36 +65,37 @@ export default function GameIntro() {
       </View>
 
       <View style={styles.main}>
-        <View style={styles.imageFrame}>
-          {game.introVideo ? (
+        {game.introVideo ? (
+          <View style={styles.imageFrame}>
             <IntroVideo source={game.introVideo} />
-          ) : (
-            <CoverImage game={game} large style={StyleSheet.absoluteFill} />
-          )}
-        </View>
+          </View>
+        ) : (
+          <FullCover game={game} />
+        )}
 
         <View style={styles.info}>
-          <AppText size={72} weight="extrabold" color={adult.accent} accessibilityRole="header" style={{ lineHeight: 76 }}>
+          <AppText size={56} weight="extrabold" color={adult.accent} accessibilityRole="header" style={{ lineHeight: 60 }}>
             {game.title}
           </AppText>
+          <Button
+            size="xl"
+            icon="play"
+            variant="primary"
+            onPress={() => router.push(`/child/games/${game.id}/play`)}
+            style={styles.play}
+          >
+            Play
+          </Button>
         </View>
       </View>
-
-      <Button
-        size="xl"
-        icon="play"
-        variant="primary"
-        onPress={() => router.push(`/child/games/${game.id}/play`)}
-        style={styles.play}
-      >
-        Play
-      </Button>
     </ChildScreen>
   );
 }
 
 const styles = StyleSheet.create({
   main: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 32 },
+  // Holds the picture; FullCover sizes the picture itself to fit inside.
+  imageBox: { flex: 1.2, alignSelf: 'stretch', marginBottom: 8, alignItems: 'center', justifyContent: 'center' },
   imageFrame: {
     flex: 1.2,
     alignSelf: 'stretch',
@@ -77,6 +104,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: colors.waveSoft,
   },
-  info: { flex: 1, justifyContent: 'center', paddingBottom: 96 },
-  play: { position: 'absolute', right: 32, bottom: 24 },
+  info: { flex: 1, justifyContent: 'center', alignItems: 'flex-start', gap: 24 },
+  play: { alignSelf: 'flex-start' },
 });

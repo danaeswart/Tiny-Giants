@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { setAudioModeAsync } from 'expo-audio';
-import * as Speech from 'expo-speech';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import IconButton from '../../shared/components/IconButton.jsx';
@@ -29,11 +27,6 @@ export default function ScenePlayer({ scenes, onExit, onFinish }) {
   const leaving = useRef(false);
   const { skip } = useSettings();
 
-  // Narration should play even when the phone's silent switch is on.
-  useEffect(() => {
-    setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
-  }, []);
-
   // The scene on screen right now. A scene that has been skipped away from (or finished)
   // can't move the story on: only a call from the current scene counts.
   const currentId = useRef(scenes[0].id);
@@ -43,7 +36,6 @@ export default function ScenePlayer({ scenes, onExit, onFinish }) {
   }, [current.id]);
 
   const goTo = useCallback((i) => {
-    Speech.stop();
     setIndex(i);
   }, []);
 
@@ -51,7 +43,6 @@ export default function ScenePlayer({ scenes, onExit, onFinish }) {
     (fromId) => {
       if (fromId !== undefined && fromId !== currentId.current) return;
       if (index >= scenes.length - 1) {
-        Speech.stop();
         onFinish();
       } else goTo(index + 1);
     },
@@ -93,7 +84,7 @@ export default function ScenePlayer({ scenes, onExit, onFinish }) {
         audience="child"
         open={asking}
         tone="confirm"
-        icon="back"
+        badge={false}
         title="Leave?"
         choice
         confirmLabel="Yes, leave the story"
@@ -106,7 +97,6 @@ export default function ScenePlayer({ scenes, onExit, onFinish }) {
         onDismiss={() => setAsking(false)}
         onClosed={() => {
           if (!leaving.current) return;
-          Speech.stop();
           onExit();
         }}
       />

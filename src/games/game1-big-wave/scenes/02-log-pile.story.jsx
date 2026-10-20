@@ -53,5 +53,5 @@ function Art() {
 }
 
 export default function LogPileScene({ onDone }) {
-  return <StoryScene Art={Art} audio={null} lines={LINES} onDone={onDone} />;
+  return <StoryScene Art={Art} lines={LINES} onDone={onDone} />;
 }

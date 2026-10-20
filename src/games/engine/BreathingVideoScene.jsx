@@ -12,7 +12,6 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useSettings } from '../../shared/hooks/useSettings.js';
 import Captions from './Captions.jsx';
 import useSpokenLines from './useSpokenLines.js';
 
@@ -45,7 +44,6 @@ export default function BreathingVideoScene({
   outSeconds = 3.5,
   onDone,
 }) {
-  const { narration, captions } = useSettings();
   const insets = useSafeAreaInsets();
   const { text, finished, stop } = useSpokenLines(lines);
   const [breathing, setBreathing] = useState(false);
@@ -54,11 +52,10 @@ export default function BreathingVideoScene({
   const [outroDone, setOutroDone] = useState(!endLines.length);
   const scale = useSharedValue(SMALL);
 
-  const player = useVideoPlayer(src, (p) => p.play());
-
-  useEffect(() => {
-    setMuted(player, !narration);
-  }, [player, narration]);
+  const player = useVideoPlayer(src, (p) => {
+    p.muted = false;
+    p.play();
+  });
 
   useEventListener(player, 'playToEnd', () => {
     if (!closing) stop();
@@ -114,7 +111,7 @@ export default function BreathingVideoScene({
       {closing ? (
         <Outro lines={endLines} onDone={() => setOutroDone(true)} />
       ) : (
-        <Captions text={finished ? null : text} hidden={!captions} />
+        <Captions text={finished ? null : text} />
       )}
     </View>
   );
@@ -122,7 +119,6 @@ export default function BreathingVideoScene({
 
 // The closing words after the video, left on its last frame.
 function Outro({ lines, onDone }) {
-  const { captions } = useSettings();
   const { text, finished } = useSpokenLines(lines);
 
   useEffect(() => {
@@ -131,12 +127,7 @@ function Outro({ lines, onDone }) {
     return () => clearTimeout(t);
   }, [finished, onDone]);
 
-  return <Captions text={text} hidden={!captions} />;
-}
-
-// Changes the native player in place; kept outside the component so the hook-value lint rule stays quiet.
-function setMuted(player, muted) {
-  player.muted = muted;
+  return <Captions text={text} />;
 }
 
 const styles = StyleSheet.create({

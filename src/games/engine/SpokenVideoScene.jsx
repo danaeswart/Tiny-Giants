@@ -1,30 +1,31 @@
-import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useEventListener } from 'expo';
 import { useVideoPlayer, VideoView } from 'expo-video';
-import { useSettings } from '../../shared/hooks/useSettings.js';
 import Captions from './Captions.jsx';
+import { useStage } from './Stage.js';
 import useSpokenLines from './useSpokenLines.js';
 
 /**
- * SCENE TYPE: SPOKEN VIDEO — plays a clip once while a voice reads the lines, then
+ * SCENE TYPE: SPOKEN VIDEO — plays a clip once while the lines show as captions, then
  * moves straight on to the next scene (no button to tap).
  *
  *   src     the video
- *   lines   [{ text }] read aloud from the start, shown as captions
+ *   lines   [{ text }] shown as captions from the start
  *   captionPosition  'bottom' or 'top-right'
+ *   shiftUp          0 to 0.3: slides the picture up by this fraction of the screen height, so more of
+ *                    the bottom of the clip shows (and a little less of the top)
  *   onDone  from ScenePlayer
  *
- * A grown-up's narration setting applies to the video's own sound too: off keeps it silent.
+ * The clip plays with its own sound.
  */
-export default function SpokenVideoScene({ src, lines = [], captionPosition = 'bottom', onDone }) {
-  const { narration, captions } = useSettings();
+export default function SpokenVideoScene({ src, lines = [], captionPosition = 'bottom', shiftUp = 0, onDone }) {
+  const { height } = useStage();
+  const lift = height * shiftUp;
   const { text, stop } = useSpokenLines(lines);
-  const player = useVideoPlayer(src, (p) => p.play());
-
-  useEffect(() => {
-    setMuted(player, !narration);
-  }, [player, narration]);
+  const player = useVideoPlayer(src, (p) => {
+    p.muted = false;
+    p.play();
+  });
 
   useEventListener(player, 'playToEnd', () => {
     stop();
@@ -33,13 +34,15 @@ export default function SpokenVideoScene({ src, lines = [], captionPosition = 'b
 
   return (
     <View style={StyleSheet.absoluteFill}>
-      <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls={false} />
-      <Captions text={text} hidden={!captions} position={captionPosition} />
+      <View style={[StyleSheet.absoluteFill, { overflow: 'hidden' }]}>
+        <VideoView
+          player={player}
+          style={[StyleSheet.absoluteFill, { top: -lift, bottom: 0, height: height + lift || undefined }]}
+          contentFit="cover"
+          nativeControls={false}
+        />
+      </View>
+      <Captions text={text} position={captionPosition} />
     </View>
   );
-}
-
-// Changes the native player in place; kept outside the component so the hook-value lint rule stays quiet.
-function setMuted(player, muted) {
-  player.muted = muted;
 }

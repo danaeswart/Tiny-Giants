@@ -7,7 +7,6 @@ import { ForestBackdrop } from '../art/Backdrops.jsx';
 import BlowCandleGame from '../components/BlowCandleGame.jsx';
 
 const INTRO = {
-  audio: null, // require('../assets/audio/10-blow-intro.m4a')
   lines: [
     { text: "I'll light my candle again." },
     { text: 'Will you help me? Big breath in… and blow!' },
@@ -15,7 +14,6 @@ const INTRO = {
 };
 
 const OUTRO = {
-  audio: null, // require('../assets/audio/10-blow-outro.m4a')
   lines: [
     { text: 'There. I feel calm again.' },
     { text: 'I can get back up!' },

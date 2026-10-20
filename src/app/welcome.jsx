@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Image, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { router } from 'expo-router';
 import Animated, {
   Easing,
@@ -15,6 +15,10 @@ import AppText from '../shared/components/AppText.jsx';
 import AdultButton from '../adult/components/AdultButton.jsx';
 import { AVATARS } from '../shared/data/avatars.js';
 import { colors } from '../shared/theme.js';
+
+const LOGO = require('../../assets/book/games/game1/logo.png');
+const LOGO_RATIO = 1280 / 600;
+const LOGO_HEIGHT = 120;
 
 const PER_ZONE = 4; // avatars travelling above the text, and the same number below it
 const GAP = 16; // clear space kept between the text block and any avatar's path
@@ -127,9 +131,13 @@ export default function Welcome() {
         <AppText size={22} weight="semibold" color={colors.inkSoft} align="center">
           Welcome to
         </AppText>
-        <AppText size={48} weight="extrabold" color={colors.ink} align="center" accessibilityRole="header">
-          Tiny Giants
-        </AppText>
+        <Image
+          source={LOGO}
+          resizeMode="contain"
+          accessibilityRole="header"
+          accessibilityLabel="Tiny Giants"
+          style={styles.logo}
+        />
         <AdultButton variant="primary" onPress={() => router.push('/signup')} style={styles.cta}>
           Get started
         </AdultButton>
@@ -142,5 +150,6 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.cream, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   floater: { position: 'absolute', left: 0 },
   card: { alignItems: 'center', gap: 16, paddingHorizontal: 32 },
+  logo: { width: LOGO_HEIGHT * LOGO_RATIO, height: LOGO_HEIGHT },
   cta: { alignSelf: 'stretch', minHeight: 56, marginTop: 8 },
 });

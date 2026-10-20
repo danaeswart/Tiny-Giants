@@ -3,14 +3,13 @@
 // breathe with her. A soft circle grows (breathe in) and shrinks (breathe out).
 // No tapping needed: the child just follows along.
 //
-// Flow: intro narration → BREATHS slow breaths → Next arrow
+// Flow: intro narration → BREATHS slow breaths → moves on by itself
 
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import Captions from '../../engine/Captions.jsx';
 import Narration from '../../engine/Narration.jsx';
-import NextButton from '../../engine/NextButton.jsx';
 import { useStage } from '../../engine/Stage.js';
 import { BeachBackdrop } from '../art/Backdrops.jsx';
 import Castle from '../art/Castle.jsx';
@@ -22,7 +21,6 @@ const IN_MS = 4000;
 const OUT_MS = 4000;
 
 const INTRO = {
-  audio: null, // require('../assets/audio/15-breathe-intro.m4a')
   lines: [
     { text: 'My candle is gone. The wave took it away.' },
     { text: 'But I can still breathe slowly, all by myself.' },
@@ -55,6 +53,11 @@ export default function BreatheTogetherScene({ onDone }) {
     );
     return () => clearTimeout(t);
   }, [phase, inhaling, breath, grow]);
+
+  // After the last breath, move straight on to the next scene.
+  useEffect(() => {
+    if (phase === 'done') onDone();
+  }, [phase, onDone]);
 
   const circle = height * 0.62;
   const circleStyle = useAnimatedStyle(() => ({
@@ -90,12 +93,6 @@ export default function BreatheTogetherScene({ onDone }) {
       {phase === 'intro' && <Narration {...INTRO} onEnd={() => setPhase('breathing')} />}
       {phase === 'breathing' && (
         <Captions text={inhaling ? 'Breathe in… 1, 2, 3, 4' : 'And slowly out… 1, 2, 3, 4'} />
-      )}
-      {phase === 'done' && (
-        <>
-          <Captions text="Well done. We did it together." />
-          <NextButton onPress={onDone} />
-        </>
       )}
     </View>
   );

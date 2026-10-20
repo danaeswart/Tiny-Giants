@@ -1,10 +1,10 @@
-// SCENE 01f · SPOKEN STILL · Cami and the pile of wood
-// A still picture while Cami says how big the job looks and decides to use her candle.
-// Moves on by itself when she's done; nothing to tap.
+// SCENE 01f · SPOKEN VIDEO · Cami and the pile of wood
+// The clip of the logs being removed one by one plays once while Cami says how big the job
+// looks and decides to use her candle. Moves on by itself when it's done; nothing to tap.
 
-import SpokenStillScene from '../../engine/SpokenStillScene.jsx';
+import SpokenVideoScene from '../../engine/SpokenVideoScene.jsx';
 
-const BACKGROUND = require('../../../../assets/book/games/game1/text-pile-of-wood.png');
+const SRC = require('../../../../assets/book/games/game1/remove-logs-one-by-one.mov');
 
 const LINES = [
   { text: 'There are a lot of logs. It seems like a big task.' },
@@ -12,5 +12,5 @@ const LINES = [
 ];
 
 export default function TextPileOfWoodScene({ onDone }) {
-  return <SpokenStillScene background={BACKGROUND} lines={LINES} onDone={onDone} />;
+  return <SpokenVideoScene src={SRC} lines={LINES} onDone={onDone} />;
 }

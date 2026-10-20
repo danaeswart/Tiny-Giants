@@ -4,6 +4,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AppText from '../../shared/components/AppText.jsx';
 import { colors, radius } from '../../shared/theme.js';
 
+// The videos carry their own voice, so no text is drawn over the game. Set to true to bring captions back.
+const SHOW_CAPTIONS = false;
+
 /**
  * The read-along text box along the bottom of the stage. Purely visual: whatever
  * owns the clock (Narration, or a playing video) decides which line to show.
@@ -11,7 +14,7 @@ import { colors, radius } from '../../shared/theme.js';
  */
 export default function Captions({ text, hidden = false, position = 'bottom' }) {
   const insets = useSafeAreaInsets();
-  if (!text || hidden) return null;
+  if (!SHOW_CAPTIONS || !text || hidden) return null;
 
   return (
     <View

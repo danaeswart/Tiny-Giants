@@ -3,7 +3,7 @@
 
 import SpokenVideoScene from '../../engine/SpokenVideoScene.jsx';
 
-const SRC = require('../../../../assets/book/games/game1/scene3-trough-forrest.mp4');
+const SRC = require('../../../../assets/book/games/game1/walking-though-forrest.mov');
 
 const LINES = [{ text: 'Now let’s get through this forest.' }];
 

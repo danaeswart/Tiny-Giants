@@ -1,55 +1,25 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
-import { useSettings } from '../../shared/hooks/useSettings.js';
 import Captions from './Captions.jsx';
 import { estimatedEnd, lineAt, timeLines } from './timing.js';
 
 /**
- * Reads lines aloud and shows them as captions at the same time.
+ * Shows lines as captions one after another, timed by estimated reading time.
+ * There is no voice: the story is read from the screen.
  *
- *   audio  require('../assets/audio/00-intro.m4a'), or null while there's no recording.
- *          With audio, captions follow the audio's own clock, so they can't drift.
- *          Without it, a timer stands in using estimated reading times.
  *   lines  [{ text, at? }] (see timing.js)
- *   onEnd  called once, when the audio (or estimated reading time) finishes.
+ *   onEnd  called once, when the last line's time is up.
  *
- * It starts as soon as it mounts. To play a second set of lines in the same scene,
+ * It starts as soon as it mounts. To show a second set of lines in the same scene,
  * render another <Narration> with a different `key`.
  */
-export default function Narration({ audio: recording = null, lines, onEnd }) {
-  // A grown-up can turn narration off (quiet reading) or captions off; see the profile menu.
-  // The words always show when there's no voice, so the story is never left blank.
-  const { narration, captions } = useSettings();
-  const audio = narration ? recording : null;
+export default function Narration({ lines, onEnd }) {
   const timed = useMemo(() => timeLines(lines), [lines]);
-  const audioTime = useAudioClock(audio, onEnd);
-  const timerTime = useTimerClock(!audio, estimatedEnd(timed), onEnd);
-  const time = audio ? audioTime : timerTime;
+  const time = useTimerClock(true, estimatedEnd(timed), onEnd);
 
-  return <Captions text={lineAt(timed, time)?.text} hidden={!captions && !!audio} />;
+  return <Captions text={lineAt(timed, time)?.text} />;
 }
 
-// Plays the audio once and reports its position in seconds.
-function useAudioClock(audio, onEnd) {
-  const player = useAudioPlayer(audio, { updateInterval: 100 });
-  const status = useAudioPlayerStatus(player);
-  const ended = useRef(false);
-
-  useEffect(() => {
-    if (audio) player.play();
-  }, [audio, player]);
-
-  useEffect(() => {
-    if (audio && status.didJustFinish && !ended.current) {
-      ended.current = true;
-      onEnd?.();
-    }
-  }, [audio, status.didJustFinish, onEnd]);
-
-  return status.currentTime ?? 0;
-}
-
-// Stand-in clock for scenes with no recording yet: counts up to `duration` seconds.
+// Clock that counts up to `duration` seconds, then calls `onEnd` once.
 export function useTimerClock(running, duration, onEnd) {
   const [time, setTime] = useState(0);
   const onEndRef = useRef(onEnd);

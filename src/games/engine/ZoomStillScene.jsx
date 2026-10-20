@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { useSettings } from '../../shared/hooks/useSettings.js';
 import Captions from './Captions.jsx';
 import FitImage from './FitImage.jsx';
 import useSpokenLines from './useSpokenLines.js';
@@ -11,13 +10,12 @@ import useSpokenLines from './useSpokenLines.js';
  * lines, then it moves straight on to the next scene (no button to tap).
  *
  *   background  the picture
- *   lines       [{ text }] read aloud (and captioned) during the zoom
+ *   lines       [{ text }] shown as captions during the zoom
  *   seconds     how long the zoom lasts; the scene waits for the lines if they take longer
  *   zoom        how far it ends up zoomed, 1.15 = 15% closer
  *   onDone      from ScenePlayer
  */
 export default function ZoomStillScene({ background, lines = [], seconds = 3, zoom = 1.15, onDone }) {
-  const { captions } = useSettings();
   const { text, finished } = useSpokenLines(lines);
   const [zoomed, setZoomed] = useState(false);
   const scale = useSharedValue(1);
@@ -40,7 +38,7 @@ export default function ZoomStillScene({ background, lines = [], seconds = 3, zo
       <Animated.View style={[StyleSheet.absoluteFill, style]}>
         <FitImage source={background} />
       </Animated.View>
-      <Captions text={finished ? null : text} hidden={!captions} />
+      <Captions text={finished ? null : text} />
     </View>
   );
 }

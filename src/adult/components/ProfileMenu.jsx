@@ -148,18 +148,6 @@ export default function ProfileMenu({ open, onClose }) {
 
               <Section title="Settings">
                 <SettingRow
-                  label="Read stories aloud"
-                  hint="Plays the narration. Turn off for quiet reading."
-                  value={settings.narration}
-                  onChange={(v) => setSetting('narration', v)}
-                />
-                <SettingRow
-                  label="Show captions"
-                  hint="Shows the words on screen while a story is read. Always on when narration is off."
-                  value={settings.captions}
-                  onChange={(v) => setSetting('captions', v)}
-                />
-                <SettingRow
                   label="Skip buttons"
                   hint="Shows skip-forward and back buttons while a game is playing, so scenes can be moved through quickly."
                   value={settings.skip}
@@ -261,10 +249,9 @@ function SettingRow({ label, hint, value, onChange, last }) {
 }
 
 /** The playing child's character on its own, no circle. Falls back to the round avatar if they have none. */
-function AccountPicture({ profile }) {
+function AccountPicture({ profile, height = 72 }) {
   const character = getAvatar(profile?.avatar);
-  if (!character) return <Avatar profile={profile} size={52} />;
-  const height = 72;
+  if (!character) return <Avatar profile={profile} size={Math.round(height * 0.72)} />;
   return (
     <Image
       source={character.source}
@@ -284,7 +271,7 @@ function AccountRow({ profile, selected, last, onPress }) {
       accessibilityLabel={`${profile.name}${selected ? ', playing now' : ''}`}
       style={({ pressed }) => [styles.row, !last && styles.rowDivider, pressed && { backgroundColor: colors.cream }]}
     >
-      <Avatar profile={profile} size={44} />
+      <AccountPicture profile={profile} height={64} />
       <AppText size={16} weight="bold" style={{ flex: 1 }}>
         {profile.name}
       </AppText>

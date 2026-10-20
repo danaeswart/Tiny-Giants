@@ -10,6 +10,7 @@ import TextField from '../adult/components/TextField.jsx';
 import { setCurrentChildId } from '../shared/hooks/useCurrentChildId.js';
 import { refreshProfiles } from '../shared/hooks/useProfiles.js';
 import { addChild } from '../shared/services/api.js';
+import { skipAddChild } from '../shared/services/onboarding.js';
 import { adult, colors } from '../shared/theme.js';
 
 /** Add a child to the signed-in parent's account (also the first thing a new parent sees). */
@@ -70,9 +71,20 @@ export default function AddChild() {
         {busy ? 'Saving…' : 'Add child'}
       </AdultButton>
       {onboarding ? (
-        <AdultButton icon="back" onPress={() => router.replace('/create-pin')} disabled={busy}>
-          Back
-        </AdultButton>
+        <>
+          <AdultButton
+            onPress={async () => {
+              await skipAddChild();
+              router.replace('/adult');
+            }}
+            disabled={busy}
+          >
+            Skip for now
+          </AdultButton>
+          <AdultButton icon="back" onPress={() => router.replace('/create-pin')} disabled={busy}>
+            Back
+          </AdultButton>
+        </>
       ) : (
         router.canGoBack() && (
           <AdultButton onPress={() => router.back()} disabled={busy}>

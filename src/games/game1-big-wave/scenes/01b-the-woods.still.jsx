@@ -1,10 +1,10 @@
-// SCENE 01b · SPOKEN STILL · The edge of the woods
-// A still picture while Cami says how she feels at the edge of the woods.
-// Moves on by itself when she's done; nothing to tap.
+// SCENE 01b · SPOKEN VIDEO · Arriving at the edge of the woods
+// The clip plays once while Cami says how she feels at the edge of the woods.
+// Moves on by itself when it's done; nothing to tap.
 
-import SpokenStillScene from '../../engine/SpokenStillScene.jsx';
+import SpokenVideoScene from '../../engine/SpokenVideoScene.jsx';
 
-const BACKGROUND = require('../assets/images/01b-the-woods.png');
+const SRC = require('../../../../assets/book/games/game1/forrest-arival.mov');
 
 const LINES = [
   { text: 'Here we are. The woods.' },
@@ -13,5 +13,5 @@ const LINES = [
 ];
 
 export default function TheWoodsScene({ onDone }) {
-  return <SpokenStillScene background={BACKGROUND} lines={LINES} captionPosition="top-right" onDone={onDone} />;
+  return <SpokenVideoScene src={SRC} lines={LINES} captionPosition="top-right" onDone={onDone} />;
 }

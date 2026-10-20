@@ -40,5 +40,5 @@ function Art() {
 }
 
 export default function SunsetEndingScene({ onDone }) {
-  return <StoryScene Art={Art} audio={null} lines={LINES} onDone={onDone} nextLabel="Finish the story" />;
+  return <StoryScene Art={Art} lines={LINES} onDone={onDone} nextLabel="Finish the story" />;
 }

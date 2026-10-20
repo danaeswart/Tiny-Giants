@@ -1,5 +1,5 @@
 // SCENE 01 · GAME · Forest path (drag)
-// Cami asks for help getting through the woods, out loud. Once she's finished
+// Cami asks for help getting through the woods, out loud (the phone's voice). Once she's finished
 // speaking, the child drags her along the winding road. Very forgiving: the finger
 // only needs to be roughly near the road and moving forward, and she never slides
 // backwards. She turns to face the way she's heading.
@@ -8,9 +8,9 @@
 // to match the map drawing; the road follows the points in art/forestMapPath.js.
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import * as Speech from 'expo-speech';
 import { Image, StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import * as Speech from 'expo-speech';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -20,15 +20,13 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
-import { useSettings } from '../../../shared/hooks/useSettings.js';
-import Captions from '../../engine/Captions.jsx';
 import { useStage } from '../../engine/Stage.js';
 import { MAP_ASPECT, MAP_PATH } from '../art/forestMapPath.js';
 
 const AVATAR = require('../assets/images/avatar-top.png'); // top-down view, facing right
 
-const ASK = 'Can you help me through this path?';
-const ASK_SECONDS = 3; // how long the words show when nobody's reading them aloud
+const ASK = 'Can you help me through the forest?';
+const ASK_FALLBACK_SECONDS = 5; // if the phone's voice never reports back, let the child play anyway
 const WIN = 'We made it through the trees!';
 
 const FLOOR = '#34503c';
@@ -85,7 +83,6 @@ function makeTrees(width, height, mapH, path) {
 
 export default function ForestPathScene({ onDone }) {
   const { width, height } = useStage();
-  const { narration, captions } = useSettings();
   const { mapH, path } = useMemo(() => layoutMap(width, height), [width, height]);
   const trees = useMemo(() => makeTrees(width, height, mapH, path), [width, height, mapH, path]);
   const roadD = useMemo(() => {
@@ -105,23 +102,21 @@ export default function ForestPathScene({ onDone }) {
   const nudge = useSharedValue(0);
   const lastAngle = useRef(0);
 
-  // Cami asks for help out loud; the child can grab her once she's done.
+  // Cami asks for help out loud (the phone's voice); the child can grab her once she's done.
   useEffect(() => {
-    if (!narration) {
-      const t = setTimeout(() => setReady(true), ASK_SECONDS * 1000);
-      return () => clearTimeout(t);
-    }
-    Speech.speak(ASK, {
-      language: 'en',
-      rate: 0.9,
-      pitch: 1.1,
-      onDone: () => setReady(true),
-      onError: () => setReady(true),
-    });
+    const go = () => setReady(true);
+    const fallback = setTimeout(go, ASK_FALLBACK_SECONDS * 1000);
+    Speech.speak(ASK, { language: 'en', rate: 0.9, pitch: 1.1, onDone: go, onError: go, onStopped: () => {} });
     return () => {
+      clearTimeout(fallback);
       Speech.stop();
     };
-  }, [narration]);
+  }, []);
+
+  // ...and cheers when they get her through.
+  useEffect(() => {
+    if (finished) Speech.speak(WIN, { language: 'en', rate: 0.9, pitch: 1.1 });
+  }, [finished]);
 
   // Move her smoothly to her new spot on the road, turned the way she's heading.
   useEffect(() => {
@@ -160,10 +155,9 @@ export default function ForestPathScene({ onDone }) {
 
   useEffect(() => {
     if (!finished) return;
-    if (narration) Speech.speak(WIN, { language: 'en', rate: 0.9, pitch: 1.1 });
     const t = setTimeout(onDone, 2800);
     return () => clearTimeout(t);
-  }, [finished, narration, onDone]);
+  }, [finished, onDone]);
 
   // Find the point just ahead of her that's closest to the finger.
   const follow = (fx, fy) => {
@@ -201,9 +195,6 @@ export default function ForestPathScene({ onDone }) {
     };
   });
 
-  // The words show while Cami asks, then disappear so the child can just play.
-  const text = finished ? WIN : ready ? null : ASK;
-
   return (
     <GestureDetector gesture={pan}>
       <View style={[StyleSheet.absoluteFill, { backgroundColor: FLOOR }]}>
@@ -217,7 +208,6 @@ export default function ForestPathScene({ onDone }) {
         <Animated.View style={[styles.character, charStyle]}>
           <Image source={AVATAR} style={{ width: charSize, height: charSize }} />
         </Animated.View>
-        <Captions text={text} hidden={!captions} />
       </View>
     </GestureDetector>
   );

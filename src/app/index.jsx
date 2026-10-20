@@ -3,6 +3,7 @@ import { Redirect } from 'expo-router';
 import { getCurrentChildId, setCurrentChildId } from '../shared/hooks/useCurrentChildId.js';
 import { getProfiles } from '../shared/services/api.js';
 import { waitForDemo } from '../shared/services/demo.js';
+import { hasSkippedAddChild } from '../shared/services/onboarding.js';
 import { hasParentPin } from '../shared/services/pin.js';
 
 /**
@@ -18,9 +19,9 @@ export default function Index() {
       let next = '/adult';
       try {
         await waitForDemo();
-        const [pinned, profiles] = await Promise.all([hasParentPin(), getProfiles()]);
+        const [pinned, profiles, skipped] = await Promise.all([hasParentPin(), getProfiles(), hasSkippedAddChild()]);
         if (!pinned) next = '/create-pin';
-        else if (profiles.length === 0) next = '/add-child?onboarding=1';
+        else if (profiles.length === 0 && !skipped) next = '/add-child?onboarding=1';
         else if (!profiles.some((p) => p.id === getCurrentChildId())) setCurrentChildId(profiles[0].id);
       } catch {
         // Offline or a read problem: carry on to the parent dashboard rather than getting stuck here.

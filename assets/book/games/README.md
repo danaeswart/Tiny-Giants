@@ -16,7 +16,6 @@ same file names**. No code changes are needed; they are already registered in
 | `game1/`                | The Big Wave       | `big-wave-*` (own file names)      |
 | `game2-kind-detective/` | The Kind Detective | `kind-detective-*`                 |
 | `game3-memory-garden/`  | The Memory Garden  | `memory-garden-*`                  |
-| `game4-two-homes/`      | Two Homes          | `two-homes-*`                      |
 
 After replacing files, restart Metro with `npx expo start -c` so the new images are picked up.
 

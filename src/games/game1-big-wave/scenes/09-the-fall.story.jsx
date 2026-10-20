@@ -30,5 +30,5 @@ function Art() {
 }
 
 export default function TheFallScene({ onDone }) {
-  return <StoryScene Art={Art} audio={null} lines={LINES} onDone={onDone} />;
+  return <StoryScene Art={Art} lines={LINES} onDone={onDone} />;
 }

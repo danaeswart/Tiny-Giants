@@ -67,21 +67,4 @@ export const games = [
     parentNote:
       'A gentle story about missing someone. Your child tends a garden and finds that sad feelings and happy memories can sit side by side.',
   },
-  {
-    id: 'two-homes',
-    title: 'Two Homes',
-    category: 'Family Change',
-    comingSoon: true,
-    coverImage: 'two-homes-small-thumb',
-    image: 'two-homes-large-thumb',
-    pages: { left: 'two-homes-left', right: 'two-homes-right' },
-    blurb: 'A story about moving between two places that are both home.',
-    tools: ['Feeling words', 'Routine anchors', 'Asking for help'],
-    words: ['Storytelling', 'Home', 'Feelings', 'Routines'],
-    teaches: 'Coping with changes in the family',
-    coachNotes:
-      "Children like predictable routines, so make a small \"going between homes\" ritual: a favourite toy or blanket that travels with them, a goodbye phrase, and a picture of each home. Name feelings out loud (\"it can feel strange to switch homes\") and tell your child it is not their fault. Practise asking for what they need with short sentences (\"I miss my dinosaur\", \"can we call Dad?\"). Never ask a child to choose between parents. Keep talk about the other home positive or neutral.",
-    parentNote:
-      'Your child follows a character who spends time in two homes, and learns ways to feel settled and to ask for what they need.',
-  },
 ];

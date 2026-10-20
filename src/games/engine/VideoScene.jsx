@@ -18,7 +18,7 @@ import { estimatedEnd, lineAt, timeLines } from './timing.js';
  *                be played start to finish before every video exists.
  *   onDone       from ScenePlayer
  *
- * The video's own sound plays (narration can be mixed into the video file).
+ * The clip plays with its own sound.
  */
 export default function VideoScene({ src, lines = [], placeholder, onDone }) {
   return src ? (
@@ -30,7 +30,10 @@ export default function VideoScene({ src, lines = [], placeholder, onDone }) {
 
 function RealVideo({ src, lines, onDone }) {
   const timed = useMemo(() => timeLines(lines), [lines]);
-  const player = useVideoPlayer(src, (p) => p.play());
+  const player = useVideoPlayer(src, (p) => {
+    p.muted = false;
+    p.play();
+  });
   const [time, setTime] = useState(0);
 
   useEventListener(player, 'playToEnd', onDone);

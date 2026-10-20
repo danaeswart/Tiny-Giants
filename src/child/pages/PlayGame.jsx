@@ -39,6 +39,7 @@ export default function PlayGame() {
   }
 
   const backToBook = () => router.dismissTo(`/child/games/${game.id}`);
+  const toAllGames = () => router.dismissTo('/child/games');
   return (
     <>
       <ScenePlayer
@@ -56,12 +57,12 @@ export default function PlayGame() {
         audience="child"
         open={cheering}
         tone="success"
-        icon="sparkle"
+        badge={false}
         title="Story finished"
         message="Great job!"
         confirmLabel="Done"
         onConfirm={() => setCheering(false)}
-        onClosed={backToBook}
+        onClosed={toAllGames}
       />
     </>
   );

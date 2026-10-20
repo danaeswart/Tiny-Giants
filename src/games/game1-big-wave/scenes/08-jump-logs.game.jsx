@@ -33,7 +33,7 @@ export default function JumpLogsScene({ onDone }) {
   const [finished, setFinished] = useState(false);
   const busy = useRef(false); // mid-jump (or finished): ignore taps
 
-  const charH = height * 0.36;
+  const charH = height * 0.48;
   const charW = charH * CAMI_ASPECT;
   const charX = width * 0.2;
   const ground = height * 0.2; // her feet sit this far above the bottom
