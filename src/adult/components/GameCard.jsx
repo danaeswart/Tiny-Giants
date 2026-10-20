@@ -43,7 +43,7 @@ export default function GameCard({ game, active, onPress, onToggle }) {
 
       {onToggle && (
         <AdultButton
-          variant={active ? 'secondary' : 'primary'}
+          variant={active ? 'secondary' : 'positive'}
           onPress={onToggle}
           disabled={game.comingSoon && !active}
           accessibilityLabel={`${active ? 'Deactivate' : 'Activate'} ${game.title}`}

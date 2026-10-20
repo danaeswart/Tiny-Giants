@@ -7,6 +7,8 @@ const VARIANTS = {
   primary: { bg: '#d7f23a', fg: colors.ink, edge: '#9db815', border: 'transparent' },
   secondary: { bg: colors.white, fg: colors.ink, edge: 'rgba(36, 20, 71, 0.3)', border: 'transparent' },
   blue: { bg: adult.accent, fg: colors.white, edge: '#1a26b8', border: 'transparent' },
+  green: { bg: colors.forest, fg: colors.white, edge: '#168a56', border: 'transparent' },
+  berry: { bg: adult.berry, fg: colors.white, edge: '#9e1d48', border: 'transparent' },
 };
 
 // Every size is at least 56px tall — above the 44–48px platform minimums.

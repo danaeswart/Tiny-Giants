@@ -7,6 +7,8 @@
 export const AVATARS = [
   { id: 'avatar1', source: require('../../../assets/book/avatars/avatar1.png'), ratio: 559 / 1003 },
   { id: 'avatar2', source: require('../../../assets/book/avatars/avatar2.png'), ratio: 437 / 563 },
+  { id: 'avatar3', source: require('../../../assets/book/avatars/avatar3.png'), ratio: 1620 / 2160 },
+  { id: 'avatar4', source: require('../../../assets/book/avatars/avatar4.png'), ratio: 1620 / 2160 },
 ];
 
 /** The character for a stored id, or null (no choice yet, or an id this version doesn't know). */

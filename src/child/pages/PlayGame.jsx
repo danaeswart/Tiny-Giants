@@ -4,6 +4,7 @@ import ScenePlayer from '../../games/engine/ScenePlayer.jsx';
 import { getScenes } from '../../games/registry.js';
 import { useEnabledGame } from '../../shared/hooks/useChildGames.js';
 import { useCurrentChildId } from '../../shared/hooks/useCurrentChildId.js';
+import Popup from '../../shared/components/Popup.jsx';
 import { recordSession } from '../../shared/services/api.js';
 import ChildMessage from '../components/ChildMessage.jsx';
 import ChildScreen from '../components/ChildScreen.jsx';
@@ -19,6 +20,7 @@ export default function PlayGame() {
   const scenes = getScenes(gameId);
   const [startedAt] = useState(Date.now);
   const saved = useRef(false);
+  const [cheering, setCheering] = useState(false);
 
   if (!scenes) return <GamePlaceholder />;
   if (loading) return <ChildScreen />;
@@ -38,16 +40,29 @@ export default function PlayGame() {
 
   const backToBook = () => router.dismissTo(`/child/games/${game.id}`);
   return (
-    <ScenePlayer
-      scenes={scenes}
-      onExit={() => {
-        save(false);
-        backToBook();
-      }}
-      onFinish={() => {
-        save(true);
-        backToBook();
-      }}
-    />
+    <>
+      <ScenePlayer
+        scenes={scenes}
+        onExit={() => {
+          save(false);
+          backToBook();
+        }}
+        onFinish={() => {
+          save(true);
+          setCheering(true); // the book opens once the celebration has been closed
+        }}
+      />
+      <Popup
+        audience="child"
+        open={cheering}
+        tone="success"
+        icon="sparkle"
+        title="Story finished"
+        message="Great job!"
+        confirmLabel="Done"
+        onConfirm={() => setCheering(false)}
+        onClosed={backToBook}
+      />
+    </>
   );
 }

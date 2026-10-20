@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { router } from 'expo-router';
 import AppText from '../shared/components/AppText.jsx';
+import Popup from '../shared/components/Popup.jsx';
 import AdultButton from '../adult/components/AdultButton.jsx';
 import FormScreen from '../adult/components/FormScreen.jsx';
 import TextField from '../adult/components/TextField.jsx';
@@ -15,6 +16,8 @@ export default function CreatePin() {
   const [confirm, setConfirm] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [celebrating, setCelebrating] = useState(false);
+  const [hasChildren, setHasChildren] = useState(false);
 
   async function submit() {
     if (!isValidPin(pin)) return setError(`Your PIN must be exactly ${PIN_LENGTH} digits.`);
@@ -24,8 +27,8 @@ export default function CreatePin() {
     try {
       await setParentPin(pin);
       // New account: step 3 is adding a child. An older account that already has children is done.
-      if ((await getProfiles()).length > 0) router.dismissTo('/adult');
-      else router.replace('/add-child?onboarding=1');
+      setHasChildren((await getProfiles()).length > 0);
+      setCelebrating(true);
     } catch (e) {
       setError(e.message || 'Could not save your PIN. Check your connection and try again.');
       setBusy(false);
@@ -74,6 +77,16 @@ export default function CreatePin() {
       <AdultButton icon="back" onPress={() => signOut()} disabled={busy}>
         Back to sign in
       </AdultButton>
+      <Popup
+        open={celebrating}
+        tone="success"
+        icon="check"
+        title="PIN set"
+        message="Only you can open the grown-up area."
+        confirmLabel="Continue"
+        onConfirm={() => setCelebrating(false)}
+        onClosed={() => (hasChildren ? router.dismissTo('/adult') : router.replace('/add-child?onboarding=1'))}
+      />
     </FormScreen>
   );
 }

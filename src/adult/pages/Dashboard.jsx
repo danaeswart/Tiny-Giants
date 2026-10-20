@@ -3,7 +3,9 @@ import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeInUp, FadeOutUp } from 'react-native-reanimated';
 import AppText from '../../shared/components/AppText.jsx';
+import AvatarImage from '../../shared/components/AvatarImage.jsx';
 import Modal from '../../shared/components/Modal.jsx';
+import Popup from '../../shared/components/Popup.jsx';
 import { setCurrentChildId } from '../../shared/hooks/useCurrentChildId.js';
 import { useLoad } from '../../shared/hooks/useLoad.js';
 import { refreshProfiles, useProfiles } from '../../shared/hooks/useProfiles.js';
@@ -32,6 +34,7 @@ export default function Dashboard() {
   const selectedId = profiles.length === 1 ? profiles[0].id : pickedId;
   const [picking, setPicking] = useState(false);
   const [pickError, setPickError] = useState('');
+  const [picked, setPicked] = useState(false);
   const load = useCallback(
     async () => {
       const games = await getGames();
@@ -60,6 +63,8 @@ export default function Dashboard() {
       await setChildAvatar(focus.id, avatar);
       refreshProfiles();
       setPicking(false);
+      // Let the picker finish leaving first: two native modals can't swap places in one frame.
+      setTimeout(() => setPicked(true), 400);
     } catch {
       setPickError('Could not save the character. Check your connection and try again.');
     }
@@ -172,6 +177,15 @@ export default function Dashboard() {
           </AppText>
         ) : null}
       </Modal>
+      <Popup
+        open={picked}
+        tone="success"
+        art={focus?.avatar ? <AvatarImage avatar={focus.avatar} height={96} /> : undefined}
+        title="Character saved"
+        message={`${focus?.name ?? 'Your child'} has a new character.`}
+        confirmLabel="Done"
+        onConfirm={() => setPicked(false)}
+      />
     </AdultScreen>
   );
 }

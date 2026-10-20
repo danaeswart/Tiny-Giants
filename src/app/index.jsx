@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Redirect } from 'expo-router';
 import { getCurrentChildId, setCurrentChildId } from '../shared/hooks/useCurrentChildId.js';
 import { getProfiles } from '../shared/services/api.js';
+import { waitForDemo } from '../shared/services/demo.js';
 import { hasParentPin } from '../shared/services/pin.js';
 
 /**
@@ -16,6 +17,7 @@ export default function Index() {
     (async () => {
       let next = '/adult';
       try {
+        await waitForDemo();
         const [pinned, profiles] = await Promise.all([hasParentPin(), getProfiles()]);
         if (!pinned) next = '/create-pin';
         else if (profiles.length === 0) next = '/add-child?onboarding=1';

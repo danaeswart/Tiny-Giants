@@ -3,6 +3,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 import AppText from '../../shared/components/AppText.jsx';
 import CoverImage from '../../shared/components/CoverImage.jsx';
+import Popup from '../../shared/components/Popup.jsx';
 import Icon from '../../shared/components/Icon.jsx';
 import { useCurrentChildId } from '../../shared/hooks/useCurrentChildId.js';
 import { useLoad } from '../../shared/hooks/useLoad.js';
@@ -32,6 +33,7 @@ export default function GameDetail() {
   const { data, loading } = useLoad(load);
   const [override, setOverride] = useState(null);
   const [notice, setNotice] = useState('');
+  const [popup, setPopup] = useState(null); // 'activated' | 'deactivate' (asking first)
 
   if (loading) return <AdultScreen withNav={false} />;
   const [game, settings, insights, child, played] = data ?? [];
@@ -56,6 +58,7 @@ export default function GameDetail() {
     setNotice('');
     try {
       await toggleGameActive(childId, game.id);
+      if (next) setPopup('activated');
     } catch (error) {
       setOverride(!next);
       setNotice(error.message);
@@ -144,8 +147,8 @@ export default function GameDetail() {
       ) : (
         <View style={styles.actionRow}>
           <AdultButton
-            variant={active ? 'secondary' : 'primary'}
-            onPress={toggle}
+            variant={active ? 'secondary' : 'positive'}
+            onPress={active ? () => setPopup('deactivate') : toggle}
             disabled={game.comingSoon && !active}
             style={{ alignSelf: 'stretch' }}
           >
@@ -167,6 +170,30 @@ export default function GameDetail() {
           ))}
         </View>
       )}
+
+      <Popup
+        open={popup === 'activated'}
+        tone="success"
+        icon="book"
+        title="Game activated"
+        message={`${child?.name ?? 'Your child'} can play it now.`}
+        confirmLabel="Done"
+        onConfirm={() => setPopup(null)}
+      />
+      <Popup
+        open={popup === 'deactivate'}
+        tone="confirm"
+        icon="book"
+        title="Deactivate game?"
+        message={`${child?.name ?? 'Your child'} won’t see it until you turn it back on.`}
+        confirmLabel="Deactivate"
+        cancelLabel="Keep it"
+        onConfirm={() => {
+          setPopup(null);
+          toggle();
+        }}
+        onCancel={() => setPopup(null)}
+      />
     </AdultScreen>
   );
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import AppText from '../../shared/components/AppText.jsx';
+import Popup from '../../shared/components/Popup.jsx';
 import { deleteAccount, signOut } from '../../shared/services/auth.js';
 import { adult } from '../../shared/theme.js';
 import AdultButton from './AdultButton.jsx';
@@ -17,6 +18,8 @@ export default function DangerZone() {
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [signingOut, setSigningOut] = useState(false);
+  const [leaving, setLeaving] = useState(false);
 
   function cancel() {
     setConfirming(false);
@@ -40,7 +43,7 @@ export default function DangerZone() {
     <View style={styles.zone}>
       <Eyebrow color={adult.berry}>The no-no zone</Eyebrow>
 
-      <Pressable onPress={signOut} disabled={busy} accessibilityRole="button" style={styles.link}>
+      <Pressable onPress={() => setSigningOut(true)} disabled={busy} accessibilityRole="button" style={styles.link}>
         <AppText size={17} weight="bold">
           Sign out
         </AppText>
@@ -81,6 +84,23 @@ export default function DangerZone() {
           </AppText>
         </Pressable>
       )}
+
+      <Popup
+        open={signingOut}
+        tone="confirm"
+        icon="user"
+        title="Sign out?"
+        message="You’ll need your password to come back."
+        confirmLabel="Sign out"
+        cancelLabel="Stay"
+        onConfirm={() => {
+          setLeaving(true);
+          setSigningOut(false);
+        }}
+        onCancel={() => setSigningOut(false)}
+        // Signing out swaps the whole app to the login screen, so wait until the popup has gone.
+        onClosed={() => leaving && signOut()}
+      />
     </View>
   );
 }

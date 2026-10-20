@@ -2,6 +2,8 @@ import { useCallback, useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { View } from 'react-native';
 import AppText from '../../shared/components/AppText.jsx';
+import AvatarImage from '../../shared/components/AvatarImage.jsx';
+import Popup from '../../shared/components/Popup.jsx';
 import { useLoad } from '../../shared/hooks/useLoad.js';
 import { refreshProfiles } from '../../shared/hooks/useProfiles.js';
 import { getChild, updateChild } from '../../shared/services/api.js';
@@ -56,6 +58,7 @@ function EditForm({ child }) {
   const [avatar, setAvatar] = useState(child.avatar);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [saved, setSaved] = useState(false);
 
   // A complete, valid birthday works out the age for you (you can still change it).
   function changeBirthday(text) {
@@ -77,7 +80,7 @@ function EditForm({ child }) {
     try {
       await updateChild(child.id, { name, age: years, birthday: day || null, avatar });
       refreshProfiles();
-      router.back();
+      setSaved(true);
     } catch {
       setError('Could not save. Check your connection and try again.');
       setBusy(false);
@@ -117,6 +120,17 @@ function EditForm({ child }) {
       <AdultButton block variant="primary" onPress={save} disabled={busy}>
         {busy ? 'Saving…' : 'Save changes'}
       </AdultButton>
+
+      <Popup
+        open={saved}
+        tone="success"
+        art={avatar ? <AvatarImage avatar={avatar} height={96} /> : undefined}
+        title="Changes saved"
+        message={`${name.trim() || child.name}’s profile is updated.`}
+        confirmLabel="Done"
+        onConfirm={() => setSaved(false)}
+        onClosed={() => router.back()}
+      />
     </AdultScreen>
   );
 }

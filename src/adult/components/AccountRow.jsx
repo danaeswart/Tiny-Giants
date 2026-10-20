@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import AppText from '../../shared/components/AppText.jsx';
+import Popup from '../../shared/components/Popup.jsx';
 import { adult, colors, fonts, radius } from '../../shared/theme.js';
 import AdultButton from './AdultButton.jsx';
 import Eyebrow from './Eyebrow.jsx';
@@ -19,6 +20,7 @@ export default function AccountRow({ label, value, fields, submitLabel, validate
   const [values, setValues] = useState({});
   const [error, setError] = useState('');
   const [done, setDone] = useState('');
+  const [celebrating, setCelebrating] = useState(false);
 
   function open() {
     setValues({});
@@ -44,6 +46,7 @@ export default function AccountRow({ label, value, fields, submitLabel, validate
       await onSubmit(values);
       setEditing(false);
       setDone(successMessage);
+      setCelebrating(true);
     } catch (e) {
       setError(e.message);
     } finally {
@@ -121,6 +124,16 @@ export default function AccountRow({ label, value, fields, submitLabel, validate
           </View>
         </View>
       )}
+
+      <Popup
+        open={celebrating}
+        tone="success"
+        icon="check"
+        title="Saved"
+        message={done}
+        confirmLabel="Done"
+        onConfirm={() => setCelebrating(false)}
+      />
     </View>
   );
 }

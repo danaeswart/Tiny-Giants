@@ -5,6 +5,7 @@ import * as Speech from 'expo-speech';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import IconButton from '../../shared/components/IconButton.jsx';
+import Popup from '../../shared/components/Popup.jsx';
 import { useSettings } from '../../shared/hooks/useSettings.js';
 import { colors } from '../../shared/theme.js';
 import { StageContext } from './Stage.js';
@@ -24,6 +25,8 @@ export default function ScenePlayer({ scenes, onExit, onFinish }) {
   const insets = useSafeAreaInsets();
   const [index, setIndex] = useState(0);
   const [stage, setStage] = useState(null);
+  const [asking, setAsking] = useState(false);
+  const leaving = useRef(false);
   const { skip } = useSettings();
 
   // Narration should play even when the phone's silent switch is on.
@@ -81,11 +84,31 @@ export default function ScenePlayer({ scenes, onExit, onFinish }) {
         label="Leave the story"
         size="md"
         variant="blue"
-        onPress={() => {
+        onPress={() => setAsking(true)}
+        style={{ position: 'absolute', bottom: Math.max(insets.bottom, 16), left: Math.max(insets.left, 16) }}
+      />
+
+      {/* A little ask first, so a stray tap doesn't end the story. */}
+      <Popup
+        audience="child"
+        open={asking}
+        tone="confirm"
+        icon="back"
+        title="Leave?"
+        choice
+        confirmLabel="Yes, leave the story"
+        cancelLabel="No, keep playing"
+        onConfirm={() => {
+          leaving.current = true;
+          setAsking(false);
+        }}
+        onCancel={() => setAsking(false)}
+        onDismiss={() => setAsking(false)}
+        onClosed={() => {
+          if (!leaving.current) return;
           Speech.stop();
           onExit();
         }}
-        style={{ position: 'absolute', bottom: Math.max(insets.bottom, 16), left: Math.max(insets.left, 16) }}
       />
 
       {/* Skip buttons only show when a grown-up turns them on (profile menu). Back only after the first scene. */}

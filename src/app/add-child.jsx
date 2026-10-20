@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import AppText from '../shared/components/AppText.jsx';
+import AvatarImage from '../shared/components/AvatarImage.jsx';
+import Popup from '../shared/components/Popup.jsx';
 import AdultButton from '../adult/components/AdultButton.jsx';
 import FormScreen from '../adult/components/FormScreen.jsx';
 import AvatarPicker from '../adult/components/AvatarPicker.jsx';
@@ -17,6 +19,8 @@ export default function AddChild() {
   const [avatar, setAvatar] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [added, setAdded] = useState(null); // the child just saved, for the welcome popup
+  const [welcoming, setWelcoming] = useState(false);
 
   const { onboarding } = useLocalSearchParams();
 
@@ -30,7 +34,8 @@ export default function AddChild() {
       const child = await addChild({ name, age: years, avatar });
       setCurrentChildId(child.id);
       refreshProfiles();
-      router.dismissTo('/adult'); // the parent dashboard, not the child's home
+      setAdded(child);
+      setWelcoming(true);
     } catch {
       setError('Could not save. Check your connection and try again.');
       setBusy(false);
@@ -75,6 +80,16 @@ export default function AddChild() {
           </AdultButton>
         )
       )}
+      <Popup
+        open={welcoming}
+        tone="success"
+        art={added?.avatar ? <AvatarImage avatar={added.avatar} height={96} /> : undefined}
+        title="Child added"
+        message={`${added?.name ?? 'Their'} profile is ready.`}
+        confirmLabel="Continue"
+        onConfirm={() => setWelcoming(false)}
+        onClosed={() => router.dismissTo('/adult')} // the parent dashboard, not the child's home
+      />
     </FormScreen>
   );
 }

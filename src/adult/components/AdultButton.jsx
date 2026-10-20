@@ -19,6 +19,7 @@ export default function AdultButton({
   style,
 }) {
   const primary = variant === 'primary';
+  const positive = variant === 'positive'; // the kids' neon green, for "Activate"
   const fg = primary ? colors.white : colors.ink;
   return (
     <Pressable
@@ -29,7 +30,7 @@ export default function AdultButton({
       accessibilityState={{ disabled }}
       style={({ pressed }) => [
         styles.base,
-        primary ? styles.primary : styles.secondary,
+        primary ? styles.primary : positive ? styles.positive : styles.secondary,
         block && styles.block,
         pressed && { opacity: 0.75 },
         disabled && { opacity: 0.5 },
@@ -61,5 +62,7 @@ const styles = StyleSheet.create({
   // Full-width bar: icon and label centred together.
   block: { alignSelf: 'stretch', minHeight: 56, paddingHorizontal: 20 },
   primary: { backgroundColor: adult.accent, borderColor: adult.accent },
+  // Same neon green as the child side's "All games" button (shared/components/Button.jsx).
+  positive: { backgroundColor: adult.lime, borderColor: '#9db815' },
   secondary: { borderColor: 'rgba(36, 20, 71, 0.3)' },
 });
