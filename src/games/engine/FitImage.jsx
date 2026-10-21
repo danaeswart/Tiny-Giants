@@ -1,5 +1,6 @@
 import { Image, StyleSheet, View } from 'react-native';
 import { colors } from '../../shared/theme.js';
+import { imageSize } from '../../shared/utils/imageSize.js';
 import { useStage } from './Stage.js';
 
 /**
@@ -12,7 +13,7 @@ import { useStage } from './Stage.js';
  */
 export default function FitImage({ source }) {
   const { width, height } = useStage();
-  const { width: imgW, height: imgH } = Image.resolveAssetSource(source);
+  const { width: imgW, height: imgH } = imageSize(source) ?? { width: 4, height: 3 };
   const fit = Math.min(width / imgW, height / imgH); // whole picture always visible
 
   return (

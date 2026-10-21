@@ -28,24 +28,25 @@
 ---
 
 <details>
-<summary><strong>📑 Table of contents</strong></summary>
+<summary><strong>Table of contents</strong></summary>
 
-1. [About the project](#-about-the-project)
-2. [Built with](#-built-with)
-3. [Getting started](#-getting-started)
-4. [Features](#-features)
-5. [Development process](#-development-process)
-6. [Final outcome](#-final-outcome)
-7. [Conclusion](#-conclusion)
-8. [License](#-license)
-9. [Author](#-author)
-10. [Acknowledgements](#-acknowledgements)
+1. [About the project](#about-the-project)
+2. [Built with](#built-with)
+3. [Getting started](#getting-started)
+4. [Features](#features)
+5. [Development process](#development-process)
+   - [Research and design reasoning](#research-and-design-reasoning)
+6. [Final outcome](#final-outcome)
+7. [Conclusion](#conclusion)
+8. [License](#license)
+9. [Author](#author)
+10. [Acknowledgements](#acknowledgements)
 
 </details>
 
 ---
 
-## 🌱 About the project
+## About the project
 
 **Tiny Giants** is a children's emotional-learning app. Each game is a short, narrated
 storybook adventure that teaches one coping skill, such as paced breathing, small-steps
@@ -62,7 +63,7 @@ inside her all along.
 
 <img src="docs/readme-images/feature-storybook.png" alt="The storybook shelf" width="100%" />
 
-## 🧰 Built with
+## Built with
 
 <p>
   <img src="https://skillicons.dev/icons?i=react,js,firebase,nodejs,cloudflare,jest,eslint,figma,git,github,vscode" alt="Tech stack icons" />
@@ -81,7 +82,7 @@ inside her all along.
 | Testing and linting | Jest (`jest-expo`), ESLint (`eslint-config-expo`) |
 | Design | Figma, custom style guide in `docs/style-guide/` |
 
-## 🚀 Getting started
+## Getting started
 
 This repository contains both the **app (front end)** and the **coach Worker (back end)**
 in the `worker/` folder.
@@ -141,39 +142,39 @@ in the `worker/` folder.
 
 > Other useful commands: `npm run lint` · `npm test`
 
-## ✨ Features
+## Features
 
-### 📖 Storybook shelf (child)
+### Storybook shelf (child)
 An open book where each game is one two-page spread, with a large **Play** button on the
 right page. Swipe or tap to turn pages. Only the games a parent has enabled appear.
 
 <img src="docs/readme-images/feature-storybook.png" alt="Storybook shelf" width="100%" />
 
-### 🕯️ Interactive story games
+### Interactive story games
 Narrated scenes with captions, video, drag-and-drop and tap interactions. The child blows
 into the microphone to put out the candle, clears logs from the path, jumps obstacles,
 builds a sandcastle and finally breathes together with the waves.
 
 <img src="docs/readme-images/feature-game.gif" alt="Gameplay" width="100%" />
 
-### 👨‍👩‍👧 Parent dashboard
+### Parent dashboard
 Switch games on and off per child, see recent play history and quick stats.
 
 <img src="docs/readme-images/feature-parent-dashboard.png" alt="Parent dashboard" width="300" />
 
-### 📊 Insights
+### Insights
 Plain-language summaries of the skills a child has been practising.
 
 <img src="docs/readme-images/feature-insights.png" alt="Insights" width="300" />
 
-### 🤖 AI parent coach
+### AI parent coach
 Chat with a coach that suggests how to play a game together and talk about it afterwards.
 The API key never touches the app: requests go through a Cloudflare Worker that checks the
 parent's Firebase sign-in token.
 
 <img src="docs/readme-images/feature-coach.png" alt="AI coach" width="300" />
 
-### 👧 Child profiles and safe access
+### Child profiles and safe access
 Multiple child profiles with avatars, plus a **parent PIN gate** so children stay on the
 child side of the app.
 
@@ -186,17 +187,24 @@ child side of the app.
 
 | Game | Theme | Status |
 |------|-------|--------|
-| The Big Wave | Stress and big feelings | ✅ Playable |
-| Kind Detective | Kindness | 🚧 Coming soon |
-| Memory Garden | Remembering and loss | 🚧 Coming soon |
+| The Big Wave | Stress and big feelings | Playable |
+| Kind Detective | Kindness | Coming soon |
+| Memory Garden | Remembering and loss | Coming soon |
 
-### ♿ Built for children
+### Built for children
 - No text smaller than **16px** anywhere
 - Responsive from the start (child routes landscape-first, parent routes portrait)
 - Very large touch targets
 - Few choices on screen at a time
 
-## 🛠️ Development process
+## Development process
+
+### Research and design reasoning
+
+The research behind this project, including the reasoning for the design of each game and the
+studies that led to these decisions, is collected in a shared Google Drive folder:
+
+> **Research documents:** [Open the Google Drive folder](ADD-GOOGLE-DRIVE-LINK-HERE)
 
 ### Design summary
 
@@ -273,7 +281,7 @@ export function getScenes(gameId) {
 Unit tests cover input validation and the persisted store (`src/__tests__/`). The UI was
 reviewed with a UX lecturer and the feedback was applied.
 
-## 🏁 Final outcome
+## Final outcome
 
 ### Test coverage results
 
@@ -285,15 +293,15 @@ npm test
 
 ### Demonstration video
 
-> 📺 **Add your link here:** `[Watch the demo](https://...)` (aim for 5–8 minutes)
+> **Add your link here:** `[Watch the demo](https://...)` (aim for 5–8 minutes)
 
 ### Promotional video / deployed link *(optional)*
 
-> 🌐 **Add your link here**
+> **Add your link here**
 
 <img src="docs/readme-images/outro.png" alt="Tiny Giants" width="100%" />
 
-## 💭 Conclusion
+## Conclusion
 
 **Highlights.** A complete, narrated first game with real interaction (microphone, drag,
 tap), a parent side with an AI coach, and a reusable engine that makes the next games
@@ -310,25 +318,27 @@ controls.
 - More languages and voice options
 - Offline play and a store release
 
-## 📄 License
+## License
 
-Copyright © 2026 Danae Swart. **All rights reserved.** This code is shared for assessment
+Copyright  2026 Danae Swart. **All rights reserved.** This code is shared for assessment
 and portfolio purposes only; it may not be copied, distributed or used to create
 derivative works without written permission.
 
-## 👩‍💻 Author
+## Author
 
 **Danae Swart**
 - GitHub: [@danaeswart](https://github.com/danaeswart)
 - Email: 241022@virtualwindow.co.za
 - LinkedIn: *add your link*
 
-## 🙏 Acknowledgements
+## Acknowledgements
 
 - [Expo documentation](https://docs.expo.dev) and [Expo Router](https://docs.expo.dev/router/introduction/)
 - [React Native](https://reactnative.dev), [Firebase](https://firebase.google.com/docs), [Cloudflare Workers](https://developers.cloudflare.com/workers/)
 - [Google Gemini](https://ai.google.dev) for the coach
 - [Google Fonts](https://fonts.google.com): Poppins and DM Mono
 - [skillicons.dev](https://skillicons.dev) and [shields.io](https://shields.io) for badges
+- **Open Window**, for the education, facilities and the opportunity to develop this project
+- **ADD LECTURER NAME**, my lecturer, for guidance, critique and feedback throughout the project, including the UX feedback that shaped the final interface
 - Claude (Anthropic) as an AI coding assistant
-- Feedback from my UX lecturer and classmates
+- Feedback from my classmates

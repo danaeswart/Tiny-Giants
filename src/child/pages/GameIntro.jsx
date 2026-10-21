@@ -1,7 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useState } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import AppText from '../../shared/components/AppText.jsx';
 import Button from '../../shared/components/Button.jsx';
 import CoverImage from '../../shared/components/CoverImage.jsx';
@@ -10,6 +10,7 @@ import { resolveImage } from '../../shared/data/images.js';
 import { useEnabledGame } from '../../shared/hooks/useChildGames.js';
 import { useCurrentChildId } from '../../shared/hooks/useCurrentChildId.js';
 import { adult, colors, radius } from '../../shared/theme.js';
+import { imageSize } from '../../shared/utils/imageSize.js';
 import ChildMessage from '../components/ChildMessage.jsx';
 import ChildScreen from '../components/ChildScreen.jsx';
 
@@ -30,7 +31,7 @@ function IntroVideo({ source }) {
 function FullCover({ game }) {
   const [box, setBox] = useState({ width: 0, height: 0 });
   const source = resolveImage(game.image) ?? resolveImage(game.coverImage) ?? resolveImage(game.pages?.left);
-  const real = source ? Image.resolveAssetSource(source) : null;
+  const real = imageSize(source);
   const ratio = real?.width && real?.height ? real.width / real.height : 4 / 3;
   const width = Math.min(box.width, box.height * ratio);
   const height = width / ratio;

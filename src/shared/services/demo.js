@@ -55,6 +55,7 @@ async function fill() {
       for (const { id, ...child } of DEMO_CHILDREN) await setDoc(doc(parent, 'children', id), child);
     }
   } catch (e) {
+    console.error('Demo sign-in failed:', e?.code, e?.message);
     const offline = e?.code === 'auth/network-request-failed';
     throw new Error(offline ? 'No connection. Check your internet and try again.' : 'Could not open the demo. Please try again.');
   }

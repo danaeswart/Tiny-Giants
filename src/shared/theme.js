@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 // Design tokens shared by child/ and adult/ screens.
 
 // Palette drawn from Cami's world: the candle flame, the big wave, the forest and castle.
@@ -36,13 +38,18 @@ export const colors = {
 // Talina is the display face for headings and big labels. The demo cut only has letters
 // (no digits or punctuation), so AppText falls back to Poppins for those characters.
 // Poppins is the body face.
+// On the web a bare font name falls back to the browser's default serif (Times) while the font is
+// still loading or if it lacks a glyph, so web gets an explicit sans-serif stack after each face.
+const SANS = 'Helvetica Neue, Helvetica, Arial, sans-serif';
+const stack = (name) => Platform.select({ web: `${name}, Poppins_600SemiBold, ${SANS}`, default: name });
+
 export const fonts = {
-  regular: 'Poppins_400Regular',
-  semibold: 'Poppins_500Medium',
-  bold: 'Poppins_600SemiBold',
-  extrabold: 'Talina',
-  fallback: 'Poppins_600SemiBold',
-  mono: 'DMMono_400Regular',
+  regular: stack('Poppins_400Regular'),
+  semibold: stack('Poppins_500Medium'),
+  bold: stack('Poppins_600SemiBold'),
+  extrabold: stack('Talina'),
+  fallback: stack('Poppins_600SemiBold'),
+  mono: Platform.select({ web: 'DMMono_400Regular, Menlo, Consolas, monospace', default: 'DMMono_400Regular' }),
 };
 
 // Accessibility floors. AppText never renders below MIN_FONT_SIZE, and no
