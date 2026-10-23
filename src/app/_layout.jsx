@@ -37,7 +37,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.cream }}>
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.cream } }}>
         {/* Signed in: the app. Signed out: only the login screens. Expo Router redirects when this flips. */}
-        <Stack.Protected guard={!!user}>
+        <Stack.Protected guard={!!user} redirectTo="/welcome">
           <Stack.Screen name="index" />
           <Stack.Screen name="child" />
           <Stack.Screen name="adult" />

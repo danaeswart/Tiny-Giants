@@ -49,7 +49,7 @@ function wavePath(phase, amp) {
  * springs across to the new link while its ripples swell and flow, then flattens back to a straight line.
  * Plugged into the router with <Tabs tabBar={...}>.
  */
-export default function BottomNav({ state, navigation }) {
+export default function BottomNav({ state, emitter, navigateToTab }) {
   const insets = useSafeAreaInsets();
   const [width, setWidth] = useState(0);
   const itemW = (width - BAR_PAD_X * 2) / TABS.length;
@@ -75,8 +75,8 @@ export default function BottomNav({ state, navigation }) {
         const focused = i === state.index;
 
         function onPress() {
-          const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
-          if (!focused && !event.defaultPrevented) navigation.navigate(route.name);
+          const event = emitter.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
+          if (!focused && !event.defaultPrevented) navigateToTab(route.key);
         }
 
         return (
