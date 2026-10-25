@@ -1,10 +1,8 @@
 <div align="center">
 
-<img src="docs/readme-images/banner.png" alt="Tiny Giants banner" width="100%" />
+<img src="docs/readme-images/mockup-01-collage.png" alt="Tiny Giants: Small kids. Giant courage." width="100%" />
 
 <br/>
-
-<img src="docs/readme-images/logo.png" alt="Tiny Giants logo" width="140" />
 
 # Tiny Giants
 
@@ -23,7 +21,7 @@
 
 </div>
 
-<img src="docs/readme-images/mockup-hero.png" alt="Tiny Giants app mockup" width="100%" />
+<img src="docs/readme-images/mockup-02-brand.png" alt="The Big Wave game page, app icon and tagline" width="100%" />
 
 ---
 
@@ -61,7 +59,7 @@ stress management: a little hero walks through the woods to the beach and learns
 blowing out her candle into the microphone and breathing with the waves, that the calm was
 inside her all along.
 
-<img src="docs/readme-images/feature-storybook.png" alt="The storybook shelf" width="100%" />
+<img src="docs/readme-images/mockup-03-library.png" alt="A parent choosing games in the child library" width="100%" />
 
 ## Built with
 
@@ -143,6 +141,8 @@ in the `worker/` folder.
 > Other useful commands: `npm run lint` · `npm test`
 
 ## Features
+
+<img src="docs/readme-images/mockup-04-screens.png" alt="Screens from across the app" width="100%" />
 
 ### Storybook shelf (child)
 An open book where each game is one two-page spread, with a large **Play** button on the

@@ -1,9 +1,12 @@
+import { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 import { useIsPortrait } from '../../shared/hooks/useLandscapeLock.js';
 import { adult, colors } from '../../shared/theme.js';
 import RotatePrompt from './RotatePrompt.jsx';
+
+const ROTATE_PROMPT_MS = 4000; // how long the "turn your phone" screen stays before the child view opens
 
 /**
  * Navigator for every /child route. The landscape lock itself is applied in the
@@ -13,11 +16,22 @@ import RotatePrompt from './RotatePrompt.jsx';
  */
 export default function ChildLayout() {
   const { isPortrait, showRotatePrompt } = useIsPortrait();
+  const [promptDone, setPromptDone] = useState(false);
+
+  // The prompt is a nudge, not a gate: after a few seconds the child view opens even if the
+  // phone hasn't been turned yet.
+  useEffect(() => {
+    if (!showRotatePrompt || promptDone) return;
+    const t = setTimeout(() => setPromptDone(true), ROTATE_PROMPT_MS);
+    return () => clearTimeout(t);
+  }, [showRotatePrompt, promptDone]);
+
+  const holdForRotate = isPortrait && !promptDone;
 
   return (
     <View style={{ flex: 1, backgroundColor: adult.hero }}>
       <StatusBar hidden />
-      <View style={{ flex: 1, display: isPortrait ? 'none' : 'flex' }}>
+      <View style={{ flex: 1, display: holdForRotate ? 'none' : 'flex' }}>
         <Stack
           screenOptions={{
             headerShown: false,
@@ -26,7 +40,7 @@ export default function ChildLayout() {
           }}
         />
       </View>
-      {showRotatePrompt && <RotatePrompt />}
+      {showRotatePrompt && !promptDone && <RotatePrompt />}
     </View>
   );
 }
