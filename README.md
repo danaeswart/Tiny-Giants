@@ -6,16 +6,18 @@
 
 # Tiny Giants
 
-### An interactive storybook mobile app that helps children understand big feelings
+### An interactive storybook app that helps young children understand and manage big feelings
 
-**Type of solution:** Mobile app (iOS · Android · Web) built with Expo / React Native
+**Type of solution:** Cross-platform mobile app (iOS, Android and Web) with a serverless AI back end
 **By:** Danae Swart
 
 <br/>
 
-![Expo](https://img.shields.io/badge/Expo-57-000020?logo=expo&logoColor=white)
-![React Native](https://img.shields.io/badge/React_Native-0.86-61DAFB?logo=react&logoColor=black)
+![Expo](https://img.shields.io/badge/Expo-58-000020?logo=expo&logoColor=white)
+![React Native](https://img.shields.io/badge/React_Native-0.88-61DAFB?logo=react&logoColor=black)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
 ![Firebase](https://img.shields.io/badge/Firebase-Auth_%26_Firestore-FFCA28?logo=firebase&logoColor=black)
+![Cloudflare](https://img.shields.io/badge/Cloudflare-Workers-F38020?logo=cloudflare&logoColor=white)
 ![Gemini](https://img.shields.io/badge/AI-Gemini_coach-8E75B2?logo=googlegemini&logoColor=white)
 ![Jest](https://img.shields.io/badge/Tested_with-Jest-C21325?logo=jest&logoColor=white)
 
@@ -29,16 +31,30 @@
 <summary><strong>Table of contents</strong></summary>
 
 1. [About the project](#about-the-project)
-2. [Built with](#built-with)
-3. [Getting started](#getting-started)
+2. [The problem and the solution](#the-problem-and-the-solution)
+3. [Who it is for (users and personas)](#who-it-is-for)
 4. [Features](#features)
-5. [Development process](#development-process)
-   - [Research and design reasoning](#research-and-design-reasoning)
-6. [Final outcome](#final-outcome)
-7. [Conclusion](#conclusion)
-8. [License](#license)
-9. [Author](#author)
-10. [Acknowledgements](#acknowledgements)
+5. [Built with](#built-with)
+6. [System architecture](#system-architecture)
+7. [Project structure](#project-structure)
+8. [How the components interact](#how-the-components-interact)
+9. [Navigation and routing](#navigation-and-routing)
+10. [The game engine](#the-game-engine)
+11. [The Big Wave: scene by scene](#the-big-wave-scene-by-scene)
+12. [Data model (ER diagram)](#data-model)
+13. [Security and privacy](#security-and-privacy)
+14. [The AI parent coach](#the-ai-parent-coach)
+15. [Design system](#design-system)
+16. [Use cases](#use-cases)
+17. [Key code snippets](#key-code-snippets)
+18. [Challenges and how they were solved](#challenges-and-how-they-were-solved)
+19. [Testing and quality](#testing-and-quality)
+20. [Getting started](#getting-started)
+21. [Deployment](#deployment)
+22. [Diagram library](#diagram-library)
+23. [Presentation guide (15 minutes)](#presentation-guide)
+24. [Conclusion and future work](#conclusion-and-future-work)
+25. [License, author and acknowledgements](#license)
 
 </details>
 
@@ -48,18 +64,92 @@
 
 **Tiny Giants** is a children's emotional-learning app. Each game is a short, narrated
 storybook adventure that teaches one coping skill, such as paced breathing, small-steps
-thinking or noticing kind actions. Children play in landscape on an open-book shelf with
-one game per page, so they are never overwhelmed with choices. A separate, PIN-protected
-parent side lets grown-ups choose which games are switched on, see what their child has
-played, read insights, and chat with an AI coach for ideas on how to play together.
+thinking or noticing kind actions. The tagline is **"Small kids. Giant courage."**
 
-It was built because young children often cannot name big feelings, and parents need
-simple, low-pressure tools to talk about them. The first game, **The Big Wave**, teaches
-stress management: a little hero walks through the woods to the beach and learns, by
-blowing out her candle into the microphone and breathing with the waves, that the calm was
-inside her all along.
+The app has two sides that share one account:
+
+| Side | Who uses it | Orientation | What it does |
+|------|-------------|-------------|--------------|
+| **Child side** | The child (aged 4 to 5) | Landscape | An open-book shelf, one game per spread, large Play button, then the story game itself |
+| **Parent side** | The grown-up | Portrait | Dashboard, choose which games are on for each child, play history, insights, AI coach, account settings |
+
+A **4 digit parent PIN** separates the two sides, so a child cannot wander into settings.
+
+The first game, **The Big Wave**, teaches stress management. A little hero called Cami
+walks through the woods to the beach. Along the way the child blows out a candle into the
+microphone, clears logs from the path, jumps obstacles, builds a sandcastle and finally
+breathes together with the waves. The lesson lands at the end: the calm was inside Cami
+all along, the candle was only a reminder.
 
 <img src="docs/readme-images/mockup-03-library.png" alt="A parent choosing games in the child library" width="100%" />
+
+## The problem and the solution
+
+**The problem**
+- Young children often cannot name big feelings, so stress shows up as tantrums, shutdowns or tears.
+- Parents want simple, low-pressure tools to talk about feelings, but most apps are built for entertainment, not for emotional learning.
+- Screen time for small children needs to be calm, short and safe, with a parent in control.
+
+**The solution**
+- Short narrated storybook games that each teach one skill through play, not through lectures.
+- A child-safe interface: large touch targets, no small text, very few choices at once.
+- A parent side that gives control (which games, which child), visibility (what was played, insights) and support (an AI coach that suggests how to play together and what to say afterwards).
+
+**Design principles**
+
+1. One skill per game, taught by doing it (breathe, blow, take small steps).
+2. The parent is always in control, the child is never overwhelmed.
+3. Nothing the child says is recorded. The microphone is only used to read loudness.
+4. Secrets stay on the server. Data access is locked down by rules, not by hope.
+
+## Who it is for
+
+| Persona | Needs | How Tiny Giants helps |
+|---------|-------|-----------------------|
+| **The child** (4 to 5) | Calm, playful, one thing at a time, can not read well yet | Narrated stories, captions, big buttons, tactile interactions (blow, drag, tap) |
+| **The parent or carer** | Safe screen time, a way to talk about feelings, to see what happened | PIN gate, per child game switches, history, insights, AI coach |
+| **The educator or therapist** (secondary) | Evidence-informed tools to reinforce coping skills | Each game lists the skills it practises and how it can be reinforced offline |
+
+## Features
+
+<img src="docs/readme-images/mockup-04-screens.png" alt="Screens from across the app" width="100%" />
+
+### Child side
+
+| Feature | Description |
+|---------|-------------|
+| **Storybook shelf** | An open book where each game is one two-page spread with a large Play button. Swipe or tap to turn pages. Only games the parent has enabled appear. |
+| **All games view and search** | A grid of the child's enabled games with a title search limited to enabled games. |
+| **Game intro** | A short "words" screen (for example Storytelling, Ocean, Adventure, Breathing) before the story starts. |
+| **Interactive story games** | Narrated scenes with timed captions, video and stills, plus five interactive moments: blow, drag, tap, jump and breathe. |
+| **Microphone blow detection** | The child blows on the phone to put out Cami's candle. Only loudness is read, never stored. If the mic is refused, the candle blows out by itself. |
+| **Celebration popup** | A cheering popup at the end of the story before the book reopens. |
+| **Rotate prompt** | Gently asks the child to turn the device to landscape. |
+
+### Parent side
+
+| Feature | Description |
+|---------|-------------|
+| **Sign up, log in, demo account** | Email and password via Firebase Auth, with validation and friendly error messages. A shared demo account opens ready to explore. |
+| **Onboarding** | New parents create a PIN, then add a first child (or skip and add later). |
+| **Parent PIN gate** | Four digits stored as a salted SHA-256 hash. Five wrong tries locks the gate for 30 seconds. |
+| **Dashboard** | Child title dropdown, stat bars, time this week ring, recent plays. |
+| **Games library** | Search, category filter pills, game detail page with skills, a parent note, and an on/off switch per child. |
+| **Play history** | Every time a child plays, finished or left early, a session is saved. Grouped by game with plays, completions and total time. |
+| **Insights** | Plain language summaries of skills being practised, with an activity suggestion and a clear "not a clinical assessment" disclaimer. |
+| **AI coach** | Chat with a Gemini powered coach about how to play a game together, grounded in the game's design notes. |
+| **Child and account management** | Add or edit children (name, age, birthday, character), change name, email or password, delete the account and all data. |
+| **Device settings** | A skip-forward and back switch for demos and testing, remembered between launches. |
+
+### Games catalogue
+
+| Game | Theme | Skills practised | Status |
+|------|-------|------------------|--------|
+| **The Big Wave** | Stress and big feelings | Paced breathing, small-steps thinking, calming candle | Playable |
+| **The Kind Detective** | Social awareness and kindness | Reading body language, naming feelings, kind responses | Coming soon |
+| **Memory Garden** | Remembering and loss | To be defined | Coming soon |
+
+<img src="docs/readme-images/feature-game.gif" alt="Gameplay" width="100%" />
 
 ## Built with
 
@@ -67,23 +157,880 @@ inside her all along.
   <img src="https://skillicons.dev/icons?i=react,js,firebase,nodejs,cloudflare,jest,eslint,figma,git,github,vscode" alt="Tech stack icons" />
 </p>
 
-| Area | Technology |
-|------|------------|
-| App framework | [Expo](https://expo.dev) SDK 57, [React Native](https://reactnative.dev) 0.86, React 19 |
-| Navigation | [Expo Router](https://docs.expo.dev/router/introduction/) (file-based routes in `src/app/`) |
-| Language | Plain JavaScript (JSX) |
-| Media | `expo-video`, `expo-audio` (narration and microphone blow detection), `expo-speech` |
-| Animation / graphics | Reanimated 4, Gesture Handler, `react-native-svg` |
-| Auth and data | Firebase Authentication, Cloud Firestore, AsyncStorage |
-| AI coach | Google Gemini behind a Cloudflare Worker (`worker/`) |
-| Type | Poppins and DM Mono (Google Fonts) |
-| Testing and linting | Jest (`jest-expo`), ESLint (`eslint-config-expo`) |
-| Design | Figma, custom style guide in `docs/style-guide/` |
+| Layer | Technology | Why it was chosen |
+|-------|------------|-------------------|
+| App framework | [Expo](https://expo.dev) SDK 58, [React Native](https://reactnative.dev) 0.88, React 19 | One code base for iOS, Android and web, fast iteration with Expo Go |
+| Language | Plain JavaScript (JSX) | Fast to write, keeps the project approachable |
+| Navigation | [Expo Router](https://docs.expo.dev/router/introduction/) | File based routes, protected route groups for sign in |
+| Animation and gestures | Reanimated 4, Worklets, Gesture Handler | Smooth 60fps drag, bounce and fade |
+| Graphics | `react-native-svg` | The characters, candle, castle and logs are drawn in code, so they scale perfectly |
+| Media | `expo-video`, `expo-audio`, `expo-speech` | Scene clips, microphone metering, audio |
+| Device | `expo-screen-orientation`, `expo-crypto`, `expo-font`, `expo-splash-screen` | Landscape and portrait locking, PIN hashing, fonts, launch screen |
+| Auth and database | Firebase Authentication and Cloud Firestore | Managed, secure, real time ready, rule based access |
+| Local storage | AsyncStorage | Remember settings and which child is playing |
+| AI coach back end | Cloudflare Worker, `jose`, Google Gemini API | The Gemini key never ships inside the app |
+| Hosting | Firebase Hosting (web build from `expo export`) | Public demo link |
+| Testing and linting | Jest (`jest-expo`), ESLint (`eslint-config-expo`) | Unit tests for validation and storage, consistent code |
+| Design | Figma, a custom style guide in `docs/style-guide/` | Moodboard, palette, typography, wireframes |
+| Fonts | Talina (display), Poppins (body), DM Mono | Friendly, readable, child appropriate |
+
+## System architecture
+
+Tiny Giants is a **client with serverless back ends**. There is no server to maintain.
+
+```mermaid
+flowchart LR
+    subgraph Device["Device (iOS, Android or Web)"]
+        APP["Tiny Giants app<br/>Expo + React Native"]
+        LS[("AsyncStorage<br/>settings, current child")]
+        MIC["Microphone<br/>loudness only"]
+    end
+
+    subgraph Firebase["Google Firebase"]
+        AUTH["Firebase Authentication"]
+        FS[("Cloud Firestore<br/>+ security rules")]
+        HOST["Firebase Hosting<br/>web build"]
+    end
+
+    subgraph Edge["Cloudflare"]
+        WORKER["Coach Worker<br/>verifies Firebase token"]
+    end
+
+    GEMINI["Google Gemini API"]
+
+    APP <--> LS
+    MIC --> APP
+    APP -- "sign in / sign up" --> AUTH
+    APP -- "read / write<br/>(own data only)" --> FS
+    AUTH -. "ID token (JWT)" .-> APP
+    APP -- "POST chat + Bearer token" --> WORKER
+    WORKER -- "verify JWT with Google keys" --> AUTH
+    WORKER -- "prompt + API key (secret)" --> GEMINI
+    GEMINI -- "reply" --> WORKER
+    WORKER -- "reply" --> APP
+    HOST -. "serves" .-> APP
+```
+
+**Reading the diagram**
+1. The app talks to **Firebase Auth** to sign in and receive an ID token.
+2. The app reads and writes **Firestore** directly. Security rules make sure a parent only touches their own branch.
+3. For the AI coach, the app sends the chat and the token to a **Cloudflare Worker**. The Worker verifies the token against Google's public keys, adds the secret Gemini key and calls **Gemini**.
+4. The microphone never leaves the device. Only a 0 to 1 loudness number is used.
+
+### Layered code architecture
+
+```mermaid
+flowchart TB
+    subgraph L1["1. Routes (src/app)"]
+        R["Thin Expo Router files"]
+    end
+    subgraph L2["2. Screens"]
+        CP["child/pages"]
+        AP["adult/pages"]
+    end
+    subgraph L3["3. UI building blocks"]
+        CC["child/components"]
+        AC["adult/components"]
+        SC["shared/components"]
+    end
+    subgraph L4["4. Logic"]
+        HK["shared/hooks"]
+        GE["games/engine"]
+        GM["games/game1-big-wave"]
+    end
+    subgraph L5["5. Services and data"]
+        API["services/api.js<br/>THE data door"]
+        SV["auth, pin, coach, demo, onboarding"]
+        DT["data: games, avatars, insights, sessions"]
+        ST["state/persistedStore"]
+    end
+    subgraph L6["6. External"]
+        FB["Firebase"]
+        CF["Coach Worker"]
+        AS["AsyncStorage"]
+    end
+
+    R --> CP & AP
+    CP --> CC & SC
+    AP --> AC & SC
+    CP --> HK & GE
+    AP --> HK
+    GE --> GM
+    HK --> API
+    API --> SV & DT
+    SV --> FB & CF
+    HK --> ST --> AS
+```
+
+Each layer only talks to the layer below it. Routes never touch Firebase. Screens never read the data files directly.
+
+## Project structure
+
+```
+Tiny-Giants/
+  src/
+    app/                 Expo Router routes: thin files that point at the pages below
+      (welcome, login, signup, create-pin, add-child, index)
+      child/             Child route group (landscape)
+      adult/             Parent route group (portrait) with a (tabs) group
+    child/               Child screens
+      pages/             StorybookShelf, StorybookReader, AllGamesView, GameIntro, PlayGame, GameNotice...
+      components/        BookCover, BookPage, PageTurner, PlayButton, SwipeHint, RotatePrompt...
+    adult/               Parent screens
+      pages/             Dashboard, Games, GameDetail, Insights, InsightDetail, PlayHistory, Settings, EditChild, AccountSettings
+      components/        ParentPinGate, CoachChat, GameCard, StatBar, InsightCard, AuthForm, TabBar...
+    games/
+      registry.js        Maps a game id to its ordered scene list
+      engine/            Reusable scene engine (ScenePlayer, scene types, captions, timing, blow detector)
+      game1-big-wave/    Scenes, hand drawn SVG art and the blow-candle mini game
+    shared/
+      components/        AppText, Button, Icon, Modal, Popup, Avatar, Blobs, CoverImage...
+      data/              games catalogue, avatars, insights, sessions, images, book layout
+      hooks/             useAuth, useProfiles, useChildGames, useCurrentChildId, useSettings, useLoad...
+      services/          api, auth, pin, coach, demo, onboarding, firebase
+      state/             persistedStore (tiny app wide store)
+      utils/             authValidation, dates, imageSize
+      theme.js           colours, fonts, spacing tokens
+    __tests__/           Jest tests
+  worker/                Cloudflare Worker for the AI coach
+  web-vite-prototype/    The earlier Vite web prototype (kept for reference)
+  assets/                Fonts, icons, scene videos and stills
+  docs/                  Style guide, README images, diagrams
+  firestore.rules        Database security rules
+  firebase.json          Hosting and rules configuration
+```
+
+## How the components interact
+
+### 1. App start and the sign-in guard
+
+```mermaid
+sequenceDiagram
+    actor U as User
+    participant L as _layout.jsx
+    participant A as useAuth
+    participant FA as Firebase Auth
+    participant I as index.jsx
+    participant FS as Firestore
+
+    U->>L: Open app
+    L->>L: Load fonts, hold splash
+    L->>A: Subscribe to auth state
+    A->>FA: onAuthStateChanged
+    FA-->>A: user or null
+    alt signed out
+        L->>U: Stack.Protected shows welcome, login, signup
+    else signed in
+        L->>I: Render index
+        I->>FS: hasParentPin(), getProfiles()
+        FS-->>I: pin?, children[]
+        alt no PIN
+            I->>U: Redirect /create-pin
+        else no child (and not skipped)
+            I->>U: Redirect /add-child?onboarding=1
+        else ready
+            I->>U: Redirect /adult (dashboard)
+        end
+    end
+```
+
+The root layout uses `Stack.Protected` with a `guard={!!user}`. When the auth state flips, Expo Router redirects automatically, so there is no manual "if logged in" code in each screen. The sign-in is held **in memory only**, so every launch begins at the login screen, which suits a shared family device.
+
+### 2. The "one data door" pattern
+
+```mermaid
+flowchart LR
+    S1["Child screens"] --> H["Hooks<br/>useChildGames, useProfiles, useLoad"]
+    S2["Parent screens"] --> H
+    H --> API["services/api.js"]
+    API --> F[("Firestore<br/>children, sessions, PIN")]
+    API --> D["data/*.js<br/>games catalogue, insights"]
+    API --> C["services/coach.js"]
+    C --> W["Coach Worker"]
+```
+
+Every screen reads and writes through `src/shared/services/api.js`. Child screens only call `getEnabledGamesForChild`, so **a parent's switch applies everywhere at once**. If the data source changes (mock to Firestore, as it did during development), only `api.js` changes.
+
+### 3. Playing a game and saving a session
+
+```mermaid
+sequenceDiagram
+    actor C as Child
+    participant SH as StorybookShelf
+    participant PG as PlayGame
+    participant REG as registry.js
+    participant SP as ScenePlayer
+    participant SC as Scene (story, video, game)
+    participant API as api.js
+    participant FS as Firestore
+
+    C->>SH: Tap Play
+    SH->>PG: route /child/games/big-wave/play
+    PG->>API: getEnabledGameForChild(childId, gameId)
+    API-->>PG: game or null
+    PG->>REG: getScenes('big-wave')
+    REG-->>PG: ordered scene list
+    PG->>SP: scenes, onExit, onFinish
+    loop each scene
+        SP->>SC: render Scene with onDone
+        SC-->>SP: onDone() when narration ends, video ends or mini game won
+    end
+    alt finished
+        SP->>PG: onFinish()
+        PG->>API: recordSession(completed = true)
+    else left early (5s or more)
+        SP->>PG: onExit()
+        PG->>API: recordSession(completed = false)
+    end
+    API->>FS: addDoc sessions { gameId, completed, durationSeconds, playedAt }
+```
+
+A failed save is only logged. **A network problem must never get in the child's way.** Leaving in under 5 seconds is not counted as a play.
+
+### 4. Switching a game on for a child (parent to child)
+
+```mermaid
+sequenceDiagram
+    actor P as Parent
+    participant GD as GameDetail
+    participant API as api.js
+    participant FS as Firestore
+    actor C as Child
+    participant SH as StorybookShelf
+
+    P->>GD: Toggle "Show to Noah"
+    GD->>API: setGameEnabledForChild(childId, gameId, true)
+    API->>FS: setDoc children/{id} { enabledGameIds } merge
+    C->>SH: Open the book
+    SH->>API: getEnabledGamesForChild(childId)
+    API->>FS: getDoc children/{id}
+    FS-->>API: enabledGameIds
+    API-->>SH: only enabled games, catalogue order
+```
+
+### 5. Component hierarchy of the child side
+
+```mermaid
+flowchart TB
+    CL["ChildLayout<br/>landscape lock + rotate prompt"] --> SHELF["StorybookShelf"]
+    CL --> ALL["AllGamesView"]
+    CL --> INTRO["GameIntro"]
+    CL --> PLAY["PlayGame"]
+    SHELF --> COVER["BookCover"]
+    SHELF --> PAGE["BookPage (left and right)"]
+    SHELF --> TURN["PageTurner"]
+    SHELF --> PB["PlayButton"]
+    SHELF --> HINT["SwipeHint"]
+    SHELF --> SEARCH["SearchBar"]
+    PLAY --> SP["ScenePlayer"]
+    PLAY --> POP["Popup (celebration)"]
+    SP --> STAGE["Stage context<br/>width and height"]
+    SP --> SCN["Current Scene"]
+```
+
+### 6. Component hierarchy of the parent side
+
+```mermaid
+flowchart TB
+    AL["AdultLayout"] --> GATE["ParentPinGate"]
+    GATE --> TABS["Bottom tabs"]
+    TABS --> DASH["Dashboard"]
+    TABS --> GAMES["Games"]
+    TABS --> INS["Insights"]
+    TABS --> SET["Settings"]
+    DASH --> CHT["ChildTitleDropdown"]
+    DASH --> STAT["StatBar and rings"]
+    DASH --> PLR["PlayedGameRow"]
+    GAMES --> CAT["CategoryFilter"]
+    GAMES --> SB["SearchBar"]
+    GAMES --> GC["GameCard"]
+    GC --> GDET["GameDetail"]
+    GDET --> TGL["ActiveToggle"]
+    GDET --> CCH["CoachChat"]
+    INS --> IC["InsightCard"]
+    IC --> ID["InsightDetail"]
+    ID --> AI["AiInsightBlock"]
+    ID --> ACT["ActivitySuggestionCard"]
+    SET --> AC["AccountRow, AvatarPicker, DangerZone"]
+```
+
+### 7. Shared UI primitives
+
+Every screen on both sides is built from the same small kit in `src/shared/components/`:
+`AppText` (typography and the 16px rule), `Button`, `IconButton`, `Icon`, `Modal`, `Popup`,
+`Avatar`, `AvatarImage`, `CoverImage` and `Blobs` (the soft background shapes). This is what
+keeps the app visually consistent and lets accessibility rules be enforced in one place.
+
+## Navigation and routing
+
+Routes live in `src/app/`. Each file is a thin wrapper that re-exports a page from `child/pages` or `adult/pages`, so route code stays tiny and screens stay testable and reusable.
+
+```mermaid
+flowchart TB
+    ROOT["_layout.jsx (root Stack)"]
+    ROOT --> PROT1["Stack.Protected: signed IN"]
+    ROOT --> PROT2["Stack.Protected: signed OUT"]
+
+    PROT2 --> W["/welcome"]
+    PROT2 --> LG["/login"]
+    PROT2 --> SU["/signup"]
+
+    PROT1 --> IDX["/ (index: decides where to go)"]
+    PROT1 --> CP["/create-pin"]
+    PROT1 --> AC["/add-child"]
+    PROT1 --> CH["/child (landscape)"]
+    PROT1 --> AD["/adult (portrait)"]
+
+    CH --> CHI["/child (shelf)"]
+    CH --> CHG["/child/games (all games)"]
+    CH --> CGI["/child/games/[gameId] (intro)"]
+    CH --> CGP["/child/games/[gameId]/play"]
+    CH --> CHS["/child/story"]
+
+    AD --> TABS["(tabs)"]
+    TABS --> T1["/adult (dashboard)"]
+    TABS --> T2["/adult/games"]
+    TABS --> T3["/adult/insights"]
+    TABS --> T4["/adult/settings"]
+    AD --> D1["/adult/game/[gameId]"]
+    AD --> D2["/adult/insight/[insightId]"]
+    AD --> D3["/adult/child/[childId]"]
+    AD --> D4["/adult/account"]
+    AD --> D5["/adult/play-history"]
+```
+
+**Orientation is a function of the route.** The root layout reads the first URL segment: `child` locks to landscape, anything else to portrait. No screen needs to think about it.
+
+## The game engine
+
+Games are not hard coded screens. They are **an ordered list of scenes** played by a reusable engine in `src/games/engine/`. A new game needs only its own folder and one line in the registry.
+
+| Piece | Responsibility |
+|-------|----------------|
+| `registry.js` | Maps a game id to its scene list. A game with no entry shows a "game goes here" placeholder. |
+| `ScenePlayer` | Plays scenes in order, full screen. Provides the stage size, close button, optional skip buttons and fade transitions. |
+| `Stage` | A React context with the stage width and height so scenes can lay out responsively. |
+| `StoryScene` | Picture plus read-aloud text, a Next arrow when the narration ends. |
+| `SpokenStillScene`, `ZoomStillScene` | A still picture with timed spoken text, or a slow zoom, then moves on by itself. |
+| `VideoScene`, `SpokenVideoScene`, `LoopingVideoScene`, `BreathingVideoScene` | Video based scenes, including a looping breathing guide. |
+| `Captions` and `useSpokenLines` | Show each line of text timed by estimated reading time. |
+| `timing.js` | Pure functions that turn lines of text into a timeline (`timeLines`, `lineAt`, `estimatedEnd`). |
+| `Narration` | A timer clock that drives captions and scene length. |
+| `useBlowDetector` | Reads microphone loudness and returns `{ status, level }`. |
+| `FitImage`, `NextButton` | Image fitting and the shared Next control. |
+
+**The scene contract is one prop.** Every scene receives `onDone`. It calls it when the narration is read, the video ends or the mini game is won, and the next scene fades in. A guard in `ScenePlayer` ignores `onDone` calls from a scene that has already been skipped away from, so the story cannot jump twice.
+
+```mermaid
+stateDiagram-v2
+    [*] --> Scene0
+    Scene0 --> Scene1: onDone()
+    Scene1 --> SceneN: onDone()
+    SceneN --> Finished: last onDone() => onFinish()
+    Scene0 --> Exited: close button => onExit()
+    Scene1 --> Exited: close button => onExit()
+    SceneN --> Exited: close button => onExit()
+    Finished --> [*]: save completed session
+    Exited --> [*]: save early session (if 5s+)
+```
+
+### Microphone blow detection
+
+```mermaid
+flowchart LR
+    A["Candle scene starts<br/>active = true"] --> B["Ask microphone permission"]
+    B -- granted --> C["Start recorder with metering on"]
+    B -- refused or web --> X["status = unavailable<br/>candle blows out by itself"]
+    C --> D["Poll every 80 ms"]
+    D --> E["Metering in dB<br/>-50 quiet to -8 loud"]
+    E --> F["Map to level 0 to 1"]
+    F --> G{"Sustained loud enough?"}
+    G -- yes --> H["Candle goes out, onDone()"]
+    G -- no --> D
+```
+
+Nothing is recorded for playback, stored or sent. The permission text shown to the user says exactly this.
+
+## The Big Wave: scene by scene
+
+The running order lives in `src/games/game1-big-wave/scenes.js`. There are **18 scenes** made of five types.
+
+| # | Scene | Type | Interaction | Skill reinforced |
+|---|-------|------|-------------|------------------|
+| 1 | Intro in the woods | story | Listen | Setting the scene |
+| 2 | The edge of the woods | still | Listen | |
+| 3 | Breathe and blow out the candle | video | **Blow** into the mic | Paced breathing |
+| 4 | Through the forest | video | Watch | |
+| 5 | Forest path | game | **Drag** Cami along the path | Fine motor, focus |
+| 6 | The pile of wood | zoom still | Watch | Naming the problem |
+| 7 | Candle again | video | **Blow** | Breathing before action |
+| 8 | Cami and the pile of wood | story | Listen | Small-steps thinking |
+| 9 | Clear the path | game | **Drag** logs one by one | Small steps add up |
+| 10 | After the logs are cleared | video | Watch | Reward |
+| 11 | Jump the 7 logs | game | **Tap** to jump | Persistence |
+| 12 | Tripping over the log | video | Watch | Setbacks happen |
+| 13 | Candle after the fall | video | **Blow** | Calm after a setback |
+| 14 | The beach | video | Watch | |
+| 15 | Build the sandcastle | game | **Tap** to build | Calm focused play |
+| 16 | The big wave | video | Watch | The big feeling arrives |
+| 17 | Breathing without the candle | video | **Breathe** along | Self regulation |
+| 18 | Final clip | video | Watch | The calm was inside you |
+
+```mermaid
+flowchart LR
+    A["Woods"] --> B["Blow candle #1"]
+    B --> C["Forest path (drag)"]
+    C --> D["Log pile"]
+    D --> E["Blow candle #2"]
+    E --> F["Clear logs (drag)"]
+    F --> G["Jump logs (tap)"]
+    G --> H["Trip and fall"]
+    H --> I["Blow candle #3"]
+    I --> J["Beach"]
+    J --> K["Build castle (tap)"]
+    K --> L["The big wave"]
+    L --> M["Breathe WITHOUT the candle"]
+    M --> N["Final: calm was inside"]
+```
+
+**Learning arc.** The candle appears three times as a prop. The last time, the child breathes with no candle at all. That is the point: the skill is internal and portable.
+
+## Data model
+
+Data is stored in **Cloud Firestore** as a tree owned by the parent. The game catalogue and the insights live in code for now.
+
+```mermaid
+erDiagram
+    PARENT ||--o{ CHILD : "has"
+    CHILD ||--o{ SESSION : "plays"
+    GAME ||--o{ SESSION : "is played in"
+    CHILD }o--o{ GAME : "enabledGameIds"
+    CHILD ||--o{ INSIGHT : "receives"
+    GAME ||--o{ INSIGHT : "about"
+    GAME ||--|{ SCENE : "is made of"
+
+    PARENT {
+        string uid PK "Firebase Auth uid"
+        string name "max 100 chars"
+        string email
+        string pinHash "SHA-256, salted"
+        string pinSalt "random 16 bytes hex"
+    }
+    CHILD {
+        string childId PK "auto id"
+        string name "1 to 50 chars"
+        int age "1 to 17"
+        string avatar "e.g. avatar2, optional"
+        string birthday "YYYY-MM-DD, optional"
+        string joinedDate "YYYY-MM-DD"
+        array enabledGameIds "game ids the parent switched on"
+        timestamp createdAt
+    }
+    SESSION {
+        string sessionId PK "auto id"
+        string gameId FK
+        bool completed "reached the end of the story"
+        int durationSeconds "0 to 36000"
+        timestamp playedAt "server time"
+    }
+    GAME {
+        string id PK "e.g. big-wave"
+        string title
+        string category
+        string blurb
+        array tools "skills practised"
+        array words
+        string teaches
+        string coachNotes
+        string parentNote
+        bool comingSoon
+    }
+    INSIGHT {
+        string id PK
+        string childId FK
+        string gameId FK
+        date date
+        string summary
+        string observed
+        object activitySuggestion
+        string aiDisclaimer
+    }
+    SCENE {
+        string id PK
+        string type "story, still, video, game"
+        string title
+    }
+```
+
+**Where each entity lives**
+
+| Entity | Storage | Path or file |
+|--------|---------|--------------|
+| Parent | Firestore | `parents/{uid}` |
+| Child | Firestore | `parents/{uid}/children/{childId}` |
+| Session | Firestore | `parents/{uid}/children/{childId}/sessions/{sessionId}` |
+| Game | Code | `src/shared/data/games.js` |
+| Insight | Code (sample content for now) | `src/shared/data/insights.js` |
+| Scene | Code | `src/games/game1-big-wave/scenes.js` |
+| Settings and current child | Device | AsyncStorage via `persistedStore` |
+
+**Design choice: a subcollection tree.** Nesting children and sessions under the parent means one rule, "`request.auth.uid == uid`", protects everything below it, and deleting an account is one clean sweep.
+
+**Design choice: the game catalogue is data in code, not in the database.** The catalogue is the same for every family, changes with app releases, and keeps the child side fast and offline friendly. Only per child choices (`enabledGameIds`) are stored.
+
+### Firestore hierarchy
+
+```mermaid
+flowchart TB
+    ROOT[("Firestore")] --> P["parents/{uid}"]
+    P --> CH["children/{childId}"]
+    CH --> SE["sessions/{sessionId}"]
+    P -. "fields" .-> PF["name, email, pinHash, pinSalt"]
+    CH -. "fields" .-> CF["name, age, avatar, birthday,<br/>joinedDate, enabledGameIds, createdAt"]
+    SE -. "fields" .-> SF["gameId, completed,<br/>durationSeconds, playedAt"]
+```
+
+## Security and privacy
+
+Security is a feature, because the users are children.
+
+| Threat | Defence |
+|--------|---------|
+| A child enters the parent area | 4 digit PIN gate between the sides, 5 wrong tries locks it for 30 seconds |
+| The PIN is stolen from the database | Only a **salted SHA-256 hash** is stored, with a fresh random 16 byte salt, never the digits |
+| One family reading another family's data | `firestore.rules` allow access only when `request.auth.uid == uid`, everything else is `allow read, write: if false` |
+| Bad or oversized data written | Rules validate name length, age 1 to 17, avatar string size, session duration cap (36000 s) and field whitelists with `hasOnly` |
+| Cheating or editing play history | Sessions are **create only**: `allow update: if false`, and `playedAt` must equal `request.time` |
+| The Gemini API key leaks from the app | The key lives only as a Cloudflare **secret**. The app never sees it |
+| Strangers abusing the AI coach | The Worker verifies the Firebase **ID token (JWT)** against Google's public keys with `jose` before answering |
+| Prompt injection through child or game fields | Context is wrapped in `<context>` tags and the system prompt tells the model to treat it as information, not instructions. Field lengths are clipped |
+| Microphone privacy | Only loudness is read. The permission text states nothing is kept or sent. Refusing the mic still lets the child finish |
+| Shared device | Auth persistence is in memory, so every launch starts signed out |
+| Account removal | The delete-account button removes the parent record and everything under it |
+| Firebase config in the repo | Web config values identify the project and are not secrets. Protection comes from sign-in and rules |
+
+```mermaid
+flowchart TB
+    REQ["Request to Firestore"] --> Q1{"Signed in?"}
+    Q1 -- no --> DENY["Denied"]
+    Q1 -- yes --> Q2{"auth.uid == uid in the path?"}
+    Q2 -- no --> DENY
+    Q2 -- yes --> Q3{"Fields whitelisted and valid?"}
+    Q3 -- no --> DENY
+    Q3 -- yes --> Q4{"Is it editing a session?"}
+    Q4 -- yes --> DENY
+    Q4 -- no --> ALLOW["Allowed"]
+```
+
+## The AI parent coach
+
+The coach helps a grown-up play a game with their child and suggests follow up activities. It is intentionally narrow: it is not a therapist and says so.
+
+```mermaid
+sequenceDiagram
+    actor P as Parent
+    participant CC as CoachChat
+    participant CO as coach.js
+    participant FA as Firebase Auth
+    participant W as Cloudflare Worker
+    participant G as Gemini API
+
+    P->>CC: Open a game, tap the coach
+    CC->>CO: askCoach({ game, child, plays, messages: [] })
+    CO->>FA: getIdToken()
+    FA-->>CO: JWT
+    CO->>W: POST { game, child, plays, messages } + Bearer JWT
+    W->>W: jwtVerify (issuer, audience, Google JWKS)
+    alt invalid token
+        W-->>CO: 401 Sign in again
+    else valid
+        W->>W: clean and clip input, build system prompt + context
+        W->>G: generateContent (model 1)
+        alt model missing or busy (400, 404, 503)
+            W->>G: generateContent (model 2)
+        end
+        G-->>W: reply text
+        W-->>CO: { reply }
+        CO-->>CC: reply
+        CC-->>P: Show message
+    end
+```
+
+**Worker design details**
+- **Model fallback.** Free tier models are tried in order, so if one is retired or busy the next answers.
+- **20 second timeout** per model so a hanging model does not freeze the parent.
+- **Limits.** The last 20 messages are kept, each at most 2000 characters. Output is capped at 1500 tokens.
+- **Grounding.** The prompt receives the game's skills, parent note and the designers' `coachNotes`, plus the child's name and play counts.
+- **Age pitch.** Advice is aimed at ages 4 to 5, with a bracketed note once per reply.
+- **Safety.** Serious concerns are met with kindness and a pointer to a professional. Off topic questions are politely redirected.
+- **Opening message.** With no messages, the Worker supplies a standard "how can I play this together" opening.
+
+## Design system
+
+<table>
+<tr>
+<td width="50%"><img src="docs/readme-images/moodboard.png" alt="Moodboard" width="100%" /></td>
+<td width="50%"><img src="docs/readme-images/colour-palette.png" alt="Colour palette" width="100%" /></td>
+</tr>
+<tr>
+<td width="50%"><img src="docs/readme-images/typography.png" alt="Typography" width="100%" /></td>
+<td width="50%"><img src="docs/readme-images/wireframes.png" alt="Wireframes" width="100%" /></td>
+</tr>
+</table>
+
+The palette is drawn from Cami's world: the candle flame, the big wave, the forest and the castle.
+
+| Token | Hex | Meaning |
+|-------|-----|---------|
+| cream | `#fff6e3` | Warm page background |
+| ink (night plum) | `#241447` | Text, the book spine |
+| flame | `#ff6b2c` | Primary action, the candle |
+| glow | `#ffc933` | Highlights |
+| wave | `#14a3d9` | Water, calm |
+| deep sea | `#0b4c8c` | Depth, headings |
+| berry | `#ff4f87` | Warmth, alerts of care |
+| forest | `#22b573` | Success, the woods |
+
+**Typography.** Talina for display headings (it only has letters, so `AppText` falls back to Poppins for digits and punctuation), Poppins for body, DM Mono for small technical labels.
+
+**Accessibility and child-first rules**
+- No text smaller than **16px**. All text goes through `AppText`, which enforces it.
+- Very large touch targets and few choices on screen at once.
+- Child routes are landscape first, parent routes portrait.
+- Captions on every narrated line.
+- The app still works if the microphone is refused.
+- The full style guide is in [`docs/style-guide/`](docs/style-guide/).
+
+## Use cases
+
+### Actors
+- **Parent**: signs up, manages children and games, reviews progress, uses the coach.
+- **Child**: plays the games.
+- **Firebase**: authenticates and stores.
+- **Coach Worker and Gemini**: answer coaching questions.
+
+```mermaid
+flowchart LR
+    P(["Parent"])
+    C(["Child"])
+    AI(["Coach Worker + Gemini"])
+
+    subgraph Account["Account"]
+        U1["Sign up / log in"]
+        U2["Use demo account"]
+        U3["Create parent PIN"]
+        U4["Edit account or delete it"]
+    end
+    subgraph Profiles["Child profiles"]
+        U5["Add / edit child"]
+        U6["Choose character"]
+    end
+    subgraph Control["Control"]
+        U7["Browse and search games"]
+        U8["Enable or disable a game per child"]
+        U9["Enter PIN to reach parent side"]
+    end
+    subgraph Insight["Insight"]
+        U10["View dashboard and play history"]
+        U11["Read insights"]
+        U12["Chat with the AI coach"]
+    end
+    subgraph Play["Play"]
+        U13["Browse the storybook shelf"]
+        U14["Search enabled games"]
+        U15["Play a story game"]
+        U16["Blow into the mic"]
+        U17["Drag, tap, jump, breathe"]
+    end
+
+    P --> U1 & U2 & U3 & U4 & U5 & U6 & U7 & U8 & U9 & U10 & U11 & U12
+    C --> U13 & U14 & U15
+    U15 -. include .-> U16
+    U15 -. include .-> U17
+    U12 --- AI
+```
+
+### Use case descriptions
+
+**UC1: Parent creates an account and finishes onboarding**
+
+| Item | Detail |
+|------|--------|
+| Actor | Parent |
+| Precondition | App installed, no account |
+| Main flow | 1. Parent taps Sign up. 2. Enters name, email, password, confirm. 3. App validates and creates the account. 4. Parent creates a 4 digit PIN. 5. Parent adds a child (name, age, character). 6. Lands on the dashboard. |
+| Alternate flows | Invalid email or short password shows an inline message. "Add a child later" skips step 5 and is remembered. |
+| Postcondition | `parents/{uid}` and optionally one child exist. |
+
+**UC2: Parent enables a game for a child**
+
+| Item | Detail |
+|------|--------|
+| Actor | Parent |
+| Precondition | Signed in, at least one child |
+| Main flow | 1. Open Games tab. 2. Search or filter by category. 3. Open a game. 4. Switch it on for a chosen child. |
+| Alternate flow | A "coming soon" game cannot be switched on. |
+| Postcondition | `enabledGameIds` updated, the child's shelf now shows the game. |
+
+**UC3: Child plays The Big Wave**
+
+| Item | Detail |
+|------|--------|
+| Actor | Child (supported by parent) |
+| Precondition | Game enabled, device in landscape |
+| Main flow | 1. Child opens the book. 2. Turns to the game spread. 3. Taps Play. 4. Watches and listens, blows, drags, taps, breathes. 5. Reaches the end and sees the celebration. 6. Book reopens. |
+| Alternate flows | Mic refused: candle blows out by itself. Child leaves early: session saved as not completed if 5 seconds or more. Save fails: logged only, the child is not interrupted. |
+| Postcondition | A session document exists. |
+
+**UC4: Parent returns to the parent side**
+
+| Item | Detail |
+|------|--------|
+| Actor | Parent |
+| Main flow | 1. Open the parent area. 2. Enter the PIN. 3. Gate opens. |
+| Alternate flow | 5 wrong tries locks the gate for 30 seconds. |
+
+**UC5: Parent asks the AI coach for ideas**
+
+| Item | Detail |
+|------|--------|
+| Actor | Parent, Coach Worker, Gemini |
+| Main flow | 1. Open a game detail page. 2. Open the coach. 3. Receive an opening recommendation. 4. Ask follow up questions. |
+| Alternate flows | Token invalid: asked to sign in again. Coach busy (429): try again in a moment. Offline: friendly error. |
+
+**UC6: Parent reviews progress**
+
+| Item | Detail |
+|------|--------|
+| Actor | Parent |
+| Main flow | 1. Pick a child in the title dropdown. 2. View stats and recent plays. 3. Open Play history for plays, completions and time per game. 4. Open an insight and read the suggested activity. |
+
+**UC7: Parent deletes their account**
+
+| Item | Detail |
+|------|--------|
+| Actor | Parent |
+| Main flow | 1. Settings, Account. 2. Danger zone. 3. Confirm (re-authentication if needed). 4. Parent record and all children and sessions are removed. |
+
+## Key code snippets
+
+**Adding a game takes one line** (`src/games/registry.js`)
+
+```js
+import { bigWaveScenes } from './game1-big-wave/scenes.js';
+
+const playableGames = { 'big-wave': bigWaveScenes };
+
+export function getScenes(gameId) {
+  return playableGames[gameId] ?? null; // null means the "game goes here" placeholder
+}
+```
+
+**A game is just an ordered list** (`src/games/game1-big-wave/scenes.js`)
+
+```js
+export const bigWaveScenes = [
+  { id: '00',  type: 'story', title: 'Intro in the woods',      Scene: Intro },
+  { id: '01c', type: 'video', title: 'Blow out the candle',     Scene: CandleBlow },
+  { id: '05',  type: 'game',  title: 'Clear the path (drag)',   Scene: ClearLogs },
+  // ...
+];
+```
+
+**Route protection in one place** (`src/app/_layout.jsx`)
+
+```jsx
+<Stack.Protected guard={!!user} redirectTo="/welcome">
+  <Stack.Screen name="child" />
+  <Stack.Screen name="adult" />
+</Stack.Protected>
+<Stack.Protected guard={!user}>
+  <Stack.Screen name="welcome" />
+  <Stack.Screen name="login" />
+</Stack.Protected>
+```
+
+**Salted PIN hashing** (`src/shared/services/pin.js`)
+
+```js
+const hash = (pin, salt) =>
+  Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, `${salt}:${pin}`);
+
+export async function setParentPin(pin) {
+  const pinSalt = await newSalt(); // 16 random bytes
+  await setDoc(parentRef(), { pinSalt, pinHash: await hash(pin, pinSalt) }, { merge: true });
+}
+```
+
+**Server side token check** (`worker/src/index.js`)
+
+```js
+await jwtVerify(token, keys, {
+  issuer: `https://securetoken.google.com/${projectId}`,
+  audience: projectId,
+});
+```
+
+**Immutable play history** (`firestore.rules`)
+
+```
+match /sessions/{sessionId} {
+  allow create: if request.auth.uid == uid
+    && request.resource.data.keys().hasOnly(['gameId','completed','durationSeconds','playedAt'])
+    && request.resource.data.playedAt == request.time;
+  allow update: if false;
+}
+```
+
+**A tiny reactive store with persistence** (`src/shared/state/persistedStore.js`)
+
+```js
+const settings = createPersistedStore('tiny-giants:settings', { skip: false });
+// any screen: const { skip } = useSettings();  setSetting('skip', true);
+```
+
+## Challenges and how they were solved
+
+| Challenge | Solution |
+|-----------|----------|
+| Detecting a child blowing into a phone | `useBlowDetector` reads microphone metering in dB every 80 ms, maps -50 to -8 dB onto a 0 to 1 level and treats a sustained spike as a blow. Nothing is recorded or sent, and there is a graceful fallback. |
+| Keeping narration, captions and video in sync | `timing.js` builds a timeline from the text and `useSpokenLines` drives captions from it, so scene length follows reading time. |
+| Keeping the AI key safe | A Cloudflare Worker holds the key and verifies the parent's Firebase token with Google's public keys before answering. |
+| Keeping children out of parent screens | Separate route groups plus a hashed, rate limited PIN gate. |
+| Keeping one family's data away from another | Hierarchical Firestore data with rules that tie every read and write to `auth.uid`. |
+| Scenes advancing twice (skip then finish) | `ScenePlayer` tracks the current scene id and ignores `onDone` from any other scene. |
+| Large video files | Short clips, with some video replaced by audio, stills and code drawn SVG art. |
+| Models being retired by the AI provider | The Worker tries a list of models in order and handles 400, 404, 503 and timeouts. |
+| Children's lack of reading ability | Captions plus narration, large icons, and games built around doing rather than reading. |
+| Two orientations in one app | Orientation is derived from the route's first segment and applied by a single hook. |
+| Showing the app on a desktop | A `PrototypeShell` renders the app inside a phone mockup on desktop browsers and tells it which way to rotate. |
+| A new family has no data to look at | A shared demo account that re-creates its PIN and two children each time it is used. |
+
+## Testing and quality
+
+```bash
+npm test        # Jest with jest-expo
+npm run lint    # ESLint with eslint-config-expo
+```
+
+| Test file | What it covers |
+|-----------|----------------|
+| `authValidation.test.js` | Email shape, sign in and sign up rules, password length and match, child form checks |
+| `persistedStore.test.js` | The persisted store reads saved state, merges, notifies listeners and saves changes |
+
+Validation and storage logic are written as **pure functions** with no Firebase or React inside, which is what makes them quick to test.
+
+<img src="docs/readme-images/test-results.png" alt="Jest results" width="100%" />
+
+**Other quality practices**
+- UX review with a lecturer, with the feedback applied to the interface.
+- Feedback from classmates during development.
+- Firestore rules reasoned through per field, not left open.
+- Early prototype built in Vite (`web-vite-prototype/`) to validate the storybook shelf idea before moving to Expo.
 
 ## Getting started
 
-This repository contains both the **app (front end)** and the **coach Worker (back end)**
-in the `worker/` folder.
+This repository contains both the **app** and the **coach Worker** in `worker/`.
 
 ### Prerequisites
 
@@ -91,245 +1038,158 @@ in the `worker/` folder.
 |-------------|---------|------|
 | Node.js | 20 or newer | https://nodejs.org |
 | npm | comes with Node | |
-| Expo Go app (phone) | latest | [App Store](https://apps.apple.com/app/expo-go/id982107779) · [Google Play](https://play.google.com/store/apps/details?id=host.exp.exponent) |
-| Firebase project | | https://console.firebase.google.com (enable **Authentication → Email/Password** and **Firestore**) |
-| Gemini API key *(only for the AI coach)* | | https://aistudio.google.com/apikey |
-| Cloudflare account + Wrangler *(only to deploy the coach)* | | https://developers.cloudflare.com/workers/wrangler/ |
+| Expo Go (phone) | latest | [App Store](https://apps.apple.com/app/expo-go/id982107779) or [Google Play](https://play.google.com/store/apps/details?id=host.exp.exponent) |
+| Firebase project | | https://console.firebase.google.com (enable Authentication with Email/Password, and Firestore) |
+| Gemini API key (AI coach only) | | https://aistudio.google.com/apikey |
+| Cloudflare account and Wrangler (to deploy the coach) | | https://developers.cloudflare.com/workers/wrangler/ |
 
-### How to install
+### Install and run
 
-1. **Clone the repository**
+1. **Clone**
    ```bash
    git clone https://github.com/danaeswart/Tiny-Giants.git
    cd Tiny-Giants
    ```
-2. **Install dependencies**
+2. **Install**
    ```bash
    npm install
    ```
-3. **Add your environment variables.** Create a `.env` file in the project root with your
-   Firebase web config (see `src/shared/services/firebase.js` for the exact names) and the
-   coach URL:
+3. **Environment variables.** Copy `.env.example` to `.env.local` and fill in your Firebase web config and the coach URL.
    ```bash
+   EXPO_PUBLIC_FIREBASE_API_KEY=...
+   EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=...
+   EXPO_PUBLIC_FIREBASE_PROJECT_ID=...
+   EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=...
+   EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
+   EXPO_PUBLIC_FIREBASE_APP_ID=...
    EXPO_PUBLIC_COACH_URL=https://tiny-giants-coach.<your-subdomain>.workers.dev
    ```
-4. **Start the app**
+4. **Start**
    ```bash
    npm start
    ```
 5. **Open it**
-   - Phone: scan the QR code with the Camera app (iPhone) or inside Expo Go (Android).
-     Both devices must be on the same Wi-Fi. If the network blocks it, use
-     `npx expo start --tunnel`.
-   - Browser: press `w` in the terminal.
+   - Phone: scan the QR code (Camera app on iPhone, Expo Go on Android). Both devices must share Wi-Fi, or use `npx expo start --tunnel`.
+   - Browser: press `w`.
    - Emulator: press `i` (iOS) or `a` (Android).
-6. **(Optional) Set up the AI coach back end**
+6. **Optional: deploy the AI coach**
    ```bash
    cd worker
    npm install
    npx wrangler secret put GEMINI_API_KEY
    npx wrangler deploy
    ```
-   Then put the deployed URL in `EXPO_PUBLIC_COACH_URL` above.
-7. **(Optional) Deploy Firestore rules and the web build**
-   ```bash
-   npx firebase deploy --only firestore:rules
-   npx expo export --platform web
-   npx firebase deploy --only hosting
-   ```
+   Put the printed URL in `EXPO_PUBLIC_COACH_URL`.
 
-> Other useful commands: `npm run lint` · `npm test`
+### Useful scripts
 
-## Features
+| Command | Purpose |
+|---------|---------|
+| `npm start` | Start the Expo dev server |
+| `npm run android` / `ios` / `web` | Start on a specific platform |
+| `npm run lint` | Lint the project |
+| `npm test` | Run Jest |
+| `npx expo-doctor` | Diagnose dependency and config issues |
 
-<img src="docs/readme-images/mockup-04-screens.png" alt="Screens from across the app" width="100%" />
+## Deployment
 
-### Storybook shelf (child)
-An open book where each game is one two-page spread, with a large **Play** button on the
-right page. Swipe or tap to turn pages. Only the games a parent has enabled appear.
-
-<img src="docs/readme-images/feature-storybook.png" alt="Storybook shelf" width="100%" />
-
-### Interactive story games
-Narrated scenes with captions, video, drag-and-drop and tap interactions. The child blows
-into the microphone to put out the candle, clears logs from the path, jumps obstacles,
-builds a sandcastle and finally breathes together with the waves.
-
-<img src="docs/readme-images/feature-game.gif" alt="Gameplay" width="100%" />
-
-### Parent dashboard
-Switch games on and off per child, see recent play history and quick stats.
-
-<img src="docs/readme-images/feature-parent-dashboard.png" alt="Parent dashboard" width="300" />
-
-### Insights
-Plain-language summaries of the skills a child has been practising.
-
-<img src="docs/readme-images/feature-insights.png" alt="Insights" width="300" />
-
-### AI parent coach
-Chat with a coach that suggests how to play a game together and talk about it afterwards.
-The API key never touches the app: requests go through a Cloudflare Worker that checks the
-parent's Firebase sign-in token.
-
-<img src="docs/readme-images/feature-coach.png" alt="AI coach" width="300" />
-
-### Child profiles and safe access
-Multiple child profiles with avatars, plus a **parent PIN gate** so children stay on the
-child side of the app.
-
-<p>
-  <img src="docs/readme-images/feature-profiles.png" alt="Child profiles" width="300" />
-  <img src="docs/readme-images/feature-pin-gate.png" alt="PIN gate" width="300" />
-</p>
-
-### Games
-
-| Game | Theme | Status |
-|------|-------|--------|
-| The Big Wave | Stress and big feelings | Playable |
-| Kind Detective | Kindness | Coming soon |
-| Memory Garden | Remembering and loss | Coming soon |
-
-### Built for children
-- No text smaller than **16px** anywhere
-- Responsive from the start (child routes landscape-first, parent routes portrait)
-- Very large touch targets
-- Few choices on screen at a time
-
-## Development process
-
-### Research and design reasoning
-
-The research behind this project, including the reasoning for the design of each game and the
-studies that led to these decisions, is collected in a shared Google Drive folder:
-
-> **Research documents:** [Open the Google Drive folder](ADD-GOOGLE-DRIVE-LINK-HERE)
-
-### Design summary
-
-| Moodboard | Colour palette |
-|-----------|----------------|
-| <img src="docs/readme-images/moodboard.png" alt="Moodboard" width="100%" /> | <img src="docs/readme-images/colour-palette.png" alt="Colour palette" width="100%" /> |
-
-| Typography | Wireframes |
-|------------|------------|
-| <img src="docs/readme-images/typography.png" alt="Typography" width="100%" /> | <img src="docs/readme-images/wireframes.png" alt="Wireframes" width="100%" /> |
-
-**Palette:** cream `#fff6e3`, night plum `#241447`, flame `#ff6b2c`, glow `#ffc933`,
-wave `#14a3d9`, deep sea `#0b4c8c`, berry `#ff4f87`, forest `#22b573`.
-The full style guide is in [`docs/style-guide/`](docs/style-guide/).
-
-### User flow
-
-<img src="docs/readme-images/user-flow.png" alt="User flow" width="100%" />
-
-### Architecture
-
-<img src="docs/readme-images/architecture.png" alt="Architecture diagram" width="100%" />
-
+```mermaid
+flowchart LR
+    DEV["Developer"] -->|"npx expo export --platform web"| DIST["dist/"]
+    DIST -->|"firebase deploy --only hosting"| HOST["Firebase Hosting"]
+    DEV -->|"firebase deploy --only firestore:rules"| RULES["Firestore rules"]
+    DEV -->|"wrangler deploy"| WK["Cloudflare Worker"]
+    DEV -->|"wrangler secret put GEMINI_API_KEY"| SEC["Worker secret"]
+    HOST --> USERS["Users in a browser"]
+    EAS["EAS Build (planned)"] -.-> STORES["App Store and Google Play"]
 ```
-src/
-  app/       Expo Router routes: thin files that point at the pages below
-  child/     Child screens (landscape-locked): pages/ + components/
-  adult/     Parent screens (portrait): pages/ + components/
-  games/     Shared scene engine + one folder per game
-  shared/    Components, data, hooks, services, theme used by both sides
-worker/      Cloudflare Worker that proxies the AI coach
-docs/        Style guide and README images
-```
-
-Key decisions:
-
-- **One data door.** Everything goes through `src/shared/services/api.js`, and child
-  screens only call `getEnabledGamesForChild`, so a parent's choices apply everywhere.
-- **A reusable game engine.** `src/games/engine/` provides the scene player, captions,
-  narration and microphone blow detection. A game is an ordered list of scenes in a
-  `scenes.js` file, so a new game needs only its own folder.
-- **Secrets stay server-side.** The Gemini key lives in the Worker, which checks the
-  parent's Firebase token before answering.
-- **Accessibility first.** All text goes through `AppText`, which never renders below 16px.
-
-### Data model
-
-<img src="docs/readme-images/erd.png" alt="Data diagram" width="100%" />
-
-### Code snippet: how a game is plugged in
-
-```js
-// src/games/registry.js
-import { bigWaveScenes } from './game1-big-wave/scenes.js';
-
-const playableGames = { 'big-wave': bigWaveScenes };
-
-export function getScenes(gameId) {
-  return playableGames[gameId] ?? null; // null → "game goes here" placeholder
-}
-```
-
-### Challenges and how they were solved
-
-| Challenge | Solution |
-|-----------|----------|
-| Detecting a child blowing into the phone | `useBlowDetector` reads the microphone level and treats a sustained spike as a blow; nothing is recorded or sent |
-| Keeping narration, captions and video in sync | `useSpokenLines` and `timing.js` drive captions from the narration |
-| Keeping the AI key safe | Cloudflare Worker proxy that verifies the Firebase sign-in token |
-| Keeping children out of parent screens | Parent PIN gate and separate route groups |
-| Large video files | Short clips, with some video being replaced by audio and stills |
-
-### Testing and review
-Unit tests cover input validation and the persisted store (`src/__tests__/`). The UI was
-reviewed with a UX lecturer and the feedback was applied.
-
-## Final outcome
-
-### Test coverage results
 
 ```bash
-npm test
+npx expo export --platform web
+npx firebase deploy --only hosting
+npx firebase deploy --only firestore:rules
 ```
 
-<img src="docs/readme-images/test-results.png" alt="Jest results" width="100%" />
+## Diagram library
 
-### Demonstration video
+Visual diagrams for the presentation are kept in `docs/diagrams/` as PDFs. The exact prompts used to generate each one are in [`docs/DIAGRAM-PROMPTS.md`](docs/DIAGRAM-PROMPTS.md). Mermaid versions of most of them are already rendered in this README.
 
-> **Add your link here:** `[Watch the demo](https://...)` (aim for 5–8 minutes)
+| # | Diagram | File | Use it to explain |
+|---|---------|------|-------------------|
+| 1 | System architecture | `docs/diagrams/01-system-architecture.pdf` | Big picture, tech stack, who talks to whom |
+| 2 | Layered code architecture | `docs/diagrams/02-layered-architecture.pdf` | Code organisation |
+| 3 | Entity relationship diagram | `docs/diagrams/03-erd.pdf` | Data model |
+| 4 | Use case diagram | `docs/diagrams/04-use-cases.pdf` | Who does what |
+| 5 | User flow | `docs/diagrams/05-user-flow.pdf` | Journeys for parent and child |
+| 6 | Sitemap and navigation | `docs/diagrams/06-sitemap.pdf` | Screens and routes |
+| 7 | Component hierarchy | `docs/diagrams/07-component-tree.pdf` | How components compose |
+| 8 | Game engine | `docs/diagrams/08-game-engine.pdf` | Reusable scene engine |
+| 9 | Sequence: play and save | `docs/diagrams/09-seq-play-session.pdf` | Runtime interaction |
+| 10 | Sequence: AI coach | `docs/diagrams/10-seq-ai-coach.pdf` | Security of the AI flow |
+| 11 | Security model | `docs/diagrams/11-security.pdf` | Defence in depth |
+| 12 | Big Wave story map | `docs/diagrams/12-story-map.pdf` | Learning arc |
+| 13 | Tech stack | `docs/diagrams/13-tech-stack.pdf` | What it is written with |
+| 14 | Deployment | `docs/diagrams/14-deployment.pdf` | How it ships |
 
-### Promotional video / deployed link *(optional)*
+## Presentation guide
 
-> **Add your link here**
+**Total: 15 minutes** (12 to 15 minutes talking, leave a little room for questions). Roughly one slide per minute. Each row says which parts of this README to draw from.
 
-<img src="docs/readme-images/outro.png" alt="Tiny Giants" width="100%" />
+| Time | Slide | Say | README section | Visual |
+|------|-------|-----|----------------|--------|
+| 0:00 to 1:00 | 1. Title and hook | "Small kids. Giant courage." One sentence on what Tiny Giants is | About the project | Collage mockup |
+| 1:00 to 2:30 | 2. Problem and audience | Kids can not name big feelings. Parents want safe, calm tools | The problem, Who it is for | Personas |
+| 2:30 to 4:00 | 3. Solution and features | Two sides, one account. Child plays, parent guides | Features | Screens mockup |
+| 4:00 to 5:30 | 4. Design | Moodboard, palette from Cami's world, 16px rule, landscape for kids | Design system | Palette, typography |
+| 5:30 to 7:00 | 5. Live demo or video | Shelf, Play, blow the candle, parent dashboard | Features | Demo (use demo account) |
+| 7:00 to 8:30 | 6. Tech stack and architecture | Expo, Firebase, Cloudflare Worker, Gemini | Built with, System architecture | Diagram 1 and 13 |
+| 8:30 to 9:30 | 7. How components interact | Layers, the one data door, routes | How the components interact | Diagram 2, 6, 7 |
+| 9:30 to 10:30 | 8. Game engine | A game is a list of scenes, onDone contract | The game engine | Diagram 8, 12 |
+| 10:30 to 11:30 | 9. Data model | Parent, child, session, game. Why subcollections | Data model | ERD |
+| 11:30 to 12:30 | 10. Security and AI coach | PIN hash, rules, JWT verified Worker | Security, AI coach | Diagram 10, 11 |
+| 12:30 to 13:30 | 11. Challenges and testing | Blow detection, key safety, double advance bug | Challenges, Testing | Table |
+| 13:30 to 14:30 | 12. Future work | More games, real analytics, store release | Conclusion | Roadmap |
+| 14:30 to 15:00 | 13. Thank you | Tagline, questions | | Outro |
 
-## Conclusion
+**Likely questions and short answers**
+- *Why Expo and React Native?* One code base for iOS, Android and web, and fast iteration.
+- *Why a Worker for the AI?* An API key inside an app can be extracted. The Worker keeps it secret and checks who is asking.
+- *Is a child's voice recorded?* No. Only loudness is read, and the app works if the mic is refused.
+- *How do you keep data private?* Rules tie every document to the signed in parent's uid.
+- *Why is the catalogue in code?* It is identical for all users, changes with releases and keeps the child side fast.
+- *How would you add a new game?* Create a folder, write a scenes list, add one line to the registry, add one catalogue entry.
+- *What is real and what is sample data?* Accounts, children, game choices, PINs and play sessions are real in Firestore. The insight text is hand written sample content until a generation back end exists.
 
-**Highlights.** A complete, narrated first game with real interaction (microphone, drag,
-tap), a parent side with an AI coach, and a reusable engine that makes the next games
-quicker to build.
+## Conclusion and future work
 
-**Challenges.** Synchronising narration, captions and video; keeping media small enough
-for mobile; and designing for a very young audience while still giving parents useful
-controls.
+**Highlights**
+- A complete, narrated first game with real interaction (microphone, drag, tap).
+- A secure parent side with a PIN gate, per child control and an AI coach.
+- A reusable engine, so the next games are mostly content, not code.
+- Privacy and safety designed in from the start, not added at the end.
+
+**Challenges.** Synchronising narration, captions and video; keeping media small enough for mobile; designing for a very young audience while giving parents useful controls; and keeping an AI feature safe and affordable.
 
 **Future improvements**
-- Finish *Kind Detective* and *Memory Garden*
-- Replace the remaining video with recorded narration and final art
-- Real analytics behind the parent insights
+- Finish *The Kind Detective* and *Memory Garden*
+- Replace the remaining placeholder video with recorded narration and final art
+- Generate real insights from gameplay instead of sample content
 - More languages and voice options
-- Offline play and a store release
+- Offline play
+- A store release through EAS Build and Submit
+- Parent reminders and shared sessions
 
 ## License
 
-Copyright  2026 Danae Swart. **All rights reserved.** This code is shared for assessment
-and portfolio purposes only; it may not be copied, distributed or used to create
-derivative works without written permission.
+Copyright 2026 Danae Swart. **All rights reserved.** This code is shared for assessment and
+portfolio purposes only; it may not be copied, distributed or used to create derivative works
+without written permission.
 
 ## Author
 
 **Danae Swart**
 - GitHub: [@danaeswart](https://github.com/danaeswart)
 - Email: 241022@virtualwindow.co.za
-- LinkedIn: *add your link*
 
 ## Acknowledgements
 
@@ -339,6 +1199,6 @@ derivative works without written permission.
 - [Google Fonts](https://fonts.google.com): Poppins and DM Mono
 - [skillicons.dev](https://skillicons.dev) and [shields.io](https://shields.io) for badges
 - **Open Window**, for the education, facilities and the opportunity to develop this project
-- **ADD LECTURER NAME**, my lecturer, for guidance, critique and feedback throughout the project, including the UX feedback that shaped the final interface
+- My lecturer, for guidance, critique and the UX feedback that shaped the final interface
 - Claude (Anthropic) as an AI coding assistant
 - Feedback from my classmates

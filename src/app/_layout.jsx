@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Poppins_400Regular, Poppins_500Medium, Poppins_600SemiBold } from '@expo-google-fonts/poppins';
 import { DMMono_400Regular } from '@expo-google-fonts/dm-mono';
 import { useFonts } from 'expo-font';
@@ -7,11 +7,22 @@ import * as SplashScreen from 'expo-splash-screen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useAuth } from '../shared/hooks/useAuth.js';
 import { useOrientationLock } from '../shared/hooks/useLandscapeLock.js';
+import PrototypeShell, { reportOrientation, shouldShowMockup } from '../shared/components/PrototypeShell';
 import { colors } from '../shared/theme.js';
 
 SplashScreen.preventAutoHideAsync();
 
+// On a desktop browser the app is shown inside a phone mockup (the app itself runs in an iframe).
 export default function RootLayout() {
+  const [showMockup] = useState(shouldShowMockup);
+  useEffect(() => {
+    if (showMockup) SplashScreen.hideAsync();
+  }, [showMockup]);
+
+  return showMockup ? <PrototypeShell /> : <AppLayout />;
+}
+
+function AppLayout() {
   const { user, ready: authReady } = useAuth();
   const [fontsLoaded, fontError] = useFonts({
     DMMono_400Regular,
@@ -23,7 +34,10 @@ export default function RootLayout() {
 
   // Child routes are landscape-only; adult routes are portrait (the vertical layout).
   const segments = useSegments();
-  useOrientationLock(segments[0] === 'child' ? 'landscape' : segments[0] ? 'portrait' : null);
+  const orientation = segments[0] === 'child' ? 'landscape' : segments[0] ? 'portrait' : null;
+  useOrientationLock(orientation);
+  // When embedded in the web phone mockup, tell it which way to turn.
+  useEffect(() => reportOrientation(orientation ?? 'portrait'), [orientation]);
 
   // Hold the splash until fonts are in and Firebase has checked for a saved sign-in.
   const ready = (fontsLoaded || fontError) && authReady;
