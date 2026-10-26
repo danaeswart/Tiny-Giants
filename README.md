@@ -32,29 +32,30 @@
 
 1. [About the project](#about-the-project)
 2. [The problem and the solution](#the-problem-and-the-solution)
-3. [Who it is for (users and personas)](#who-it-is-for)
-4. [Features](#features)
-5. [Built with](#built-with)
-6. [System architecture](#system-architecture)
-7. [Project structure](#project-structure)
-8. [How the components interact](#how-the-components-interact)
-9. [Navigation and routing](#navigation-and-routing)
-10. [The game engine](#the-game-engine)
-11. [The Big Wave: scene by scene](#the-big-wave-scene-by-scene)
-12. [Data model (ER diagram)](#data-model)
-13. [Security and privacy](#security-and-privacy)
-14. [The AI parent coach](#the-ai-parent-coach)
-15. [Design system](#design-system)
-16. [Use cases](#use-cases)
-17. [Key code snippets](#key-code-snippets)
-18. [Challenges and how they were solved](#challenges-and-how-they-were-solved)
-19. [Testing and quality](#testing-and-quality)
-20. [Getting started](#getting-started)
-21. [Deployment](#deployment)
-22. [Diagram library](#diagram-library)
-23. [Presentation guide (15 minutes)](#presentation-guide)
-24. [Conclusion and future work](#conclusion-and-future-work)
-25. [License, author and acknowledgements](#license)
+3. [Research and UX case study](#research-and-ux-case-study)
+4. [Who it is for (users and personas)](#who-it-is-for)
+5. [Features](#features)
+6. [Built with](#built-with)
+7. [Getting started](#getting-started)
+8. [System architecture](#system-architecture)
+9. [Project structure](#project-structure)
+10. [How the components interact](#how-the-components-interact)
+11. [Navigation and routing](#navigation-and-routing)
+12. [The game engine](#the-game-engine)
+13. [The Big Wave: scene by scene](#the-big-wave-scene-by-scene)
+14. [Data model (ER diagram)](#data-model)
+15. [Security and privacy](#security-and-privacy)
+16. [The AI parent coach](#the-ai-parent-coach)
+17. [Design](#design)
+18. [Use cases](#use-cases)
+19. [Key code snippets](#key-code-snippets)
+20. [Challenges and how they were solved](#challenges-and-how-they-were-solved)
+21. [Testing and quality](#testing-and-quality)
+22. [Deployment](#deployment)
+23. [Diagram library](#diagram-library)
+24. [Presentation guide (15 minutes)](#presentation-guide)
+25. [Conclusion and future work](#conclusion-and-future-work)
+26. [License, author and acknowledgements](#license)
 
 </details>
 
@@ -62,7 +63,7 @@
 
 ## About the project
 
-**Tiny Giants** is a children's emotional-learning app. Each game is a short, narrated
+**Tiny Giants** is a children's emotional-learning app. Each game is a short, captioned
 storybook adventure that teaches one coping skill, such as paced breathing, small-steps
 thinking or noticing kind actions. The tagline is **"Small kids. Giant courage."**
 
@@ -70,7 +71,7 @@ The app has two sides that share one account:
 
 | Side | Who uses it | Orientation | What it does |
 |------|-------------|-------------|--------------|
-| **Child side** | The child (aged 4 to 5) | Landscape | An open-book shelf, one game per spread, large Play button, then the story game itself |
+| **Child side** | The child (aged 4 to 5) | Landscape | A friendly "Hi, Name!" home with one big **All games** button, picture tiles for the enabled games, a large Play button, then the story game itself |
 | **Parent side** | The grown-up | Portrait | Dashboard, choose which games are on for each child, play history, insights, AI coach, account settings |
 
 A **4 digit parent PIN** separates the two sides, so a child cannot wander into settings.
@@ -91,7 +92,7 @@ all along, the candle was only a reminder.
 - Screen time for small children needs to be calm, short and safe, with a parent in control.
 
 **The solution**
-- Short narrated storybook games that each teach one skill through play, not through lectures.
+- Short captioned storybook games that each teach one skill through play, not through lectures.
 - A child-safe interface: large touch targets, no small text, very few choices at once.
 - A parent side that gives control (which games, which child), visibility (what was played, insights) and support (an AI coach that suggests how to play together and what to say afterwards).
 
@@ -102,13 +103,89 @@ all along, the candle was only a reminder.
 3. Nothing the child says is recorded. The microphone is only used to read loudness.
 4. Secrets stay on the server. Data access is locked down by rules, not by hope.
 
+## Research and UX case study
+
+The full UX case study (problem framing, research, personas, game blueprint and annotated wireframes) shaped every decision in the app. The key pieces are summarised here.
+
+### Problem framing
+
+> **A four-year-old can count to ten. But can they calm themselves down?**
+
+Kids' app stores are wall to wall letters, numbers and shapes. Almost nothing teaches a child what to do when their chest goes tight. Children aged 4 to 5 have big feelings, no vocabulary for them and no tools to cope, and their parents often lack the words, the time or the access to professional support.
+
+**How might we** help a child aged four to five build emotional intelligence and real coping tools through play, while giving their parent a genuine role in that process, not just visibility into it?
+
+**The pivot.** Early drafts did not mention the parent at all. Research showed that 4 and 5 year olds whose parent played an educational app with them did meaningfully better than kids who played alone (Griffith et al., 2021). The project became something built for **two people from the start**: a child game plus a parent companion.
+
+### The numbers behind it
+
+| | | |
+|:---:|:---:|:---:|
+| **36**<br/>4 to 5 year olds described different coping responses | **1 in 10+**<br/>children has a diagnosable, treatable mental health condition (UCT, 2023) | **9 / 10**<br/>South African children with a diagnosable condition have no real way to get treated |
+| **15**<br/>child and adolescent psychiatrists in the entire public healthcare system (UCT, 2023) | **3 of 9**<br/>provinces have any child psychiatrists in the public sector (Docrat et al., 2019) | **1 : 10,633**<br/>psychologists to people who would need one (PsySSA, 2025) |
+
+### Research findings that became design decisions
+
+| Finding | Source | Design decision |
+|---------|--------|-----------------|
+| Children this age cope **worse** in situations they can control and **better** in ones outside their hands | Yeo et al., 2014; Band and Weisz, 1988 | The hard moments (the fall, the wave) happen to the character, not as a child failure. The log pile is kept deliberately small |
+| Guided breathing **shown through simple imagery**, not told, lowered physical stress | Obradovic et al., 2021 | A growing and shrinking circle and a candle teach breathing without instructions |
+| Small, completed wins build a child's belief they can cope | Bandura, 1977 | Every scene ends on a small win. Logs can only be removed **one at a time** |
+| Teacher interview: breathing is her main classroom tool, and "baby steps" is her phrase for breaking a task down | Teacher interview | Breathing is the core skill. The "baby steps" scene and one-log-at-a-time game come straight from her words |
+| Parents lack specifics, not motivation | Griffith et al., 2021 | The Play together coach tells a tired parent exactly when and how to join in |
+| Four to five year olds feel before they can name a feeling, and are not reading yet | Simply Psychology; Yeo et al., 2014 | Feelings are shown in Cami's body and never named in the game. Everything is icon and picture led |
+
+### Game design blueprint: the pattern
+
+**Invest, then a big feeling, then breathe with Cami, then the moment passes.** The pattern repeats across controllable moments (the log pile) and uncontrollable ones (the fall, the wave) so the skill transfers. The emotions are never named in the game on purpose. That gap is the parent's cue to join in and talk about it.
+
+| Stage | Scenes | Purpose |
+|-------|--------|---------|
+| Investment | Introduction, Building the sandcastle | A child who cares stays with the story when the challenge arrives |
+| Big feeling | Edge of the woods | Shows stress in the body without naming it |
+| Coping skill | Breathe with Cami | Introduces paced breathing through the candle |
+| Interactive | Forest path, Clearing the logs, Jumping the logs | Hands-on play between story beats |
+| Big feeling + breathe | Log pile, The fall | Practise the skill after different kinds of hard moments |
+| Strategy | "Baby steps" | Pair calming down with a plan |
+| Calm | Arrival at the beach | A deliberate breather before the biggest moment |
+| Biggest feeling + breathe | The wave | The deepest practice, **without the candle** |
+| Resolution | The ending | "The magic is in me too." The skill is handed to the child |
+
+**Playing together** (suggested by the parent coach): *Before*, pause at each big feeling and ask what your child thinks Cami feels. *During*, the unnamed emotions are the cue to talk. *After*, replay the log pile and ask "Have you ever felt like something was too big to do all at once?"
+
+### Parent app flows (from the annotated wireframes)
+
+| Flow | What it does | Design insight |
+|------|--------------|----------------|
+| **1. Parent dashboard** | Each child appears as the character they picked. Tap one to see active games, the skills practised and recent plays | Skills are shown as practice, never scores or comparisons between siblings. A worried parent should leave more equipped, not more anxious |
+| **2. Add a game to a child's view** | Overview, Library, pick a child, game details, Activate | Every game states what it teaches before it is switched on. Nothing reaches the child until a parent chooses it |
+| **3. Playing together** | Pick a child and game, tap Get ideas, receive a plan with when to join in and follow-up activities | The biggest pivot: from managing access to giving ideas. Every answer is labelled "AI suggestions, not professional advice" |
+| **4. Settings and account** | Edit children, account settings behind the PIN, sign out and delete kept apart in "the no-no zone" | The PIN keeps account changes away from small hands without adding friction to everyday use |
+
+### Child app flows
+
+| Flow | What it does | Design insight |
+|------|--------------|----------------|
+| **5. Play a game** | "Hi, Maya!" then All games, pick a picture tile, Play, story, calming candle, "Great job!", Done | Every action is icon led because the child is not reading yet. The ending is a small completed win |
+| **6. Child settings** | A small panel to switch who is playing, toggle skip buttons, or return to the parent dashboard behind the PIN | Families share one tablet. Switching child is a single tap on a character |
+
+### Try it
+
+**Live prototype:** https://tiny-giants-178da.web.app/
+
+On the login page, tap the **demo** button to view the app as if someone has already been using it (two children, play history and insights are filled in).
+
+<!-- Optional visuals: export pages of the case study PDF as images and place them in docs/readme-images/, for example
+     case-study-problem.png, case-study-personas.png, case-study-blueprint.png, case-study-flows.png, then embed them here with
+     <img src="docs/readme-images/case-study-problem.png" width="100%" /> -->
+
 ## Who it is for
 
-| Persona | Needs | How Tiny Giants helps |
-|---------|-------|-----------------------|
-| **The child** (4 to 5) | Calm, playful, one thing at a time, can not read well yet | Narrated stories, captions, big buttons, tactile interactions (blow, drag, tap) |
-| **The parent or carer** | Safe screen time, a way to talk about feelings, to see what happened | PIN gate, per child game switches, history, insights, AI coach |
-| **The educator or therapist** (secondary) | Evidence-informed tools to reinforce coping skills | Each game lists the skills it practises and how it can be reinforced offline |
+| Persona | Who | Needs | How Tiny Giants helps |
+|---------|-----|-------|-----------------------|
+| **Noah, 5** (the child) | Goes quiet or physical before he has words for what is wrong. Being told to "calm down" does nothing. | Something shown, not told. A tool that does not need him to explain the feeling first. Mom nearby, doing it with him. Repetition until the tool is his own. | Story games where feelings are shown in the character's body, one breathing tool repeated across the story, big icon-led controls |
+| **Sarah, 34** (the parent) | Searches for parenting help late at night after Noah is asleep. Professional help was never really an option. | Something free that does not quietly become a cost later. Something she can do with him, not hand to him. Simple enough for a tired Tuesday. | Free app, a Play together coach with concrete ideas, per child control, no scores or comparisons |
+| **Educator or therapist** (secondary) | Wants tools that reinforce coping skills | Evidence-informed activities | Each game lists the skills it practises and how to reinforce them offline |
 
 ## Features
 
@@ -118,12 +195,12 @@ all along, the candle was only a reminder.
 
 | Feature | Description |
 |---------|-------------|
-| **Storybook shelf** | An open book where each game is one two-page spread with a large Play button. Swipe or tap to turn pages. Only games the parent has enabled appear. |
-| **All games view and search** | A grid of the child's enabled games with a title search limited to enabled games. |
-| **Game intro** | A short "words" screen (for example Storytelling, Ocean, Adventure, Breathing) before the story starts. |
-| **Interactive story games** | Narrated scenes with timed captions, video and stills, plus five interactive moments: blow, drag, tap, jump and breathe. |
+| **Child home** | A personal greeting ("Hi, Maya!"), one big **All games** button and the child's chosen characters floating on the side. A settings button lets siblings switch who is playing. |
+| **All games view** | Big picture tiles for only the games a parent has enabled, so a pre-reader can choose without reading. |
+| **Game intro** | The game's cover art, its title and one large Play button. |
+| **Interactive story games** | Captioned scenes with video and stills, plus interactive moments: blow, drag, tap, jump and breathe. There is no voiceover. Captions are timed by reading time. |
 | **Microphone blow detection** | The child blows on the phone to put out Cami's candle. Only loudness is read, never stored. If the mic is refused, the candle blows out by itself. |
-| **Celebration popup** | A cheering popup at the end of the story before the book reopens. |
+| **Celebration popup** | A cheering popup at the end of the story before returning to the game page. |
 | **Rotate prompt** | Gently asks the child to turn the device to landscape. |
 
 ### Parent side
@@ -164,7 +241,7 @@ all along, the candle was only a reminder.
 | Navigation | [Expo Router](https://docs.expo.dev/router/introduction/) | File based routes, protected route groups for sign in |
 | Animation and gestures | Reanimated 4, Worklets, Gesture Handler | Smooth 60fps drag, bounce and fade |
 | Graphics | `react-native-svg` | The characters, candle, castle and logs are drawn in code, so they scale perfectly |
-| Media | `expo-video`, `expo-audio`, `expo-speech` | Scene clips, microphone metering, audio |
+| Media | `expo-video`, `expo-audio` | Silent scene clips, and microphone loudness metering for the blow-out-the-candle moment |
 | Device | `expo-screen-orientation`, `expo-crypto`, `expo-font`, `expo-splash-screen` | Landscape and portrait locking, PIN hashing, fonts, launch screen |
 | Auth and database | Firebase Authentication and Cloud Firestore | Managed, secure, real time ready, rule based access |
 | Local storage | AsyncStorage | Remember settings and which child is playing |
@@ -173,6 +250,69 @@ all along, the candle was only a reminder.
 | Testing and linting | Jest (`jest-expo`), ESLint (`eslint-config-expo`) | Unit tests for validation and storage, consistent code |
 | Design | Figma, a custom style guide in `docs/style-guide/` | Moodboard, palette, typography, wireframes |
 | Fonts | Talina (display), Poppins (body), DM Mono | Friendly, readable, child appropriate |
+
+## Getting started
+
+This repository contains both the **app** and the **coach Worker** in `worker/`.
+
+### Prerequisites
+
+| Requirement | Version | Link |
+|-------------|---------|------|
+| Node.js | 20 or newer | https://nodejs.org |
+| npm | comes with Node | |
+| Expo Go (phone) | latest | [App Store](https://apps.apple.com/app/expo-go/id982107779) or [Google Play](https://play.google.com/store/apps/details?id=host.exp.exponent) |
+| Firebase project | | https://console.firebase.google.com (enable Authentication with Email/Password, and Firestore) |
+| Gemini API key (AI coach only) | | https://aistudio.google.com/apikey |
+| Cloudflare account and Wrangler (to deploy the coach) | | https://developers.cloudflare.com/workers/wrangler/ |
+
+### Install and run
+
+1. **Clone**
+   ```bash
+   git clone https://github.com/danaeswart/Tiny-Giants.git
+   cd Tiny-Giants
+   ```
+2. **Install**
+   ```bash
+   npm install
+   ```
+3. **Environment variables.** Copy `.env.example` to `.env.local` and fill in your Firebase web config and the coach URL.
+   ```bash
+   EXPO_PUBLIC_FIREBASE_API_KEY=...
+   EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=...
+   EXPO_PUBLIC_FIREBASE_PROJECT_ID=...
+   EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=...
+   EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
+   EXPO_PUBLIC_FIREBASE_APP_ID=...
+   EXPO_PUBLIC_COACH_URL=https://tiny-giants-coach.<your-subdomain>.workers.dev
+   ```
+4. **Start**
+   ```bash
+   npm start
+   ```
+5. **Open it**
+   - Phone: scan the QR code (Camera app on iPhone, Expo Go on Android). Both devices must share Wi-Fi, or use `npx expo start --tunnel`.
+   - Browser: press `w`.
+   - Emulator: press `i` (iOS) or `a` (Android).
+6. **Optional: deploy the AI coach**
+   ```bash
+   cd worker
+   npm install
+   npx wrangler secret put GEMINI_API_KEY
+   npx wrangler deploy
+   ```
+   Put the printed URL in `EXPO_PUBLIC_COACH_URL`.
+
+### Useful scripts
+
+| Command | Purpose |
+|---------|---------|
+| `npm start` | Start the Expo dev server |
+| `npm run android` / `ios` / `web` | Start on a specific platform |
+| `npm run lint` | Lint the project |
+| `npm test` | Run Jest |
+| `npx expo-doctor` | Diagnose dependency and config issues |
 
 ## System architecture
 
@@ -274,8 +414,9 @@ Tiny-Giants/
       child/             Child route group (landscape)
       adult/             Parent route group (portrait) with a (tabs) group
     child/               Child screens
-      pages/             StorybookShelf, StorybookReader, AllGamesView, GameIntro, PlayGame, GameNotice...
-      components/        BookCover, BookPage, PageTurner, PlayButton, SwipeHint, RotatePrompt...
+      pages/             StorybookShelf (the child home), AllGamesView, GameIntro, PlayGame, GameNotice...
+      components/        FloatingAvatars, PlayButton, RotatePrompt, ChildScreen, ChildMessage...
+                         (BookCover, BookPage, PageTurner and StorybookReader are the older book view, no longer the main flow)
     adult/               Parent screens
       pages/             Dashboard, Games, GameDetail, Insights, InsightDetail, PlayHistory, Settings, EditChild, AccountSettings
       components/        ParentPinGate, CoachChat, GameCard, StatBar, InsightCard, AuthForm, TabBar...
@@ -285,7 +426,7 @@ Tiny-Giants/
       game1-big-wave/    Scenes, hand drawn SVG art and the blow-candle mini game
     shared/
       components/        AppText, Button, Icon, Modal, Popup, Avatar, Blobs, CoverImage...
-      data/              games catalogue, avatars, insights, sessions, images, book layout
+      data/              games catalogue, avatars, insights, sessions, images
       hooks/             useAuth, useProfiles, useChildGames, useCurrentChildId, useSettings, useLoad...
       services/          api, auth, pin, coach, demo, onboarding, firebase
       state/             persistedStore (tiny app wide store)
@@ -356,7 +497,7 @@ Every screen reads and writes through `src/shared/services/api.js`. Child screen
 ```mermaid
 sequenceDiagram
     actor C as Child
-    participant SH as StorybookShelf
+    participant GI as GameIntro
     participant PG as PlayGame
     participant REG as registry.js
     participant SP as ScenePlayer
@@ -364,8 +505,8 @@ sequenceDiagram
     participant API as api.js
     participant FS as Firestore
 
-    C->>SH: Tap Play
-    SH->>PG: route /child/games/big-wave/play
+    C->>GI: Tap Play
+    GI->>PG: route /child/games/big-wave/play
     PG->>API: getEnabledGameForChild(childId, gameId)
     API-->>PG: game or null
     PG->>REG: getScenes('big-wave')
@@ -373,7 +514,7 @@ sequenceDiagram
     PG->>SP: scenes, onExit, onFinish
     loop each scene
         SP->>SC: render Scene with onDone
-        SC-->>SP: onDone() when narration ends, video ends or mini game won
+        SC-->>SP: onDone() when captions end, video ends or mini game won
     end
     alt finished
         SP->>PG: onFinish()
@@ -396,12 +537,12 @@ sequenceDiagram
     participant API as api.js
     participant FS as Firestore
     actor C as Child
-    participant SH as StorybookShelf
+    participant SH as AllGamesView
 
     P->>GD: Toggle "Show to Noah"
     GD->>API: setGameEnabledForChild(childId, gameId, true)
     API->>FS: setDoc children/{id} { enabledGameIds } merge
-    C->>SH: Open the book
+    C->>SH: Tap All games
     SH->>API: getEnabledGamesForChild(childId)
     API->>FS: getDoc children/{id}
     FS-->>API: enabledGameIds
@@ -412,16 +553,15 @@ sequenceDiagram
 
 ```mermaid
 flowchart TB
-    CL["ChildLayout<br/>landscape lock + rotate prompt"] --> SHELF["StorybookShelf"]
+    CL["ChildLayout<br/>landscape lock + RotatePrompt"] --> HOME["StorybookShelf (child home)"]
     CL --> ALL["AllGamesView"]
     CL --> INTRO["GameIntro"]
     CL --> PLAY["PlayGame"]
-    SHELF --> COVER["BookCover"]
-    SHELF --> PAGE["BookPage (left and right)"]
-    SHELF --> TURN["PageTurner"]
-    SHELF --> PB["PlayButton"]
-    SHELF --> HINT["SwipeHint"]
-    SHELF --> SEARCH["SearchBar"]
+    HOME --> FA["FloatingAvatars"]
+    HOME --> BTN["Button: All games"]
+    HOME --> PM["ProfileMenu (switch child, skip buttons, back to parent)"]
+    ALL --> COVER["CoverImage tiles"]
+    INTRO --> FULL["FullCover + Play button"]
     PLAY --> SP["ScenePlayer"]
     PLAY --> POP["Popup (celebration)"]
     SP --> STAGE["Stage context<br/>width and height"]
@@ -481,7 +621,7 @@ flowchart TB
     PROT1 --> CH["/child (landscape)"]
     PROT1 --> AD["/adult (portrait)"]
 
-    CH --> CHI["/child (shelf)"]
+    CH --> CHI["/child (home: Hi, Name!)"]
     CH --> CHG["/child/games (all games)"]
     CH --> CGI["/child/games/[gameId] (intro)"]
     CH --> CGP["/child/games/[gameId]/play"]
@@ -510,16 +650,16 @@ Games are not hard coded screens. They are **an ordered list of scenes** played 
 | `registry.js` | Maps a game id to its scene list. A game with no entry shows a "game goes here" placeholder. |
 | `ScenePlayer` | Plays scenes in order, full screen. Provides the stage size, close button, optional skip buttons and fade transitions. |
 | `Stage` | A React context with the stage width and height so scenes can lay out responsively. |
-| `StoryScene` | Picture plus read-aloud text, a Next arrow when the narration ends. |
-| `SpokenStillScene`, `ZoomStillScene` | A still picture with timed spoken text, or a slow zoom, then moves on by itself. |
+| `StoryScene` | Picture plus captions, a Next arrow when the last line has been shown. |
+| `SpokenStillScene`, `ZoomStillScene` | A still picture with timed captions, or a slow zoom, then moves on by itself. |
 | `VideoScene`, `SpokenVideoScene`, `LoopingVideoScene`, `BreathingVideoScene` | Video based scenes, including a looping breathing guide. |
-| `Captions` and `useSpokenLines` | Show each line of text timed by estimated reading time. |
+| `Captions` and `useSpokenLines` | Show each line of text timed by estimated reading time. (Despite the name, no voice is played.) |
 | `timing.js` | Pure functions that turn lines of text into a timeline (`timeLines`, `lineAt`, `estimatedEnd`). |
-| `Narration` | A timer clock that drives captions and scene length. |
+| `Narration` | A timer clock that drives captions and scene length (a timer, not audio). |
 | `useBlowDetector` | Reads microphone loudness and returns `{ status, level }`. |
 | `FitImage`, `NextButton` | Image fitting and the shared Next control. |
 
-**The scene contract is one prop.** Every scene receives `onDone`. It calls it when the narration is read, the video ends or the mini game is won, and the next scene fades in. A guard in `ScenePlayer` ignores `onDone` calls from a scene that has already been skipped away from, so the story cannot jump twice.
+**The scene contract is one prop.** Every scene receives `onDone`. It calls it when the captions have been read, the video ends or the mini game is won, and the next scene fades in. A guard in `ScenePlayer` ignores `onDone` calls from a scene that has already been skipped away from, so the story cannot jump twice.
 
 ```mermaid
 stateDiagram-v2
@@ -765,49 +905,11 @@ sequenceDiagram
 - **Safety.** Serious concerns are met with kindness and a pointer to a professional. Off topic questions are politely redirected.
 - **Opening message.** With no messages, the Worker supplies a standard "how can I play this together" opening.
 
-## Design system
+## Design
 
-<table>
-<tr>
-<td width="50%"><img src="docs/readme-images/moodboard.png" alt="Moodboard" width="100%" /></td>
-<td width="50%"><img src="docs/readme-images/colour-palette.png" alt="Colour palette" width="100%" /></td>
-</tr>
-<tr>
-<td width="50%"><img src="docs/readme-images/typography.png" alt="Typography" width="100%" /></td>
-<td width="50%"><img src="docs/readme-images/wireframes.png" alt="Wireframes" width="100%" /></td>
-</tr>
-</table>
-
-The palette is drawn from Cami's world: the candle flame, the big wave, the forest and the castle.
-
-| Token | Hex | Meaning |
-|-------|-----|---------|
-| cream | `#fff6e3` | Warm page background |
-| ink (night plum) | `#241447` | Text, the book spine |
-| flame | `#ff6b2c` | Primary action, the candle |
-| glow | `#ffc933` | Highlights |
-| wave | `#14a3d9` | Water, calm |
-| deep sea | `#0b4c8c` | Depth, headings |
-| berry | `#ff4f87` | Warmth, alerts of care |
-| forest | `#22b573` | Success, the woods |
-
-**Typography.** Talina for display headings (it only has letters, so `AppText` falls back to Poppins for digits and punctuation), Poppins for body, DM Mono for small technical labels.
-
-**Accessibility and child-first rules**
-- No text smaller than **16px**. All text goes through `AppText`, which enforces it.
-- Very large touch targets and few choices on screen at once.
-- Child routes are landscape first, parent routes portrait.
-- Captions on every narrated line.
-- The app still works if the microphone is refused.
-- The full style guide is in [`docs/style-guide/`](docs/style-guide/).
+<img src="docs/readme-images/design%20mockup.png" alt="Tiny Giants design mockup" width="100%" />
 
 ## Use cases
-
-### Actors
-- **Parent**: signs up, manages children and games, reviews progress, uses the coach.
-- **Child**: plays the games.
-- **Firebase**: authenticates and stores.
-- **Coach Worker and Gemini**: answer coaching questions.
 
 ```mermaid
 flowchart LR
@@ -815,102 +917,23 @@ flowchart LR
     C(["Child"])
     AI(["Coach Worker + Gemini"])
 
-    subgraph Account["Account"]
-        U1["Sign up / log in"]
-        U2["Use demo account"]
-        U3["Create parent PIN"]
-        U4["Edit account or delete it"]
-    end
-    subgraph Profiles["Child profiles"]
-        U5["Add / edit child"]
-        U6["Choose character"]
-    end
-    subgraph Control["Control"]
-        U7["Browse and search games"]
-        U8["Enable or disable a game per child"]
-        U9["Enter PIN to reach parent side"]
-    end
-    subgraph Insight["Insight"]
-        U10["View dashboard and play history"]
-        U11["Read insights"]
-        U12["Chat with the AI coach"]
-    end
-    subgraph Play["Play"]
-        U13["Browse the storybook shelf"]
-        U14["Search enabled games"]
-        U15["Play a story game"]
-        U16["Blow into the mic"]
-        U17["Drag, tap, jump, breathe"]
-    end
-
-    P --> U1 & U2 & U3 & U4 & U5 & U6 & U7 & U8 & U9 & U10 & U11 & U12
-    C --> U13 & U14 & U15
-    U15 -. include .-> U16
-    U15 -. include .-> U17
-    U12 --- AI
+    P --> U1["Sign up, log in or use demo"]
+    P --> U2["Add and edit children"]
+    P --> U3["Enable or disable games per child"]
+    P --> U4["View dashboard, history and insights"]
+    P --> U5["Chat with the AI coach"]
+    C --> U6["Browse All games"]
+    C --> U7["Play a story game"]
+    U7 -. include .-> U8["Blow, drag, tap and breathe"]
+    U7 -. include .-> U9["Save play session"]
+    U5 --- AI
 ```
 
-### Use case descriptions
-
-**UC1: Parent creates an account and finishes onboarding**
-
-| Item | Detail |
-|------|--------|
-| Actor | Parent |
-| Precondition | App installed, no account |
-| Main flow | 1. Parent taps Sign up. 2. Enters name, email, password, confirm. 3. App validates and creates the account. 4. Parent creates a 4 digit PIN. 5. Parent adds a child (name, age, character). 6. Lands on the dashboard. |
-| Alternate flows | Invalid email or short password shows an inline message. "Add a child later" skips step 5 and is remembered. |
-| Postcondition | `parents/{uid}` and optionally one child exist. |
-
-**UC2: Parent enables a game for a child**
-
-| Item | Detail |
-|------|--------|
-| Actor | Parent |
-| Precondition | Signed in, at least one child |
-| Main flow | 1. Open Games tab. 2. Search or filter by category. 3. Open a game. 4. Switch it on for a chosen child. |
-| Alternate flow | A "coming soon" game cannot be switched on. |
-| Postcondition | `enabledGameIds` updated, the child's shelf now shows the game. |
-
-**UC3: Child plays The Big Wave**
-
-| Item | Detail |
-|------|--------|
-| Actor | Child (supported by parent) |
-| Precondition | Game enabled, device in landscape |
-| Main flow | 1. Child opens the book. 2. Turns to the game spread. 3. Taps Play. 4. Watches and listens, blows, drags, taps, breathes. 5. Reaches the end and sees the celebration. 6. Book reopens. |
-| Alternate flows | Mic refused: candle blows out by itself. Child leaves early: session saved as not completed if 5 seconds or more. Save fails: logged only, the child is not interrupted. |
-| Postcondition | A session document exists. |
-
-**UC4: Parent returns to the parent side**
-
-| Item | Detail |
-|------|--------|
-| Actor | Parent |
-| Main flow | 1. Open the parent area. 2. Enter the PIN. 3. Gate opens. |
-| Alternate flow | 5 wrong tries locks the gate for 30 seconds. |
-
-**UC5: Parent asks the AI coach for ideas**
-
-| Item | Detail |
-|------|--------|
-| Actor | Parent, Coach Worker, Gemini |
-| Main flow | 1. Open a game detail page. 2. Open the coach. 3. Receive an opening recommendation. 4. Ask follow up questions. |
-| Alternate flows | Token invalid: asked to sign in again. Coach busy (429): try again in a moment. Offline: friendly error. |
-
-**UC6: Parent reviews progress**
-
-| Item | Detail |
-|------|--------|
-| Actor | Parent |
-| Main flow | 1. Pick a child in the title dropdown. 2. View stats and recent plays. 3. Open Play history for plays, completions and time per game. 4. Open an insight and read the suggested activity. |
-
-**UC7: Parent deletes their account**
-
-| Item | Detail |
-|------|--------|
-| Actor | Parent |
-| Main flow | 1. Settings, Account. 2. Danger zone. 3. Confirm (re-authentication if needed). 4. Parent record and all children and sessions are removed. |
+| Use case | Actor | Main flow | Alternate flows |
+|----------|-------|-----------|-----------------|
+| **Set up and choose games** | Parent | Sign up, create a PIN, add a child, open the Games tab, switch a game on for that child | Skip adding a child and do it later. A "coming soon" game cannot be switched on |
+| **Play The Big Wave** | Child | Home, All games, pick the tile, Play, watch, blow, drag, tap and breathe to the end, celebration popup | Mic refused: the candle blows out by itself. Leaving after 5 seconds or more saves a not completed session |
+| **Get ideas from the coach** | Parent | Open a game, ask the coach, read the opening recommendation, ask follow-ups | Invalid token: asked to sign in again. Coach busy or offline: friendly error |
 
 ## Key code snippets
 
@@ -994,14 +1017,14 @@ const settings = createPersistedStore('tiny-giants:settings', { skip: false });
 | Challenge | Solution |
 |-----------|----------|
 | Detecting a child blowing into a phone | `useBlowDetector` reads microphone metering in dB every 80 ms, maps -50 to -8 dB onto a 0 to 1 level and treats a sustained spike as a blow. Nothing is recorded or sent, and there is a graceful fallback. |
-| Keeping narration, captions and video in sync | `timing.js` builds a timeline from the text and `useSpokenLines` drives captions from it, so scene length follows reading time. |
+| Keeping captions and video in sync | `timing.js` builds a timeline from the text and `useSpokenLines` drives captions from it, so scene length follows reading time. |
 | Keeping the AI key safe | A Cloudflare Worker holds the key and verifies the parent's Firebase token with Google's public keys before answering. |
 | Keeping children out of parent screens | Separate route groups plus a hashed, rate limited PIN gate. |
 | Keeping one family's data away from another | Hierarchical Firestore data with rules that tie every read and write to `auth.uid`. |
 | Scenes advancing twice (skip then finish) | `ScenePlayer` tracks the current scene id and ignores `onDone` from any other scene. |
 | Large video files | Short clips, with some video replaced by audio, stills and code drawn SVG art. |
 | Models being retired by the AI provider | The Worker tries a list of models in order and handles 400, 404, 503 and timeouts. |
-| Children's lack of reading ability | Captions plus narration, large icons, and games built around doing rather than reading. |
+| Children's lack of reading ability | Captions, large icons and picture tiles, and games built around doing rather than reading. |
 | Two orientations in one app | Orientation is derived from the route's first segment and applied by a single hook. |
 | Showing the app on a desktop | A `PrototypeShell` renders the app inside a phone mockup on desktop browsers and tells it which way to rotate. |
 | A new family has no data to look at | A shared demo account that re-creates its PIN and two children each time it is used. |
@@ -1020,76 +1043,11 @@ npm run lint    # ESLint with eslint-config-expo
 
 Validation and storage logic are written as **pure functions** with no Firebase or React inside, which is what makes them quick to test.
 
-<img src="docs/readme-images/test-results.png" alt="Jest results" width="100%" />
-
 **Other quality practices**
 - UX review with a lecturer, with the feedback applied to the interface.
 - Feedback from classmates during development.
 - Firestore rules reasoned through per field, not left open.
-- Early prototype built in Vite (`web-vite-prototype/`) to validate the storybook shelf idea before moving to Expo.
-
-## Getting started
-
-This repository contains both the **app** and the **coach Worker** in `worker/`.
-
-### Prerequisites
-
-| Requirement | Version | Link |
-|-------------|---------|------|
-| Node.js | 20 or newer | https://nodejs.org |
-| npm | comes with Node | |
-| Expo Go (phone) | latest | [App Store](https://apps.apple.com/app/expo-go/id982107779) or [Google Play](https://play.google.com/store/apps/details?id=host.exp.exponent) |
-| Firebase project | | https://console.firebase.google.com (enable Authentication with Email/Password, and Firestore) |
-| Gemini API key (AI coach only) | | https://aistudio.google.com/apikey |
-| Cloudflare account and Wrangler (to deploy the coach) | | https://developers.cloudflare.com/workers/wrangler/ |
-
-### Install and run
-
-1. **Clone**
-   ```bash
-   git clone https://github.com/danaeswart/Tiny-Giants.git
-   cd Tiny-Giants
-   ```
-2. **Install**
-   ```bash
-   npm install
-   ```
-3. **Environment variables.** Copy `.env.example` to `.env.local` and fill in your Firebase web config and the coach URL.
-   ```bash
-   EXPO_PUBLIC_FIREBASE_API_KEY=...
-   EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=...
-   EXPO_PUBLIC_FIREBASE_PROJECT_ID=...
-   EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=...
-   EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
-   EXPO_PUBLIC_FIREBASE_APP_ID=...
-   EXPO_PUBLIC_COACH_URL=https://tiny-giants-coach.<your-subdomain>.workers.dev
-   ```
-4. **Start**
-   ```bash
-   npm start
-   ```
-5. **Open it**
-   - Phone: scan the QR code (Camera app on iPhone, Expo Go on Android). Both devices must share Wi-Fi, or use `npx expo start --tunnel`.
-   - Browser: press `w`.
-   - Emulator: press `i` (iOS) or `a` (Android).
-6. **Optional: deploy the AI coach**
-   ```bash
-   cd worker
-   npm install
-   npx wrangler secret put GEMINI_API_KEY
-   npx wrangler deploy
-   ```
-   Put the printed URL in `EXPO_PUBLIC_COACH_URL`.
-
-### Useful scripts
-
-| Command | Purpose |
-|---------|---------|
-| `npm start` | Start the Expo dev server |
-| `npm run android` / `ios` / `web` | Start on a specific platform |
-| `npm run lint` | Lint the project |
-| `npm test` | Run Jest |
-| `npx expo-doctor` | Diagnose dependency and config issues |
+- Early prototype built in Vite (`web-vite-prototype/`) to validate the original open-book idea before moving to Expo (the book was later simplified into the current home screen and All games button).
 
 ## Deployment
 
@@ -1140,8 +1098,8 @@ Visual diagrams for the presentation are kept in `docs/diagrams/` as PDFs. The e
 | 0:00 to 1:00 | 1. Title and hook | "Small kids. Giant courage." One sentence on what Tiny Giants is | About the project | Collage mockup |
 | 1:00 to 2:30 | 2. Problem and audience | Kids can not name big feelings. Parents want safe, calm tools | The problem, Who it is for | Personas |
 | 2:30 to 4:00 | 3. Solution and features | Two sides, one account. Child plays, parent guides | Features | Screens mockup |
-| 4:00 to 5:30 | 4. Design | Moodboard, palette from Cami's world, 16px rule, landscape for kids | Design system | Palette, typography |
-| 5:30 to 7:00 | 5. Live demo or video | Shelf, Play, blow the candle, parent dashboard | Features | Demo (use demo account) |
+| 4:00 to 5:30 | 4. Design | Moodboard, palette from Cami's world, 16px rule, landscape for kids | Design | Design mockup, palette |
+| 5:30 to 7:00 | 5. Live demo or video | Child home, All games, Play, blow the candle, parent dashboard | Features | Demo (use demo account) |
 | 7:00 to 8:30 | 6. Tech stack and architecture | Expo, Firebase, Cloudflare Worker, Gemini | Built with, System architecture | Diagram 1 and 13 |
 | 8:30 to 9:30 | 7. How components interact | Layers, the one data door, routes | How the components interact | Diagram 2, 6, 7 |
 | 9:30 to 10:30 | 8. Game engine | A game is a list of scenes, onDone contract | The game engine | Diagram 8, 12 |
@@ -1163,16 +1121,16 @@ Visual diagrams for the presentation are kept in `docs/diagrams/` as PDFs. The e
 ## Conclusion and future work
 
 **Highlights**
-- A complete, narrated first game with real interaction (microphone, drag, tap).
+- A complete first game with real interaction (microphone, drag, tap).
 - A secure parent side with a PIN gate, per child control and an AI coach.
 - A reusable engine, so the next games are mostly content, not code.
 - Privacy and safety designed in from the start, not added at the end.
 
-**Challenges.** Synchronising narration, captions and video; keeping media small enough for mobile; designing for a very young audience while giving parents useful controls; and keeping an AI feature safe and affordable.
+**Challenges.** Synchronising captions and video; keeping media small enough for mobile; designing for a very young audience while giving parents useful controls; and keeping an AI feature safe and affordable.
 
 **Future improvements**
 - Finish *The Kind Detective* and *Memory Garden*
-- Replace the remaining placeholder video with recorded narration and final art
+- Replace the remaining placeholder video with final art, and consider adding voiceover and sound
 - Generate real insights from gameplay instead of sample content
 - More languages and voice options
 - Offline play
@@ -1199,6 +1157,5 @@ without written permission.
 - [Google Fonts](https://fonts.google.com): Poppins and DM Mono
 - [skillicons.dev](https://skillicons.dev) and [shields.io](https://shields.io) for badges
 - **Open Window**, for the education, facilities and the opportunity to develop this project
-- My lecturer, for guidance, critique and the UX feedback that shaped the final interface
 - Claude (Anthropic) as an AI coding assistant
 - Feedback from my classmates

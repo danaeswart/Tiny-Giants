@@ -29,7 +29,7 @@ TECH STACK
 - Expo SDK 58, React Native 0.88, React 19, plain JavaScript (JSX)
 - Expo Router (file based routes, Stack.Protected for auth guard)
 - Reanimated 4, Gesture Handler, react-native-svg
-- expo-video, expo-audio (microphone loudness metering), expo-speech, expo-crypto, expo-screen-orientation
+- expo-video (silent clips), expo-audio (microphone loudness metering only, there is no voiceover or sound), expo-crypto, expo-screen-orientation
 - Firebase Authentication (email and password) and Cloud Firestore with security rules
 - AsyncStorage for device settings and "current child"
 - Cloudflare Worker (uses the "jose" library) that verifies the Firebase ID token and calls the Google Gemini API; the Gemini key is a Worker secret
@@ -39,7 +39,7 @@ TECH STACK
 
 CODE STRUCTURE (src/)
 - app/ : thin Expo Router route files (welcome, login, signup, create-pin, add-child, index, child/*, adult/*)
-- child/ : pages (StorybookShelf, StorybookReader, AllGamesView, GameIntro, PlayGame, GameNotice) and components (BookCover, BookPage, PageTurner, PlayButton, SwipeHint, RotatePrompt, SearchBar)
+- child/ : pages (StorybookShelf which is now the child home "Hi, Name!" with an All games button, AllGamesView, GameIntro, PlayGame, GameNotice) and components (FloatingAvatars, PlayButton, RotatePrompt, ChildScreen, ChildMessage). The old open-book view is no longer used, do not draw a book.
 - adult/ : pages (Dashboard, Games, GameDetail, Insights, InsightDetail, PlayHistory, Settings, EditChild, AccountSettings) and components (ParentPinGate, CoachChat, GameCard, StatBar, InsightCard, AuthForm, AvatarPicker, DangerZone, etc.)
 - games/ : registry.js (game id to scene list), engine/ (ScenePlayer, Stage, StoryScene, SpokenStillScene, ZoomStillScene, VideoScene, SpokenVideoScene, LoopingVideoScene, BreathingVideoScene, Captions, Narration, timing.js, useSpokenLines, useBlowDetector), game1-big-wave/ (scenes.js with 18 scenes, art/ SVG drawings, BlowCandleGame)
 - shared/ : components (AppText, Button, Icon, Modal, Popup, Avatar, Blobs...), data (games, avatars, insights, sessions), hooks (useAuth, useProfiles, useChildGames, useCurrentChildId, useSettings, useLoad), services (api.js "the one data door", auth, pin, coach, demo, onboarding, firebase), state/persistedStore, theme.js
@@ -144,7 +144,7 @@ Draw a system boundary box titled "Tiny Giants" containing these use cases (oval
 - Child profiles: Add child, Edit child, Choose character
 - Game control: Browse and search games, Enable or disable game per child, Enter PIN to reach parent side
 - Insight: View dashboard, View play history, Read insights, Chat with AI coach
-- Play: Browse storybook shelf, Search enabled games, Play a story game
+- Play: Browse All games, Search enabled games, Play a story game
 
 Relationships:
 - Parent connects to all Account, Child profiles, Game control and Insight use cases
@@ -164,9 +164,9 @@ Create a user flow diagram as a PDF (landscape A4) with two swimlanes: "Parent (
 
 Parent lane: Open app -> Welcome -> (Sign up or Log in or Demo) -> decision "Has PIN?" (no: Create PIN) -> decision "Has a child?" (no: Add child, or skip) -> Dashboard -> Games tab -> Game detail -> Toggle game on for a child -> Play history / Insights / AI coach -> Settings (edit child, account, delete account).
 
-Child lane: Enter PIN to switch sides is NOT needed to go to the child side, but to return to the parent side the PIN is required. Show: Parent hands over device -> Storybook shelf -> Turn page -> Tap Play -> Game intro -> Story scenes (watch, blow, drag, tap, breathe) -> Celebration popup -> Book reopens -> (Exit) -> PIN gate -> back to Parent lane.
+Child lane: the PIN is not needed to go to the child side, but is required to return to the parent side. Show: Parent hands over device -> Child home ("Hi, Name!") -> All games -> Pick a picture tile -> Game intro -> Tap Play -> Story scenes (watch, blow, drag, tap, breathe) -> Celebration popup -> Back to game page -> (Exit) -> PIN gate -> back to Parent lane.
 
-Add a cross lane arrow showing: "Session saved to Firestore" when the child finishes or leaves after 5 seconds, and "Game appears on shelf" when the parent enables a game. Use rounded rectangles for screens, diamonds for decisions, a different colour for each lane. Export as a PDF.
+Add a cross lane arrow showing: "Session saved to Firestore" when the child finishes or leaves after 5 seconds, and "Game appears on the child home" when the parent enables a game. Use rounded rectangles for screens, diamonds for decisions, a different colour for each lane. Export as a PDF.
 ```
 
 ### 06. Sitemap and navigation  (`06-sitemap.pdf`)
@@ -180,7 +180,7 @@ Branch "Signed in (Stack.Protected guard = !!user)":
   - / (index: decides where to go: create-pin, add-child, or adult)
   - /create-pin
   - /add-child
-  - /child (landscape): shelf at /child, /child/games, /child/games/[gameId] (intro), /child/games/[gameId]/play, /child/story
+  - /child (landscape): child home at /child, /child/games, /child/games/[gameId] (intro), /child/games/[gameId]/play, /child/story
   - /adult (portrait): bottom tabs (Dashboard, Games, Insights, Settings), plus /adult/game/[gameId], /adult/insight/[insightId], /adult/child/[childId], /adult/account, /adult/play-history
 
 Colour code: auth screens in berry, onboarding in glow, child routes in wave blue, parent routes in forest green. Add small orientation icons (landscape or portrait) beside the child and adult branches and a note "Orientation is chosen from the first URL segment". Export as a PDF.
@@ -192,8 +192,10 @@ Colour code: auth screens in berry, onboarding in glow, child routes in wave blu
 Create a component tree diagram as a PDF (landscape A4) showing how React components compose, as two trees side by side.
 
 LEFT TREE (Child side):
-ChildLayout (landscape lock + RotatePrompt) -> StorybookShelf, AllGamesView, GameIntro, PlayGame
-StorybookShelf -> BookCover, BookPage (left and right), PageTurner, PlayButton, SwipeHint, SearchBar
+ChildLayout (landscape lock + RotatePrompt) -> StorybookShelf (child home), AllGamesView, GameIntro, PlayGame
+StorybookShelf -> FloatingAvatars, Button "All games", ProfileMenu
+AllGamesView -> CoverImage tiles
+GameIntro -> FullCover, Play button
 PlayGame -> ScenePlayer, Popup (celebration)
 ScenePlayer -> Stage context -> current Scene
 
@@ -217,7 +219,7 @@ Create a diagram explaining the reusable game engine as a PDF (landscape A4).
 Left: "registry.js" mapping game id 'big-wave' to bigWaveScenes (and 'kind-detective' to "placeholder").
 Centre: ScenePlayer with: current scene index, Stage context (width, height), close button, optional skip buttons, fade between scenes. Show the contract: "Every Scene receives one prop: onDone()". Show ScenePlayer guard: "Ignore onDone from a scene that is no longer current".
 Right: a column of scene types: StoryScene, SpokenStillScene, ZoomStillScene, VideoScene, SpokenVideoScene, LoopingVideoScene, BreathingVideoScene, and Game scenes (BlowCandleGame, drag, tap).
-Bottom: helper modules: Captions, Narration (timer clock), useSpokenLines, timing.js (timeLines, lineAt, estimatedEnd), useBlowDetector (microphone level 0 to 1), FitImage, NextButton.
+Bottom: helper modules: Captions, Narration (timer clock, no audio), useSpokenLines, timing.js (timeLines, lineAt, estimatedEnd), useBlowDetector (microphone level 0 to 1), FitImage, NextButton.
 
 Include a small state diagram: Scene 0 -> Scene 1 -> ... -> Last -> onFinish (save completed session); close button -> onExit (save early session if 5 seconds or more). Add a callout: "To add a game: new folder + scenes list + one line in registry". Export as a PDF.
 ```
@@ -227,11 +229,11 @@ Include a small state diagram: Scene 0 -> Scene 1 -> ... -> Last -> onFinish (sa
 ```
 Create a UML sequence diagram as a PDF (landscape A4).
 
-Participants: Child, StorybookShelf, PlayGame, registry.js, ScenePlayer, Scene, api.js, Firestore.
+Participants: Child, GameIntro, PlayGame, registry.js, ScenePlayer, Scene, api.js, Firestore.
 
 Messages in order:
-1. Child taps Play on StorybookShelf
-2. StorybookShelf navigates to /child/games/big-wave/play (PlayGame)
+1. Child taps Play on GameIntro
+2. GameIntro navigates to /child/games/big-wave/play (PlayGame)
 3. PlayGame calls api.getEnabledGameForChild(childId, gameId); api.js reads Firestore; returns the game or null
 4. PlayGame calls registry.getScenes('big-wave') and gets the ordered scene list
 5. PlayGame renders ScenePlayer with scenes, onExit, onFinish
@@ -305,7 +307,7 @@ Arrange as horizontal bands, each with the technologies as rounded chips and a o
 - Language: JavaScript (JSX)
 - Navigation: Expo Router (file based routes, protected routes)
 - Animation and graphics: Reanimated 4, Gesture Handler, react-native-svg (characters drawn in code)
-- Media and device: expo-video, expo-audio, expo-speech, expo-crypto, expo-screen-orientation, expo-font
+- Media and device: expo-video, expo-audio (microphone only), expo-crypto, expo-screen-orientation, expo-font
 - Backend as a service: Firebase Authentication, Cloud Firestore, Firebase Hosting
 - Serverless AI: Cloudflare Worker, jose (JWT), Google Gemini
 - Local storage: AsyncStorage
@@ -337,13 +339,13 @@ Also show environment variables: EXPO_PUBLIC_FIREBASE_* and EXPO_PUBLIC_COACH_UR
 ### 15. Wireframe to final screen comparison  (`15-wireframes.pdf`)
 
 ```
-Using the attached wireframes and final screenshots, create a before and after comparison sheet as a PDF (landscape A4): wireframe on the left, final screen on the right, for the storybook shelf, game intro, parent dashboard, games library and coach chat. Under each pair add one line on what changed and why (for example "buttons enlarged after UX feedback").
+Using the attached wireframes and final screenshots, create a before and after comparison sheet as a PDF (landscape A4): wireframe on the left, final screen on the right, for the child home, game intro, parent dashboard, games library and coach chat. Under each pair add one line on what changed and why (for example "buttons enlarged after UX feedback").
 ```
 
 ### 16. Project timeline / process  (`16-process.pdf`)
 
 ```
-Create a horizontal timeline PDF of my design and development process: Research and moodboard, Wireframes in Figma, Vite web prototype of the storybook shelf, Move to Expo and Expo Router, Child side and game engine, Big Wave scenes and art, Firebase Auth and Firestore, Parent side and PIN gate, Cloudflare Worker AI coach, Testing and UX feedback, Hosting and final polish. Put a milestone marker and a one line learning on each step. Use the Tiny Giants palette. Export as a PDF.
+Create a horizontal timeline PDF of my design and development process: Research and moodboard, Wireframes in Figma, Vite web prototype of the original open-book idea, Move to Expo and Expo Router, Child side and game engine, Big Wave scenes and art, Firebase Auth and Firestore, Parent side and PIN gate, Cloudflare Worker AI coach, Testing and UX feedback, Hosting and final polish. Put a milestone marker and a one line learning on each step. Use the Tiny Giants palette. Export as a PDF.
 ```
 
 ### 17. Mic blow detection flow  (`17-blow-detection.pdf`)
