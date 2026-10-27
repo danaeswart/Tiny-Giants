@@ -28,7 +28,11 @@ export default function FillVideo({ player, style, ...rest }) {
   });
 
   useEffect(() => {
-    if (Platform.OS !== 'web' || player.muted) return;
+    if (Platform.OS !== 'web') return;
+    // On the web the scene's own play() runs before the <video> tag exists and does nothing, so
+    // start the clip again now that it is on screen.
+    player.play();
+    if (player.muted) return;
     const t = setTimeout(() => {
       try {
         if (!player.playing && player.currentTime === 0) setBlocked(true);

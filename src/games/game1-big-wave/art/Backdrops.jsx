@@ -10,6 +10,8 @@ import Svg, { Circle, Defs, Ellipse, G, LinearGradient, Path, Rect, Stop } from 
 function Canvas({ children }) {
   return (
     <Svg
+      width="100%"
+      height="100%"
       style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
       viewBox="0 0 1600 900"
       preserveAspectRatio="xMidYMid slice"

@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { Stack, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 import { useForceLandscapeOnWeb } from '../../shared/hooks/useLandscapeLock.js';
@@ -10,7 +10,10 @@ import { adult, colors } from '../../shared/theme.js';
  * landscape: locked on a phone or tablet app, and turned a quarter turn on the web.
  */
 export default function ChildLayout() {
-  useForceLandscapeOnWeb();
+  // The child screens stay mounted underneath when the parent dashboard is pushed on top, so only
+  // turn the page while a child route is actually showing.
+  const onChildSide = useSegments()[0] === 'child';
+  useForceLandscapeOnWeb(onChildSide);
   return (
     <View style={{ flex: 1, backgroundColor: adult.hero }}>
       <StatusBar hidden />

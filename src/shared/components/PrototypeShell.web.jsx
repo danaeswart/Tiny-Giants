@@ -109,8 +109,9 @@ export default function PrototypeShell() {
                 border: 0,
                 background: colors.cream,
                 // An iframe does not stretch from top/bottom/left/right alone, so give it a real size.
+                // Landscape: the app fills the whole screen and the camera island sits on top of it.
                 ...(landscape
-                  ? { top: 0, right: 0, width: screenW - STATUS, height: screenH }
+                  ? { top: 0, left: 0, width: screenW, height: screenH }
                   : { top: STATUS, left: 0, width: screenW, height: screenH - STATUS }),
               }}
             />

@@ -1,14 +1,12 @@
 // SCENE 01 · GAME · Forest path (drag)
-// Cami asks for help getting through the woods, out loud (the phone's voice). Once she's finished
-// speaking, the child drags her along the winding road. Very forgiving: the finger
-// only needs to be roughly near the road and moving forward, and she never slides
-// backwards. She turns to face the way she's heading.
+// Cami needs help getting through the woods. The child drags her along the winding road.
+// Very forgiving: the finger only needs to be roughly near the road and moving forward, and
+// she never slides backwards. She turns to face the way she's heading.
 //
 // The forest is drawn in code (blobs of trees on a dark green floor, a sandy road)
 // to match the map drawing; the road follows the points in art/forestMapPath.js.
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import * as Speech from 'expo-speech';
 import { Image, StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -24,10 +22,6 @@ import { useStage } from '../../engine/Stage.js';
 import { MAP_ASPECT, MAP_PATH } from '../art/forestMapPath.js';
 
 const AVATAR = require('../assets/images/avatar-top.png'); // top-down view, facing right
-
-const ASK = 'Can you help me through the forest?';
-const ASK_FALLBACK_SECONDS = 5; // if the phone's voice never reports back, let the child play anyway
-const WIN = 'We made it through the trees!';
 
 const FLOOR = '#34503c';
 const ROAD = '#b9aa7b';
@@ -91,7 +85,6 @@ export default function ForestPathScene({ onDone }) {
     return pts.map((p, i) => `${i ? 'L' : 'M'}${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
   }, [path, width]);
 
-  const [ready, setReady] = useState(false); // Cami has finished asking for help
   const [progress, setProgress] = useState(0); // index into path
   const finished = progress >= POINTS - 1;
 
@@ -101,22 +94,6 @@ export default function ForestPathScene({ onDone }) {
   const angle = useSharedValue(0);
   const nudge = useSharedValue(0);
   const lastAngle = useRef(0);
-
-  // Cami asks for help out loud (the phone's voice); the child can grab her once she's done.
-  useEffect(() => {
-    const go = () => setReady(true);
-    const fallback = setTimeout(go, ASK_FALLBACK_SECONDS * 1000);
-    Speech.speak(ASK, { language: 'en', rate: 0.9, pitch: 1.1, onDone: go, onError: go, onStopped: () => {} });
-    return () => {
-      clearTimeout(fallback);
-      Speech.stop();
-    };
-  }, []);
-
-  // ...and cheers when they get her through.
-  useEffect(() => {
-    if (finished) Speech.speak(WIN, { language: 'en', rate: 0.9, pitch: 1.1 });
-  }, [finished]);
 
   // Move her smoothly to her new spot on the road, turned the way she's heading.
   useEffect(() => {
@@ -135,7 +112,7 @@ export default function ForestPathScene({ onDone }) {
   }, [progress, path, x, y, angle]);
 
   // Until the child first moves her, she rocks forward a little: "push me this way".
-  const waiting = ready && progress === 0;
+  const waiting = progress === 0;
   useEffect(() => {
     if (waiting) {
       nudge.set(
@@ -177,7 +154,6 @@ export default function ForestPathScene({ onDone }) {
   };
 
   const pan = Gesture.Pan()
-    .enabled(ready)
     .minDistance(0)
     .runOnJS(true)
     .onBegin((e) => follow(e.x, e.y))
@@ -198,7 +174,8 @@ export default function ForestPathScene({ onDone }) {
   return (
     <GestureDetector gesture={pan}>
       <View style={[StyleSheet.absoluteFill, { backgroundColor: FLOOR }]}>
-        <Svg style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}>
+        {/* width and height are set because on the web an <svg> ignores absoluteFill and shows at 300 x 150 */}
+        <Svg width={width} height={height} style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}>
           <Rect width={width} height={height} fill={FLOOR} />
           <Path d={roadD} stroke={ROAD} strokeWidth={mapH * 0.085} strokeLinecap="round" strokeLinejoin="round" fill="none" />
           {trees.map((t) =>

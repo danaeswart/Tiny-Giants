@@ -38,11 +38,12 @@ const subscribeTurned = (listener) => {
 
 /**
  * Keeps the page landscape on the web: when the window is taller than it is wide, the page is
- * turned 90 degrees to fill it. Used by the child routes, and undone when leaving them.
+ * turned 90 degrees to fill it. Pass active=false (the child side is no longer on screen) to put
+ * the page back; the child screens can stay mounted underneath the parent side.
  */
-export function useForceLandscapeOnWeb() {
+export function useForceLandscapeOnWeb(active = true) {
   useEffect(() => {
-    if (Platform.OS !== 'web' || typeof document === 'undefined') return;
+    if (!active || Platform.OS !== 'web' || typeof document === 'undefined') return;
     const root = document.documentElement;
     const saved = { width: root.style.width, height: root.style.height, transform: root.style.transform, transformOrigin: root.style.transformOrigin };
 
@@ -69,7 +70,7 @@ export function useForceLandscapeOnWeb() {
       Object.assign(root.style, saved);
       setTurned(false);
     };
-  }, []);
+  }, [active]);
 }
 
 /** The size of the screen as the app sees it: width and height swap while the page is turned. */
