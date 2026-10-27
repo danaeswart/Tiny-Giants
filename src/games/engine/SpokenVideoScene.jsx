@@ -1,6 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 import { useEventListener } from 'expo';
-import { useVideoPlayer, VideoView } from 'expo-video';
+import { useVideoPlayer } from 'expo-video';
+import FillVideo from './FillVideo.jsx';
 import Captions from './Captions.jsx';
 import { useStage } from './Stage.js';
 import useSpokenLines from './useSpokenLines.js';
@@ -35,7 +36,7 @@ export default function SpokenVideoScene({ src, lines = [], captionPosition = 'b
   return (
     <View style={StyleSheet.absoluteFill}>
       <View style={[StyleSheet.absoluteFill, { overflow: 'hidden' }]}>
-        <VideoView
+        <FillVideo
           player={player}
           style={[StyleSheet.absoluteFill, { top: -lift, bottom: 0, height: height + lift || undefined }]}
           contentFit="cover"

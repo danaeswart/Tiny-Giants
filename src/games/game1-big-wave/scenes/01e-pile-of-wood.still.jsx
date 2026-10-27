@@ -4,7 +4,7 @@
 
 import SpokenVideoScene from '../../engine/SpokenVideoScene.jsx';
 
-const SRC = require('../../../../assets/book/games/game1/pile-of-wood.mov');
+const SRC = require('../../../../assets/book/games/game1/pile-of-wood.mp4');
 
 const LINES = [{ text: 'Oh no, a pile of logs.' }];
 

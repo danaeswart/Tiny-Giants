@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { Modal as RNModal, Platform, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { useViewportSize } from '../hooks/useLandscapeLock.js';
+import { Modal as RNModal, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, {
   Easing,
   FadeIn,
@@ -68,7 +69,7 @@ export default function Popup({
   audience = 'parent',
   busy = false,
 }) {
-  const { width, height } = useWindowDimensions();
+  const { width, height } = useViewportSize();
   const reduceMotion = useReducedMotion();
   const t = TONES[tone];
   const parentSide = audience === 'parent';

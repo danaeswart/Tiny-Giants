@@ -3,7 +3,7 @@
 
 import SpokenVideoScene from '../../engine/SpokenVideoScene.jsx';
 
-const SRC = require('../../../../assets/book/games/game1/after-wood-remove.mov');
+const SRC = require('../../../../assets/book/games/game1/after-wood-remove.mp4');
 
 export default function AfterWoodRemoveScene({ onDone }) {
   return <SpokenVideoScene src={SRC} onDone={onDone} />;

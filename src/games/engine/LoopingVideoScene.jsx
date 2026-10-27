@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useVideoPlayer, VideoView } from 'expo-video';
+import { useVideoPlayer } from 'expo-video';
+import FillVideo from './FillVideo.jsx';
 import Animated, { ZoomIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import IconButton from '../../shared/components/IconButton.jsx';
@@ -10,7 +11,7 @@ const PLAY_AFTER_SECONDS = 5; // how far into the clip the Play button pops up
 /**
  * SCENE TYPE: LOOPING VIDEO — a clip that repeats (with its own sound) until the child taps Play.
  *
- *   src     the video, e.g. require('../../../../assets/book/games/game1/into.mov')
+ *   src     the video, e.g. require('../../../../assets/book/games/game1/into.mp4')
  *   onDone  from ScenePlayer: moves to the next scene
  *
  * The Play button pops up a few seconds into the clip.
@@ -37,7 +38,7 @@ export default function LoopingVideoScene({ src, onDone }) {
 
   return (
     <View style={StyleSheet.absoluteFill}>
-      <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls={false} />
+      <FillVideo player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls={false} />
       {showPlay && (
         <Animated.View
           entering={ZoomIn.springify()}

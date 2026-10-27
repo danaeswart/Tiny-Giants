@@ -3,6 +3,7 @@ import { collection, doc, getDocs, setDoc } from 'firebase/firestore';
 import { games } from '../data/games.js';
 import { auth, db } from './firebase.js';
 import { hasParentPin, setParentPin } from './pin.js';
+import { setSetting } from '../hooks/useSettings.js';
 
 /**
  * A shared demo account for showing the app without making an account first.
@@ -39,6 +40,7 @@ export const waitForDemo = () => filling;
 
 /** Sign in to the demo account (creating and filling it if needed). Throws a message to show. */
 export function enterDemo() {
+  setSetting('skip', true); // the demo opens with the skip buttons on, so it is quick to move through
   const run = fill();
   filling = run.catch(() => {});
   return run;

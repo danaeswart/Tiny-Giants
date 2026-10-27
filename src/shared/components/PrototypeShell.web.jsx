@@ -108,9 +108,10 @@ export default function PrototypeShell() {
                 position: 'absolute',
                 border: 0,
                 background: colors.cream,
+                // An iframe does not stretch from top/bottom/left/right alone, so give it a real size.
                 ...(landscape
-                  ? { top: 0, bottom: 0, right: 0, left: STATUS }
-                  : { top: STATUS, bottom: 0, left: 0, right: 0 }),
+                  ? { top: 0, right: 0, width: screenW - STATUS, height: screenH }
+                  : { top: STATUS, left: 0, width: screenW, height: screenH - STATUS }),
               }}
             />
             <div style={statusBar}>

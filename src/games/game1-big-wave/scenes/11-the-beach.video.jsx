@@ -3,7 +3,7 @@
 
 import SpokenVideoScene from '../../engine/SpokenVideoScene.jsx';
 
-const SRC = require('../../../../assets/book/games/game1/beach-arive.mov');
+const SRC = require('../../../../assets/book/games/game1/beach-arive.mp4');
 
 export default function TheBeachScene({ onDone }) {
   return <SpokenVideoScene src={SRC} onDone={onDone} />;

@@ -1,7 +1,8 @@
-import { Modal as RNModal, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Modal as RNModal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { colors, radius } from '../theme.js';
 import AppText from './AppText.jsx';
 import IconButton from './IconButton.jsx';
+import { useViewportSize } from '../hooks/useLandscapeLock.js';
 
 /**
  * Simple dialog. Tapping the dimmed backdrop, the close button, or the Android
@@ -9,7 +10,7 @@ import IconButton from './IconButton.jsx';
  * on-screen keyboard (huge in landscape) doesn't cover it.
  */
 export default function Modal({ open, onClose, title, align = 'center', children }) {
-  const { height } = useWindowDimensions();
+  const { height } = useViewportSize();
 
   return (
     <RNModal

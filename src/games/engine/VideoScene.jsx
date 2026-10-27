@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useEventListener } from 'expo';
-import { useVideoPlayer, VideoView } from 'expo-video';
+import { useVideoPlayer } from 'expo-video';
+import FillVideo from './FillVideo.jsx';
 import AppText from '../../shared/components/AppText.jsx';
 import { colors, radius } from '../../shared/theme.js';
 import Captions from './Captions.jsx';
@@ -47,7 +48,7 @@ function RealVideo({ src, lines, onDone }) {
 
   return (
     <View style={StyleSheet.absoluteFill}>
-      <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls={false} />
+      <FillVideo player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls={false} />
       <Captions text={lineAt(timed, time)?.text} />
     </View>
   );

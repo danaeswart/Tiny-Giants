@@ -5,7 +5,7 @@
 
 import BreathingVideoScene from '../../engine/BreathingVideoScene.jsx';
 
-const SRC = require('../../../../assets/book/games/game1/candle-blow.mov');
+const SRC = require('../../../../assets/book/games/game1/candle-blow.mp4');
 
 export default function CandleBlowScene({ onDone }) {
   return <BreathingVideoScene src={SRC} breatheFrom={8} onDone={onDone} />;

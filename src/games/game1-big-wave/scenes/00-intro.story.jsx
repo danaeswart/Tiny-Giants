@@ -3,7 +3,7 @@
 
 import LoopingVideoScene from '../../engine/LoopingVideoScene.jsx';
 
-const SRC = require('../../../../assets/book/games/game1/into.mov');
+const SRC = require('../../../../assets/book/games/game1/into.mp4');
 
 export default function IntroScene({ onDone }) {
   return <LoopingVideoScene src={SRC} onDone={onDone} />;

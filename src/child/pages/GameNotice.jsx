@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import AppText from '../../shared/components/AppText.jsx';
 import Button from '../../shared/components/Button.jsx';
 import Icon from '../../shared/components/Icon.jsx';
@@ -8,13 +8,14 @@ import { useCurrentChildId } from '../../shared/hooks/useCurrentChildId.js';
 import { adult, colors, radius } from '../../shared/theme.js';
 import ChildMessage from '../components/ChildMessage.jsx';
 import ChildScreen from '../components/ChildScreen.jsx';
+import { useViewportSize } from '../../shared/hooks/useLandscapeLock.js';
 
 /** A short note for the grown-up nearby, shown before a game starts. */
 export default function GameNotice() {
   const { gameId } = useLocalSearchParams();
   const childId = useCurrentChildId();
   const { game, loading } = useEnabledGame(childId, gameId);
-  const { width } = useWindowDimensions();
+  const { width } = useViewportSize();
 
   if (loading) return <ChildScreen />;
   if (!game) return <ChildMessage title="This story isn't here right now" />;

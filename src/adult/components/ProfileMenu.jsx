@@ -146,6 +146,12 @@ export default function ProfileMenu({ open, onClose }) {
                 </View>
               </Section>
 
+              {/* The only way from the child side to the parent side, so it's the PIN's one checkpoint.
+                  Sits just under the account, above the settings. */}
+              <AdultButton variant="primary" onPress={openDashboard} style={{ alignSelf: 'stretch' }}>
+                Parent dashboard
+              </AdultButton>
+
               <Section title="Settings">
                 <SettingRow
                   label="Skip buttons"
@@ -155,12 +161,6 @@ export default function ProfileMenu({ open, onClose }) {
                   last
                 />
               </Section>
-
-              {/* The only way from the child side to the parent side, so it's the PIN's one checkpoint.
-                  Sits at the very end of the scrolling page, not pinned to the screen. */}
-              <AdultButton variant="primary" onPress={openDashboard} style={{ alignSelf: 'stretch' }}>
-                Parent dashboard
-              </AdultButton>
             </>
           )}
         </ScrollView>

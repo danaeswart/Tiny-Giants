@@ -1,6 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useVideoPlayer, VideoView } from 'expo-video';
+import { useVideoPlayer } from 'expo-video';
 import { useState } from 'react';
+import FillVideo from '../../games/engine/FillVideo.jsx';
 import { StyleSheet, View } from 'react-native';
 import AppText from '../../shared/components/AppText.jsx';
 import Button from '../../shared/components/Button.jsx';
@@ -21,7 +22,7 @@ function IntroVideo({ source }) {
     p.muted = true;
     p.play();
   });
-  return <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls={false} />;
+  return <FillVideo player={player} contentFit="cover" />;
 }
 
 /**

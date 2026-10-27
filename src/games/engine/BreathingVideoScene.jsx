@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useEventListener } from 'expo';
-import { useVideoPlayer, VideoView } from 'expo-video';
+import { useVideoPlayer } from 'expo-video';
+import FillVideo from './FillVideo.jsx';
 import Animated, {
   Easing,
   cancelAnimation,
@@ -98,7 +99,7 @@ export default function BreathingVideoScene({
 
   return (
     <View style={StyleSheet.absoluteFill}>
-      <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls={false} />
+      <FillVideo player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls={false} />
       {breathing && (
         <View
           pointerEvents="none"
