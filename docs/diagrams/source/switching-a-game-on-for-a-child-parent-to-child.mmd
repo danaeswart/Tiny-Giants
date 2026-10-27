@@ -1,0 +1,16 @@
+sequenceDiagram
+    actor P as Parent
+    participant GD as GameDetail
+    participant API as api.js
+    participant FS as Firestore
+    actor C as Child
+    participant SH as AllGamesView
+
+    P->>GD: Toggle "Show to Noah"
+    GD->>API: setGameEnabledForChild(childId, gameId, true)
+    API->>FS: setDoc children/{id} { enabledGameIds } merge
+    C->>SH: Tap All games
+    SH->>API: getEnabledGamesForChild(childId)
+    API->>FS: getDoc children/{id}
+    FS-->>API: enabledGameIds
+    API-->>SH: only enabled games, catalogue order

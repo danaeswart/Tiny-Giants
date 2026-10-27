@@ -1,0 +1,10 @@
+flowchart LR
+    A["Candle scene starts<br/>active = true"] --> B["Ask microphone permission"]
+    B -- granted --> C["Start recorder with metering on"]
+    B -- refused or web --> X["status = unavailable<br/>candle blows out by itself"]
+    C --> D["Poll every 80 ms"]
+    D --> E["Metering in dB<br/>-50 quiet to -8 loud"]
+    E --> F["Map to level 0 to 1"]
+    F --> G{"Sustained loud enough?"}
+    G -- yes --> H["Candle goes out, onDone()"]
+    G -- no --> D

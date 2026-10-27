@@ -1,0 +1,15 @@
+flowchart LR
+    P(["Parent"])
+    C(["Child"])
+    AI(["Coach Worker + Gemini"])
+
+    P --> U1["Sign up, log in or use demo"]
+    P --> U2["Add and edit children"]
+    P --> U3["Enable or disable games per child"]
+    P --> U4["View dashboard and play history"]
+    P --> U5["Chat with the AI coach"]
+    C --> U6["Browse All games"]
+    C --> U7["Play a story game"]
+    U7 -. include .-> U8["Blow, drag, tap and breathe"]
+    U7 -. include .-> U9["Save play session"]
+    U5 --- AI

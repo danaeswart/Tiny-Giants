@@ -1,0 +1,27 @@
+sequenceDiagram
+    actor U as User
+    participant L as _layout.jsx
+    participant A as useAuth
+    participant FA as Firebase Auth
+    participant I as index.jsx
+    participant FS as Firestore
+
+    U->>L: Open app
+    L->>L: Load fonts, hold splash
+    L->>A: Subscribe to auth state
+    A->>FA: onAuthStateChanged
+    FA-->>A: user or null
+    alt signed out
+        L->>U: Stack.Protected shows welcome, login, signup
+    else signed in
+        L->>I: Render index
+        I->>FS: hasParentPin(), getProfiles()
+        FS-->>I: pin?, children[]
+        alt no PIN
+            I->>U: Redirect /create-pin
+        else no child (and not skipped)
+            I->>U: Redirect /add-child?onboarding=1
+        else ready
+            I->>U: Redirect /adult (dashboard)
+        end
+    end

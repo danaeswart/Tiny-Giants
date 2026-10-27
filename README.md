@@ -13,6 +13,12 @@
 
 <br/>
 
+<img src="docs/readme-images/qr.png" alt="QR code to open the Tiny Giants live prototype" width="180" />
+
+**Try it live:** [tiny-giants-178da.web.app](https://tiny-giants-178da.web.app/) (scan the QR code, then tap the demo button on the login page)
+
+<br/>
+
 ![Expo](https://img.shields.io/badge/Expo-58-000020?logo=expo&logoColor=white)
 ![React Native](https://img.shields.io/badge/React_Native-0.88-61DAFB?logo=react&logoColor=black)
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
@@ -316,38 +322,7 @@ This repository contains both the **app** and the **coach Worker** in `worker/`.
 
 Tiny Giants is a **client with serverless back ends**. There is no server to maintain.
 
-```mermaid
-flowchart LR
-    subgraph Device["Device (iOS, Android or Web)"]
-        APP["Tiny Giants app<br/>Expo + React Native"]
-        LS[("AsyncStorage<br/>settings, current child")]
-        MIC["Microphone<br/>loudness only"]
-    end
-
-    subgraph Firebase["Google Firebase"]
-        AUTH["Firebase Authentication"]
-        FS[("Cloud Firestore<br/>+ security rules")]
-        HOST["Firebase Hosting<br/>web build"]
-    end
-
-    subgraph Edge["Cloudflare (AI coach Worker only)"]
-        WORKER["Coach Worker<br/>verifies Firebase token"]
-    end
-
-    GEMINI["Google Gemini API"]
-
-    APP <--> LS
-    MIC --> APP
-    APP -- "sign in / sign up" --> AUTH
-    APP -- "read / write<br/>(own data only)" --> FS
-    AUTH -. "ID token (JWT)" .-> APP
-    APP -- "POST chat + Bearer token" --> WORKER
-    WORKER -- "verify JWT with Google keys" --> AUTH
-    WORKER -- "prompt + API key (secret)" --> GEMINI
-    GEMINI -- "reply" --> WORKER
-    WORKER -- "reply" --> APP
-    HOST -. "serves" .-> APP
-```
+<img src="docs/readme-images/diagrams/system-architecture.png" alt="System architecture diagram" width="100%" />
 
 **Reading the diagram**
 1. The app talks to **Firebase Auth** to sign in and receive an ID token.
@@ -358,48 +333,7 @@ flowchart LR
 
 ### Layered code architecture
 
-```mermaid
-flowchart TB
-    subgraph L1["1. Routes (src/app)"]
-        R["Thin Expo Router files"]
-    end
-    subgraph L2["2. Screens"]
-        CP["child/pages"]
-        AP["adult/pages"]
-    end
-    subgraph L3["3. UI building blocks"]
-        CC["child/components"]
-        AC["adult/components"]
-        SC["shared/components"]
-    end
-    subgraph L4["4. Logic"]
-        HK["shared/hooks"]
-        GE["games/engine"]
-        GM["games/game1-big-wave"]
-    end
-    subgraph L5["5. Services and data"]
-        API["services/api.js<br/>THE data door"]
-        SV["auth, pin, coach, demo, onboarding"]
-        DT["data: games, avatars, sessions"]
-        ST["state/persistedStore"]
-    end
-    subgraph L6["6. External"]
-        FB["Firebase"]
-        CF["Coach Worker"]
-        AS["AsyncStorage"]
-    end
-
-    R --> CP & AP
-    CP --> CC & SC
-    AP --> AC & SC
-    CP --> HK & GE
-    AP --> HK
-    GE --> GM
-    HK --> API
-    API --> SV & DT
-    SV --> FB & CF
-    HK --> ST --> AS
-```
+<img src="docs/readme-images/diagrams/layered-code-architecture.png" alt="Layered code architecture diagram" width="100%" />
 
 Each layer only talks to the layer below it. Routes never touch Firebase. Screens never read the data files directly.
 
@@ -444,149 +378,33 @@ Tiny-Giants/
 
 ### 1. App start and the sign-in guard
 
-```mermaid
-sequenceDiagram
-    actor U as User
-    participant L as _layout.jsx
-    participant A as useAuth
-    participant FA as Firebase Auth
-    participant I as index.jsx
-    participant FS as Firestore
-
-    U->>L: Open app
-    L->>L: Load fonts, hold splash
-    L->>A: Subscribe to auth state
-    A->>FA: onAuthStateChanged
-    FA-->>A: user or null
-    alt signed out
-        L->>U: Stack.Protected shows welcome, login, signup
-    else signed in
-        L->>I: Render index
-        I->>FS: hasParentPin(), getProfiles()
-        FS-->>I: pin?, children[]
-        alt no PIN
-            I->>U: Redirect /create-pin
-        else no child (and not skipped)
-            I->>U: Redirect /add-child?onboarding=1
-        else ready
-            I->>U: Redirect /adult (dashboard)
-        end
-    end
-```
+<img src="docs/readme-images/diagrams/app-start-and-the-sign-in-guard.png" alt="App start and the sign-in guard diagram" width="100%" />
 
 The root layout uses `Stack.Protected` with a `guard={!!user}`. When the auth state flips, Expo Router redirects automatically, so there is no manual "if logged in" code in each screen. The sign-in is held **in memory only**, so every launch begins at the login screen, which suits a shared family device.
 
 ### 2. The "one data door" pattern
 
-```mermaid
-flowchart LR
-    S1["Child screens"] --> H["Hooks<br/>useChildGames, useProfiles, useLoad"]
-    S2["Parent screens"] --> H
-    H --> API["services/api.js"]
-    API --> F[("Firestore<br/>children, sessions, PIN")]
-    API --> D["data/*.js<br/>games catalogue"]
-    API --> C["services/coach.js"]
-    C --> W["Coach Worker"]
-```
+<img src="docs/readme-images/diagrams/the-one-data-door-pattern.png" alt="The "one data door" pattern diagram" width="100%" />
 
 Every screen reads and writes through `src/shared/services/api.js`. Child screens only call `getEnabledGamesForChild`, so **a parent's switch applies everywhere at once**. If the data source changes (mock to Firestore, as it did during development), only `api.js` changes.
 
 ### 3. Playing a game and saving a session
 
-```mermaid
-sequenceDiagram
-    actor C as Child
-    participant GI as GameIntro
-    participant PG as PlayGame
-    participant REG as registry.js
-    participant SP as ScenePlayer
-    participant SC as Scene (story, video, game)
-    participant API as api.js
-    participant FS as Firestore
-
-    C->>GI: Tap Play
-    GI->>PG: route /child/games/big-wave/play
-    PG->>API: getEnabledGameForChild(childId, gameId)
-    API-->>PG: game or null
-    PG->>REG: getScenes('big-wave')
-    REG-->>PG: ordered scene list
-    PG->>SP: scenes, onExit, onFinish
-    loop each scene
-        SP->>SC: render Scene with onDone
-        SC-->>SP: onDone() when captions end, video ends or mini game won
-    end
-    alt finished
-        SP->>PG: onFinish()
-        PG->>API: recordSession(completed = true)
-    else left early (5s or more)
-        SP->>PG: onExit()
-        PG->>API: recordSession(completed = false)
-    end
-    API->>FS: addDoc sessions { gameId, completed, durationSeconds, playedAt }
-```
+<img src="docs/readme-images/diagrams/playing-a-game-and-saving-a-session.png" alt="Playing a game and saving a session diagram" width="100%" />
 
 A failed save is only logged. **A network problem must never get in the child's way.** Leaving in under 5 seconds is not counted as a play.
 
 ### 4. Switching a game on for a child (parent to child)
 
-```mermaid
-sequenceDiagram
-    actor P as Parent
-    participant GD as GameDetail
-    participant API as api.js
-    participant FS as Firestore
-    actor C as Child
-    participant SH as AllGamesView
-
-    P->>GD: Toggle "Show to Noah"
-    GD->>API: setGameEnabledForChild(childId, gameId, true)
-    API->>FS: setDoc children/{id} { enabledGameIds } merge
-    C->>SH: Tap All games
-    SH->>API: getEnabledGamesForChild(childId)
-    API->>FS: getDoc children/{id}
-    FS-->>API: enabledGameIds
-    API-->>SH: only enabled games, catalogue order
-```
+<img src="docs/readme-images/diagrams/switching-a-game-on-for-a-child-parent-to-child.png" alt="Switching a game on for a child (parent to child) diagram" width="100%" />
 
 ### 5. Component hierarchy of the child side
 
-```mermaid
-flowchart TB
-    CL["ChildLayout<br/>landscape lock + RotatePrompt"] --> HOME["StorybookShelf (child home)"]
-    CL --> ALL["AllGamesView"]
-    CL --> INTRO["GameIntro"]
-    CL --> PLAY["PlayGame"]
-    HOME --> FA["FloatingAvatars"]
-    HOME --> BTN["Button: All games"]
-    HOME --> PM["ProfileMenu (switch child, skip buttons, back to parent)"]
-    ALL --> COVER["CoverImage tiles"]
-    INTRO --> FULL["FullCover + Play button"]
-    PLAY --> SP["ScenePlayer"]
-    PLAY --> POP["Popup (celebration)"]
-    SP --> STAGE["Stage context<br/>width and height"]
-    SP --> SCN["Current Scene"]
-```
+<img src="docs/readme-images/diagrams/component-hierarchy-of-the-child-side.png" alt="Component hierarchy of the child side diagram" width="100%" />
 
 ### 6. Component hierarchy of the parent side
 
-```mermaid
-flowchart TB
-    AL["AdultLayout"] --> GATE["ParentPinGate"]
-    GATE --> TABS["Bottom tabs"]
-    TABS --> DASH["Dashboard"]
-    TABS --> GAMES["Games"]
-    TABS --> SET["Settings"]
-    DASH --> CHT["ChildTitleDropdown"]
-    DASH --> STAT["StatBar and rings"]
-    DASH --> PLR["PlayedGameRow"]
-    GAMES --> CAT["CategoryFilter"]
-    GAMES --> SB["SearchBar"]
-    GAMES --> GC["GameCard"]
-    GC --> GDET["GameDetail"]
-    GDET --> TGL["ActiveToggle"]
-    GDET --> CCH["CoachChat"]
-    SET --> AC["AccountRow, AvatarPicker, DangerZone"]
-```
+<img src="docs/readme-images/diagrams/component-hierarchy-of-the-parent-side.png" alt="Component hierarchy of the parent side diagram" width="100%" />
 
 ### 7. Shared UI primitives
 
@@ -599,37 +417,7 @@ keeps the app visually consistent and lets accessibility rules be enforced in on
 
 Routes live in `src/app/`. Each file is a thin wrapper that re-exports a page from `child/pages` or `adult/pages`, so route code stays tiny and screens stay testable and reusable.
 
-```mermaid
-flowchart TB
-    ROOT["_layout.jsx (root Stack)"]
-    ROOT --> PROT1["Stack.Protected: signed IN"]
-    ROOT --> PROT2["Stack.Protected: signed OUT"]
-
-    PROT2 --> W["/welcome"]
-    PROT2 --> LG["/login"]
-    PROT2 --> SU["/signup"]
-
-    PROT1 --> IDX["/ (index: decides where to go)"]
-    PROT1 --> CP["/create-pin"]
-    PROT1 --> AC["/add-child"]
-    PROT1 --> CH["/child (landscape)"]
-    PROT1 --> AD["/adult (portrait)"]
-
-    CH --> CHI["/child (home: Hi, Name!)"]
-    CH --> CHG["/child/games (all games)"]
-    CH --> CGI["/child/games/[gameId] (intro)"]
-    CH --> CGP["/child/games/[gameId]/play"]
-    CH --> CHS["/child/story"]
-
-    AD --> TABS["(tabs)"]
-    TABS --> T1["/adult (dashboard)"]
-    TABS --> T2["/adult/games"]
-    TABS --> T4["/adult/settings"]
-    AD --> D1["/adult/game/[gameId]"]
-    AD --> D3["/adult/child/[childId]"]
-    AD --> D4["/adult/account"]
-    AD --> D5["/adult/play-history"]
-```
+<img src="docs/readme-images/diagrams/navigation-and-routing.png" alt="Navigation and routing diagram" width="100%" />
 
 **Orientation is a function of the route.** The root layout reads the first URL segment: `child` locks to landscape, anything else to portrait. No screen needs to think about it.
 
@@ -653,33 +441,11 @@ Games are not hard coded screens. They are **an ordered list of scenes** played 
 
 **The scene contract is one prop.** Every scene receives `onDone`. It calls it when the captions have been read, the video ends or the mini game is won, and the next scene fades in. A guard in `ScenePlayer` ignores `onDone` calls from a scene that has already been skipped away from, so the story cannot jump twice.
 
-```mermaid
-stateDiagram-v2
-    [*] --> Scene0
-    Scene0 --> Scene1: onDone()
-    Scene1 --> SceneN: onDone()
-    SceneN --> Finished: last onDone() => onFinish()
-    Scene0 --> Exited: close button => onExit()
-    Scene1 --> Exited: close button => onExit()
-    SceneN --> Exited: close button => onExit()
-    Finished --> [*]: save completed session
-    Exited --> [*]: save early session (if 5s+)
-```
+<img src="docs/readme-images/diagrams/the-game-engine.png" alt="The game engine diagram" width="100%" />
 
 ### Microphone blow detection
 
-```mermaid
-flowchart LR
-    A["Candle scene starts<br/>active = true"] --> B["Ask microphone permission"]
-    B -- granted --> C["Start recorder with metering on"]
-    B -- refused or web --> X["status = unavailable<br/>candle blows out by itself"]
-    C --> D["Poll every 80 ms"]
-    D --> E["Metering in dB<br/>-50 quiet to -8 loud"]
-    E --> F["Map to level 0 to 1"]
-    F --> G{"Sustained loud enough?"}
-    G -- yes --> H["Candle goes out, onDone()"]
-    G -- no --> D
-```
+<img src="docs/readme-images/diagrams/microphone-blow-detection.png" alt="Microphone blow detection diagram" width="100%" />
 
 Nothing is recorded for playback, stored or sent. The permission text shown to the user says exactly this.
 
@@ -708,22 +474,7 @@ The running order lives in `src/games/game1-big-wave/scenes.js`. There are **18 
 | 17 | Breathing without the candle | video | **Breathe** along | Self regulation |
 | 18 | Final clip | video | Watch | The calm was inside you |
 
-```mermaid
-flowchart LR
-    A["Woods"] --> B["Blow candle #1"]
-    B --> C["Forest path (drag)"]
-    C --> D["Log pile"]
-    D --> E["Blow candle #2"]
-    E --> F["Clear logs (drag)"]
-    F --> G["Jump logs (tap)"]
-    G --> H["Trip and fall"]
-    H --> I["Blow candle #3"]
-    I --> J["Beach"]
-    J --> K["Build castle (tap)"]
-    K --> L["The big wave"]
-    L --> M["Breathe WITHOUT the candle"]
-    M --> N["Final: calm was inside"]
-```
+<img src="docs/readme-images/diagrams/the-big-wave-scene-by-scene.png" alt="The Big Wave: scene by scene diagram" width="100%" />
 
 **Learning arc.** The candle appears three times as a prop. The last time, the child breathes with no candle at all. That is the point: the skill is internal and portable.
 
@@ -731,56 +482,7 @@ flowchart LR
 
 Data is stored in **Cloud Firestore** as a tree owned by the parent. The game catalogue lives in code.
 
-```mermaid
-erDiagram
-    PARENT ||--o{ CHILD : "has"
-    CHILD ||--o{ SESSION : "plays"
-    GAME ||--o{ SESSION : "is played in"
-    CHILD }o--o{ GAME : "enabledGameIds"
-    GAME ||--|{ SCENE : "is made of"
-
-    PARENT {
-        string uid PK "Firebase Auth uid"
-        string name "max 100 chars"
-        string email
-        string pinHash "SHA-256, salted"
-        string pinSalt "random 16 bytes hex"
-    }
-    CHILD {
-        string childId PK "auto id"
-        string name "1 to 50 chars"
-        int age "1 to 17"
-        string avatar "e.g. avatar2, optional"
-        string birthday "YYYY-MM-DD, optional"
-        string joinedDate "YYYY-MM-DD"
-        array enabledGameIds "game ids the parent switched on"
-        timestamp createdAt
-    }
-    SESSION {
-        string sessionId PK "auto id"
-        string gameId FK
-        bool completed "reached the end of the story"
-        int durationSeconds "0 to 36000"
-        timestamp playedAt "server time"
-    }
-    GAME {
-        string id PK "e.g. big-wave"
-        string title
-        string category
-        string blurb
-        array tools "skills practised"
-        array words
-        string teaches
-        string coachNotes
-        string parentNote
-        bool comingSoon
-    }
-    SCENE {
-        string id PK
-        string type "story, still, video, game"
-        string title
-    }
-```
+<img src="docs/readme-images/diagrams/data-model.png" alt="Data model diagram" width="100%" />
 
 **Where each entity lives**
 
@@ -799,15 +501,7 @@ erDiagram
 
 ### Firestore hierarchy
 
-```mermaid
-flowchart TB
-    ROOT[("Firestore")] --> P["parents/{uid}"]
-    P --> CH["children/{childId}"]
-    CH --> SE["sessions/{sessionId}"]
-    P -. "fields" .-> PF["name, email, pinHash, pinSalt"]
-    CH -. "fields" .-> CF["name, age, avatar, birthday,<br/>joinedDate, enabledGameIds, createdAt"]
-    SE -. "fields" .-> SF["gameId, completed,<br/>durationSeconds, playedAt"]
-```
+<img src="docs/readme-images/diagrams/firestore-hierarchy.png" alt="Firestore hierarchy diagram" width="100%" />
 
 ## Security and privacy
 
@@ -828,52 +522,13 @@ Security is a feature, because the users are children.
 | Account removal | The delete-account button removes the parent record and everything under it |
 | Firebase config in the repo | Web config values identify the project and are not secrets. Protection comes from sign-in and rules |
 
-```mermaid
-flowchart TB
-    REQ["Request to Firestore"] --> Q1{"Signed in?"}
-    Q1 -- no --> DENY["Denied"]
-    Q1 -- yes --> Q2{"auth.uid == uid in the path?"}
-    Q2 -- no --> DENY
-    Q2 -- yes --> Q3{"Fields whitelisted and valid?"}
-    Q3 -- no --> DENY
-    Q3 -- yes --> Q4{"Is it editing a session?"}
-    Q4 -- yes --> DENY
-    Q4 -- no --> ALLOW["Allowed"]
-```
+<img src="docs/readme-images/diagrams/security-and-privacy.png" alt="Security and privacy diagram" width="100%" />
 
 ## The AI parent coach
 
 The coach helps a grown-up play a game with their child and suggests follow up activities. It is intentionally narrow: it is not a therapist and says so.
 
-```mermaid
-sequenceDiagram
-    actor P as Parent
-    participant CC as CoachChat
-    participant CO as coach.js
-    participant FA as Firebase Auth
-    participant W as Cloudflare Worker
-    participant G as Gemini API
-
-    P->>CC: Open a game, tap the coach
-    CC->>CO: askCoach({ game, child, plays, messages: [] })
-    CO->>FA: getIdToken()
-    FA-->>CO: JWT
-    CO->>W: POST { game, child, plays, messages } + Bearer JWT
-    W->>W: jwtVerify (issuer, audience, Google JWKS)
-    alt invalid token
-        W-->>CO: 401 Sign in again
-    else valid
-        W->>W: clean and clip input, build system prompt + context
-        W->>G: generateContent (model 1)
-        alt model missing or busy (400, 404, 503)
-            W->>G: generateContent (model 2)
-        end
-        G-->>W: reply text
-        W-->>CO: { reply }
-        CO-->>CC: reply
-        CC-->>P: Show message
-    end
-```
+<img src="docs/readme-images/diagrams/the-ai-parent-coach.png" alt="The AI parent coach diagram" width="100%" />
 
 **Worker design details**
 - **Model fallback.** Free tier models are tried in order, so if one is retired or busy the next answers.
@@ -890,23 +545,7 @@ sequenceDiagram
 
 ## Use cases
 
-```mermaid
-flowchart LR
-    P(["Parent"])
-    C(["Child"])
-    AI(["Coach Worker + Gemini"])
-
-    P --> U1["Sign up, log in or use demo"]
-    P --> U2["Add and edit children"]
-    P --> U3["Enable or disable games per child"]
-    P --> U4["View dashboard and play history"]
-    P --> U5["Chat with the AI coach"]
-    C --> U6["Browse All games"]
-    C --> U7["Play a story game"]
-    U7 -. include .-> U8["Blow, drag, tap and breathe"]
-    U7 -. include .-> U9["Save play session"]
-    U5 --- AI
-```
+<img src="docs/readme-images/diagrams/use-cases.png" alt="Use cases diagram" width="100%" />
 
 | Use case | Actor | Main flow | Alternate flows |
 |----------|-------|-----------|-----------------|
@@ -1030,16 +669,7 @@ Validation and storage logic are written as **pure functions** with no Firebase 
 
 ## Deployment
 
-```mermaid
-flowchart LR
-    DEV["Developer"] -->|"npx expo export --platform web"| DIST["dist/"]
-    DIST -->|"firebase deploy --only hosting"| HOST["Firebase Hosting"]
-    DEV -->|"firebase deploy --only firestore:rules"| RULES["Firestore rules"]
-    DEV -->|"wrangler deploy"| WK["Cloudflare Worker"]
-    DEV -->|"wrangler secret put GEMINI_API_KEY"| SEC["Worker secret"]
-    HOST --> USERS["Users in a browser"]
-    EAS["EAS Build (planned)"] -.-> STORES["App Store and Google Play"]
-```
+<img src="docs/readme-images/diagrams/deployment.png" alt="Deployment diagram" width="100%" />
 
 ```bash
 npx expo export --platform web

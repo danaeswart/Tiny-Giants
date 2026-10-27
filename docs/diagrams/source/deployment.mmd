@@ -1,0 +1,8 @@
+flowchart LR
+    DEV["Developer"] -->|"npx expo export --platform web"| DIST["dist/"]
+    DIST -->|"firebase deploy --only hosting"| HOST["Firebase Hosting"]
+    DEV -->|"firebase deploy --only firestore:rules"| RULES["Firestore rules"]
+    DEV -->|"wrangler deploy"| WK["Cloudflare Worker"]
+    DEV -->|"wrangler secret put GEMINI_API_KEY"| SEC["Worker secret"]
+    HOST --> USERS["Users in a browser"]
+    EAS["EAS Build (planned)"] -.-> STORES["App Store and Google Play"]

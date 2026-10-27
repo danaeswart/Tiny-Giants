@@ -1,0 +1,48 @@
+erDiagram
+    PARENT ||--o{ CHILD : "has"
+    CHILD ||--o{ SESSION : "plays"
+    GAME ||--o{ SESSION : "is played in"
+    CHILD }o--o{ GAME : "enabledGameIds"
+    GAME ||--|{ SCENE : "is made of"
+
+    PARENT {
+        string uid PK "Firebase Auth uid"
+        string name "max 100 chars"
+        string email
+        string pinHash "SHA-256, salted"
+        string pinSalt "random 16 bytes hex"
+    }
+    CHILD {
+        string childId PK "auto id"
+        string name "1 to 50 chars"
+        int age "1 to 17"
+        string avatar "e.g. avatar2, optional"
+        string birthday "YYYY-MM-DD, optional"
+        string joinedDate "YYYY-MM-DD"
+        array enabledGameIds "game ids the parent switched on"
+        timestamp createdAt
+    }
+    SESSION {
+        string sessionId PK "auto id"
+        string gameId FK
+        bool completed "reached the end of the story"
+        int durationSeconds "0 to 36000"
+        timestamp playedAt "server time"
+    }
+    GAME {
+        string id PK "e.g. big-wave"
+        string title
+        string category
+        string blurb
+        array tools "skills practised"
+        array words
+        string teaches
+        string coachNotes
+        string parentNote
+        bool comingSoon
+    }
+    SCENE {
+        string id PK
+        string type "story, still, video, game"
+        string title
+    }

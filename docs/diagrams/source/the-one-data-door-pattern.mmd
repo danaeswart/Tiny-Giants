@@ -1,0 +1,8 @@
+flowchart LR
+    S1["Child screens"] --> H["Hooks<br/>useChildGames, useProfiles, useLoad"]
+    S2["Parent screens"] --> H
+    H --> API["services/api.js"]
+    API --> F[("Firestore<br/>children, sessions, PIN")]
+    API --> D["data/*.js<br/>games catalogue"]
+    API --> C["services/coach.js"]
+    C --> W["Coach Worker"]

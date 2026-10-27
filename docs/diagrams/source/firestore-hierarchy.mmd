@@ -1,0 +1,7 @@
+flowchart TB
+    ROOT[("Firestore")] --> P["parents/{uid}"]
+    P --> CH["children/{childId}"]
+    CH --> SE["sessions/{sessionId}"]
+    P -. "fields" .-> PF["name, email, pinHash, pinSalt"]
+    CH -. "fields" .-> CF["name, age, avatar, birthday,<br/>joinedDate, enabledGameIds, createdAt"]
+    SE -. "fields" .-> SF["gameId, completed,<br/>durationSeconds, playedAt"]

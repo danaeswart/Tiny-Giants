@@ -1,0 +1,27 @@
+sequenceDiagram
+    actor P as Parent
+    participant CC as CoachChat
+    participant CO as coach.js
+    participant FA as Firebase Auth
+    participant W as Cloudflare Worker
+    participant G as Gemini API
+
+    P->>CC: Open a game, tap the coach
+    CC->>CO: askCoach({ game, child, plays, messages: [] })
+    CO->>FA: getIdToken()
+    FA-->>CO: JWT
+    CO->>W: POST { game, child, plays, messages } + Bearer JWT
+    W->>W: jwtVerify (issuer, audience, Google JWKS)
+    alt invalid token
+        W-->>CO: 401 Sign in again
+    else valid
+        W->>W: clean and clip input, build system prompt + context
+        W->>G: generateContent (model 1)
+        alt model missing or busy (400, 404, 503)
+            W->>G: generateContent (model 2)
+        end
+        G-->>W: reply text
+        W-->>CO: { reply }
+        CO-->>CC: reply
+        CC-->>P: Show message
+    end

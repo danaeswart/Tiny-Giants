@@ -1,0 +1,40 @@
+flowchart TB
+    subgraph L1["1. Routes (src/app)"]
+        R["Thin Expo Router files"]
+    end
+    subgraph L2["2. Screens"]
+        CP["child/pages"]
+        AP["adult/pages"]
+    end
+    subgraph L3["3. UI building blocks"]
+        CC["child/components"]
+        AC["adult/components"]
+        SC["shared/components"]
+    end
+    subgraph L4["4. Logic"]
+        HK["shared/hooks"]
+        GE["games/engine"]
+        GM["games/game1-big-wave"]
+    end
+    subgraph L5["5. Services and data"]
+        API["services/api.js<br/>THE data door"]
+        SV["auth, pin, coach, demo, onboarding"]
+        DT["data: games, avatars, sessions"]
+        ST["state/persistedStore"]
+    end
+    subgraph L6["6. External"]
+        FB["Firebase"]
+        CF["Coach Worker"]
+        AS["AsyncStorage"]
+    end
+
+    R --> CP & AP
+    CP --> CC & SC
+    AP --> AC & SC
+    CP --> HK & GE
+    AP --> HK
+    GE --> GM
+    HK --> API
+    API --> SV & DT
+    SV --> FB & CF
+    HK --> ST --> AS

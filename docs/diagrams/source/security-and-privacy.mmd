@@ -1,0 +1,10 @@
+flowchart TB
+    REQ["Request to Firestore"] --> Q1{"Signed in?"}
+    Q1 -- no --> DENY["Denied"]
+    Q1 -- yes --> Q2{"auth.uid == uid in the path?"}
+    Q2 -- no --> DENY
+    Q2 -- yes --> Q3{"Fields whitelisted and valid?"}
+    Q3 -- no --> DENY
+    Q3 -- yes --> Q4{"Is it editing a session?"}
+    Q4 -- yes --> DENY
+    Q4 -- no --> ALLOW["Allowed"]

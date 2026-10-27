@@ -1,0 +1,29 @@
+sequenceDiagram
+    actor C as Child
+    participant GI as GameIntro
+    participant PG as PlayGame
+    participant REG as registry.js
+    participant SP as ScenePlayer
+    participant SC as Scene (story, video, game)
+    participant API as api.js
+    participant FS as Firestore
+
+    C->>GI: Tap Play
+    GI->>PG: route /child/games/big-wave/play
+    PG->>API: getEnabledGameForChild(childId, gameId)
+    API-->>PG: game or null
+    PG->>REG: getScenes('big-wave')
+    REG-->>PG: ordered scene list
+    PG->>SP: scenes, onExit, onFinish
+    loop each scene
+        SP->>SC: render Scene with onDone
+        SC-->>SP: onDone() when captions end, video ends or mini game won
+    end
+    alt finished
+        SP->>PG: onFinish()
+        PG->>API: recordSession(completed = true)
+    else left early (5s or more)
+        SP->>PG: onExit()
+        PG->>API: recordSession(completed = false)
+    end
+    API->>FS: addDoc sessions { gameId, completed, durationSeconds, playedAt }

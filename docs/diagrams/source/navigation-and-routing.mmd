@@ -1,0 +1,29 @@
+flowchart TB
+    ROOT["_layout.jsx (root Stack)"]
+    ROOT --> PROT1["Stack.Protected: signed IN"]
+    ROOT --> PROT2["Stack.Protected: signed OUT"]
+
+    PROT2 --> W["/welcome"]
+    PROT2 --> LG["/login"]
+    PROT2 --> SU["/signup"]
+
+    PROT1 --> IDX["/ (index: decides where to go)"]
+    PROT1 --> CP["/create-pin"]
+    PROT1 --> AC["/add-child"]
+    PROT1 --> CH["/child (landscape)"]
+    PROT1 --> AD["/adult (portrait)"]
+
+    CH --> CHI["/child (home: Hi, Name!)"]
+    CH --> CHG["/child/games (all games)"]
+    CH --> CGI["/child/games/[gameId] (intro)"]
+    CH --> CGP["/child/games/[gameId]/play"]
+    CH --> CHS["/child/story"]
+
+    AD --> TABS["(tabs)"]
+    TABS --> T1["/adult (dashboard)"]
+    TABS --> T2["/adult/games"]
+    TABS --> T4["/adult/settings"]
+    AD --> D1["/adult/game/[gameId]"]
+    AD --> D3["/adult/child/[childId]"]
+    AD --> D4["/adult/account"]
+    AD --> D5["/adult/play-history"]

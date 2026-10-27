@@ -1,0 +1,30 @@
+flowchart LR
+    subgraph Device["Device (iOS, Android or Web)"]
+        APP["Tiny Giants app<br/>Expo + React Native"]
+        LS[("AsyncStorage<br/>settings, current child")]
+        MIC["Microphone<br/>loudness only"]
+    end
+
+    subgraph Firebase["Google Firebase"]
+        AUTH["Firebase Authentication"]
+        FS[("Cloud Firestore<br/>+ security rules")]
+        HOST["Firebase Hosting<br/>web build"]
+    end
+
+    subgraph Edge["Cloudflare (AI coach Worker only)"]
+        WORKER["Coach Worker<br/>verifies Firebase token"]
+    end
+
+    GEMINI["Google Gemini API"]
+
+    APP <--> LS
+    MIC --> APP
+    APP -- "sign in / sign up" --> AUTH
+    APP -- "read / write<br/>(own data only)" --> FS
+    AUTH -. "ID token (JWT)" .-> APP
+    APP -- "POST chat + Bearer token" --> WORKER
+    WORKER -- "verify JWT with Google keys" --> AUTH
+    WORKER -- "prompt + API key (secret)" --> GEMINI
+    GEMINI -- "reply" --> WORKER
+    WORKER -- "reply" --> APP
+    HOST -. "serves" .-> APP

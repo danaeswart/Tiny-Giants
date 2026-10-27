@@ -1,0 +1,10 @@
+stateDiagram-v2
+    [*] --> Scene0
+    Scene0 --> Scene1: onDone()
+    Scene1 --> SceneN: onDone()
+    SceneN --> Finished: last onDone() => onFinish()
+    Scene0 --> Exited: close button => onExit()
+    Scene1 --> Exited: close button => onExit()
+    SceneN --> Exited: close button => onExit()
+    Finished --> [*]: save completed session
+    Exited --> [*]: save early session (if 5s+)
