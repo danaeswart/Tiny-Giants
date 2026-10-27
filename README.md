@@ -378,7 +378,7 @@ Tiny-Giants/
 
 ### 1. App start and the sign-in guard
 
-<img src="docs/readme-images/diagrams/app-start-and-the-sign-in-guard.png" alt="App start and the sign-in guard diagram" width="100%" />
+<p align="center"><img src="docs/readme-images/diagrams/app-start-and-the-sign-in-guard.png" alt="App start and the sign-in guard diagram" width="90%" /></p>
 
 The root layout uses `Stack.Protected` with a `guard={!!user}`. When the auth state flips, Expo Router redirects automatically, so there is no manual "if logged in" code in each screen. The sign-in is held **in memory only**, so every launch begins at the login screen, which suits a shared family device.
 
@@ -441,7 +441,7 @@ Games are not hard coded screens. They are **an ordered list of scenes** played 
 
 **The scene contract is one prop.** Every scene receives `onDone`. It calls it when the captions have been read, the video ends or the mini game is won, and the next scene fades in. A guard in `ScenePlayer` ignores `onDone` calls from a scene that has already been skipped away from, so the story cannot jump twice.
 
-<img src="docs/readme-images/diagrams/the-game-engine.png" alt="The game engine diagram" width="100%" />
+<p align="center"><img src="docs/readme-images/diagrams/the-game-engine.png" alt="The game engine diagram" width="75%" /></p>
 
 ### Microphone blow detection
 
@@ -482,7 +482,7 @@ The running order lives in `src/games/game1-big-wave/scenes.js`. There are **18 
 
 Data is stored in **Cloud Firestore** as a tree owned by the parent. The game catalogue lives in code.
 
-<img src="docs/readme-images/diagrams/data-model.png" alt="Data model diagram" width="100%" />
+<p align="center"><img src="docs/readme-images/diagrams/data-model.png" alt="Data model diagram" width="50%" /></p>
 
 **Where each entity lives**
 
@@ -501,7 +501,7 @@ Data is stored in **Cloud Firestore** as a tree owned by the parent. The game ca
 
 ### Firestore hierarchy
 
-<img src="docs/readme-images/diagrams/firestore-hierarchy.png" alt="Firestore hierarchy diagram" width="100%" />
+<p align="center"><img src="docs/readme-images/diagrams/firestore-hierarchy.png" alt="Firestore hierarchy diagram" width="65%" /></p>
 
 ## Security and privacy
 
@@ -522,13 +522,13 @@ Security is a feature, because the users are children.
 | Account removal | The delete-account button removes the parent record and everything under it |
 | Firebase config in the repo | Web config values identify the project and are not secrets. Protection comes from sign-in and rules |
 
-<img src="docs/readme-images/diagrams/security-and-privacy.png" alt="Security and privacy diagram" width="100%" />
+<p align="center"><img src="docs/readme-images/diagrams/security-and-privacy.png" alt="Security and privacy diagram" width="30%" /></p>
 
 ## The AI parent coach
 
 The coach helps a grown-up play a game with their child and suggests follow up activities. It is intentionally narrow: it is not a therapist and says so.
 
-<img src="docs/readme-images/diagrams/the-ai-parent-coach.png" alt="The AI parent coach diagram" width="100%" />
+<p align="center"><img src="docs/readme-images/diagrams/the-ai-parent-coach.png" alt="The AI parent coach diagram" width="90%" /></p>
 
 **Worker design details**
 - **Model fallback.** Free tier models are tried in order, so if one is retired or busy the next answers.
@@ -545,7 +545,7 @@ The coach helps a grown-up play a game with their child and suggests follow up a
 
 ## Use cases
 
-<img src="docs/readme-images/diagrams/use-cases.png" alt="Use cases diagram" width="100%" />
+<p align="center"><img src="docs/readme-images/diagrams/use-cases.png" alt="Use cases diagram" width="65%" /></p>
 
 | Use case | Actor | Main flow | Alternate flows |
 |----------|-------|-----------|-----------------|
