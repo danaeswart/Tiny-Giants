@@ -23,7 +23,7 @@ Tiny Giants is a children's emotional learning storybook app (tagline: "Small ki
 Children aged 4 to 5 play short narrated story games that teach coping skills. The first game,
 "The Big Wave", teaches stress management (paced breathing, small steps thinking). A parent side
 (portrait, behind a 4 digit PIN) lets grown ups choose which games each child can see, review play
-history and insights, and chat with an AI coach. The child side is landscape only.
+and play history, and get AI suggestions (from a coach) for how to play the game together with their child. The child side is landscape only.
 
 TECH STACK
 - Expo SDK 58, React Native 0.88, React 19, plain JavaScript (JSX)
@@ -40,16 +40,16 @@ TECH STACK
 CODE STRUCTURE (src/)
 - app/ : thin Expo Router route files (welcome, login, signup, create-pin, add-child, index, child/*, adult/*)
 - child/ : pages (StorybookShelf which is now the child home "Hi, Name!" with an All games button, AllGamesView, GameIntro, PlayGame, GameNotice) and components (FloatingAvatars, PlayButton, RotatePrompt, ChildScreen, ChildMessage). The old open-book view is no longer used, do not draw a book.
-- adult/ : pages (Dashboard, Games, GameDetail, Insights, InsightDetail, PlayHistory, Settings, EditChild, AccountSettings) and components (ParentPinGate, CoachChat, GameCard, StatBar, InsightCard, AuthForm, AvatarPicker, DangerZone, etc.)
+- adult/ : pages (Dashboard, Games, GameDetail, PlayHistory, Settings, EditChild, AccountSettings) and components (ParentPinGate, CoachChat, GameCard, StatBar, AuthForm, AvatarPicker, DangerZone, etc.)
 - games/ : registry.js (game id to scene list), engine/ (ScenePlayer, Stage, StoryScene, SpokenStillScene, ZoomStillScene, VideoScene, SpokenVideoScene, LoopingVideoScene, BreathingVideoScene, Captions, Narration, timing.js, useSpokenLines, useBlowDetector), game1-big-wave/ (scenes.js with 18 scenes, art/ SVG drawings, BlowCandleGame)
-- shared/ : components (AppText, Button, Icon, Modal, Popup, Avatar, Blobs...), data (games, avatars, insights, sessions), hooks (useAuth, useProfiles, useChildGames, useCurrentChildId, useSettings, useLoad), services (api.js "the one data door", auth, pin, coach, demo, onboarding, firebase), state/persistedStore, theme.js
+- shared/ : components (AppText, Button, Icon, Modal, Popup, Avatar, Blobs...), data (games, avatars, sessions), hooks (useAuth, useProfiles, useChildGames, useCurrentChildId, useSettings, useLoad), services (api.js "the one data door", auth, pin, coach, demo, onboarding, firebase), state/persistedStore, theme.js
 - worker/ : Cloudflare Worker for the AI coach
 
 DATA MODEL (Firestore)
 parents/{uid}: name, email, pinHash, pinSalt
 parents/{uid}/children/{childId}: name, age, avatar, birthday, joinedDate, enabledGameIds[], createdAt
 parents/{uid}/children/{childId}/sessions/{sessionId}: gameId, completed, durationSeconds, playedAt
-Game catalogue (games.js), insights (insights.js) and scenes (scenes.js) live in code, not Firestore.
+The game catalogue (games.js) and scenes (scenes.js) live in code, not Firestore. There is no insights feature.
 
 VISUAL STYLE FOR ALL DIAGRAMS
 - Landscape A4, white or warm cream (#fff6e3) background, generous spacing, no overlapping lines
@@ -117,7 +117,6 @@ Entities and attributes (mark PK and FK):
 - CHILD: childId (PK), parentUid (FK, implied by path), name, age (1 to 17), avatar, birthday, joinedDate, enabledGameIds (array), createdAt
 - SESSION: sessionId (PK), childId (FK, implied by path), gameId (FK), completed (bool), durationSeconds (0 to 36000), playedAt (server timestamp)
 - GAME (static catalogue in code): id (PK), title, category, blurb, tools[], words[], teaches, coachNotes, parentNote, comingSoon
-- INSIGHT (sample data in code): id (PK), childId (FK), gameId (FK), date, summary, observed, activitySuggestion, aiDisclaimer
 - SCENE (static, in code): id (PK), gameId (FK), type (story, still, video, game), title
 
 Relationships:
@@ -125,8 +124,6 @@ Relationships:
 - CHILD 1 to many SESSION (plays)
 - GAME 1 to many SESSION (is played in)
 - CHILD many to many GAME via enabledGameIds (parent enables)
-- CHILD 1 to many INSIGHT
-- GAME 1 to many INSIGHT
 - GAME 1 to many SCENE
 
 Colour coding: entities stored in Firestore in blue (wave), entities that live in code in yellow (glow). Add a legend for this and a note: "Firestore path: parents/{uid}/children/{childId}/sessions/{sessionId}". Export as a PDF.
@@ -143,11 +140,11 @@ Draw a system boundary box titled "Tiny Giants" containing these use cases (oval
 - Account: Sign up, Log in, Use demo account, Create parent PIN, Edit account, Delete account
 - Child profiles: Add child, Edit child, Choose character
 - Game control: Browse and search games, Enable or disable game per child, Enter PIN to reach parent side
-- Insight: View dashboard, View play history, Read insights, Chat with AI coach
+- Play together: View dashboard, View play history, Get AI suggestions for playing together (before, during, after)
 - Play: Browse All games, Search enabled games, Play a story game
 
 Relationships:
-- Parent connects to all Account, Child profiles, Game control and Insight use cases
+- Parent connects to all Account, Child profiles, Game control and Play together use cases
 - Child connects to Play use cases
 - "Play a story game" has <<include>> to "Blow into microphone" and "Drag, tap and breathe interactions", and <<include>> to "Save play session"
 - "Chat with AI coach" connects to the Coach Worker + Gemini actor
@@ -162,7 +159,7 @@ Use correct UML notation and keep lines from crossing where possible. Export as 
 ```
 Create a user flow diagram as a PDF (landscape A4) with two swimlanes: "Parent (portrait)" and "Child (landscape)".
 
-Parent lane: Open app -> Welcome -> (Sign up or Log in or Demo) -> decision "Has PIN?" (no: Create PIN) -> decision "Has a child?" (no: Add child, or skip) -> Dashboard -> Games tab -> Game detail -> Toggle game on for a child -> Play history / Insights / AI coach -> Settings (edit child, account, delete account).
+Parent lane: Open app -> Welcome -> (Sign up or Log in or Demo) -> decision "Has PIN?" (no: Create PIN) -> decision "Has a child?" (no: Add child, or skip) -> Dashboard -> Games tab -> Game detail -> Toggle game on for a child -> Play history / AI suggestions for playing together -> Settings (edit child, account, delete account).
 
 Child lane: the PIN is not needed to go to the child side, but is required to return to the parent side. Show: Parent hands over device -> Child home ("Hi, Name!") -> All games -> Pick a picture tile -> Game intro -> Tap Play -> Story scenes (watch, blow, drag, tap, breathe) -> Celebration popup -> Back to game page -> (Exit) -> PIN gate -> back to Parent lane.
 
@@ -181,7 +178,7 @@ Branch "Signed in (Stack.Protected guard = !!user)":
   - /create-pin
   - /add-child
   - /child (landscape): child home at /child, /child/games, /child/games/[gameId] (intro), /child/games/[gameId]/play, /child/story
-  - /adult (portrait): bottom tabs (Dashboard, Games, Insights, Settings), plus /adult/game/[gameId], /adult/insight/[insightId], /adult/child/[childId], /adult/account, /adult/play-history
+  - /adult (portrait): bottom tabs (Dashboard, Games, Settings), plus /adult/game/[gameId], /adult/child/[childId], /adult/account, /adult/play-history
 
 Colour code: auth screens in berry, onboarding in glow, child routes in wave blue, parent routes in forest green. Add small orientation icons (landscape or portrait) beside the child and adult branches and a note "Orientation is chosen from the first URL segment". Export as a PDF.
 ```
@@ -201,10 +198,9 @@ ScenePlayer -> Stage context -> current Scene
 
 RIGHT TREE (Parent side):
 AdultLayout -> ParentPinGate -> Bottom tabs
-Tabs -> Dashboard, Games, Insights, Settings
+Tabs -> Dashboard, Games, Settings
 Dashboard -> ChildTitleDropdown, StatBar, PlayedGameRow
 Games -> SearchBar, CategoryFilter, GameCard -> GameDetail -> ActiveToggle, CoachChat
-Insights -> InsightCard -> InsightDetail -> AiInsightBlock, ActivitySuggestionCard
 Settings -> AccountRow, AvatarPicker, DangerZone
 
 BOTTOM STRIP: "Shared building blocks used by both sides": AppText (16px minimum), Button, IconButton, Icon, Modal, Popup, Avatar, Blobs, CoverImage.

@@ -53,9 +53,8 @@
 21. [Testing and quality](#testing-and-quality)
 22. [Deployment](#deployment)
 23. [Diagram library](#diagram-library)
-24. [Presentation guide (15 minutes)](#presentation-guide)
-25. [Conclusion and future work](#conclusion-and-future-work)
-26. [License, author and acknowledgements](#license)
+24. [Conclusion and future work](#conclusion-and-future-work)
+25. [License, author and acknowledgements](#license)
 
 </details>
 
@@ -72,7 +71,7 @@ The app has two sides that share one account:
 | Side | Who uses it | Orientation | What it does |
 |------|-------------|-------------|--------------|
 | **Child side** | The child (aged 4 to 5) | Landscape | A friendly "Hi, Name!" home with one big **All games** button, picture tiles for the enabled games, a large Play button, then the story game itself |
-| **Parent side** | The grown-up | Portrait | Dashboard, choose which games are on for each child, play history, insights, AI coach, account settings |
+| **Parent side** | The grown-up | Portrait | Dashboard, choose which games are on for each child, play history, AI suggestions for playing together, account settings |
 
 A **4 digit parent PIN** separates the two sides, so a child cannot wander into settings.
 
@@ -94,7 +93,7 @@ all along, the candle was only a reminder.
 **The solution**
 - Short captioned storybook games that each teach one skill through play, not through lectures.
 - A child-safe interface: large touch targets, no small text, very few choices at once.
-- A parent side that gives control (which games, which child), visibility (what was played, insights) and support (an AI coach that suggests how to play together and what to say afterwards).
+- A parent side that gives control (which games, which child), visibility (what was played) and support (an AI coach that suggests how to play together and what to say afterwards).
 
 **Design principles**
 
@@ -173,7 +172,7 @@ Kids' app stores are wall to wall letters, numbers and shapes. Almost nothing te
 
 **Live prototype:** https://tiny-giants-178da.web.app/
 
-On the login page, tap the **demo** button to view the app as if someone has already been using it (two children, play history and insights are filled in).
+On the login page, tap the **demo** button to view the app as if someone has already been using it (two children and their play history are filled in).
 
 <!-- Optional visuals: export pages of the case study PDF as images and place them in docs/readme-images/, for example
      case-study-problem.png, case-study-personas.png, case-study-blueprint.png, case-study-flows.png, then embed them here with
@@ -213,8 +212,7 @@ On the login page, tap the **demo** button to view the app as if someone has alr
 | **Dashboard** | Child title dropdown, stat bars, time this week ring, recent plays. |
 | **Games library** | Search, category filter pills, game detail page with skills, a parent note, and an on/off switch per child. |
 | **Play history** | Every time a child plays, finished or left early, a session is saved. Grouped by game with plays, completions and total time. |
-| **Insights** | Plain language summaries of skills being practised, with an activity suggestion and a clear "not a clinical assessment" disclaimer. |
-| **AI coach** | Chat with a Gemini powered coach about how to play a game together, grounded in the game's design notes. |
+| **AI suggestions for playing together** | For each game, a Gemini powered coach gives ideas for how to play with your child before, during or after the game, and answers follow-up questions. It is grounded in the game's design notes and labelled "AI suggestions, not professional advice". |
 | **Child and account management** | Add or edit children (name, age, birthday, character), change name, email or password, delete the account and all data. |
 | **Device settings** | A skip-forward and back switch for demos and testing, remembered between launches. |
 
@@ -332,7 +330,7 @@ flowchart LR
         HOST["Firebase Hosting<br/>web build"]
     end
 
-    subgraph Edge["Cloudflare"]
+    subgraph Edge["Cloudflare (AI coach Worker only)"]
         WORKER["Coach Worker<br/>verifies Firebase token"]
     end
 
@@ -356,6 +354,7 @@ flowchart LR
 2. The app reads and writes **Firestore** directly. Security rules make sure a parent only touches their own branch.
 3. For the AI coach, the app sends the chat and the token to a **Cloudflare Worker**. The Worker verifies the token against Google's public keys, adds the secret Gemini key and calls **Gemini**.
 4. The microphone never leaves the device. Only a 0 to 1 loudness number is used.
+5. **Hosting.** The web app itself is hosted on **Firebase Hosting** at https://tiny-giants-178da.web.app/. Cloudflare is used only to run the small AI coach Worker, not to host the site.
 
 ### Layered code architecture
 
@@ -381,7 +380,7 @@ flowchart TB
     subgraph L5["5. Services and data"]
         API["services/api.js<br/>THE data door"]
         SV["auth, pin, coach, demo, onboarding"]
-        DT["data: games, avatars, insights, sessions"]
+        DT["data: games, avatars, sessions"]
         ST["state/persistedStore"]
     end
     subgraph L6["6. External"]
@@ -418,15 +417,15 @@ Tiny-Giants/
       components/        FloatingAvatars, PlayButton, RotatePrompt, ChildScreen, ChildMessage...
                          (BookCover, BookPage, PageTurner and StorybookReader are the older book view, no longer the main flow)
     adult/               Parent screens
-      pages/             Dashboard, Games, GameDetail, Insights, InsightDetail, PlayHistory, Settings, EditChild, AccountSettings
-      components/        ParentPinGate, CoachChat, GameCard, StatBar, InsightCard, AuthForm, TabBar...
+      pages/             Dashboard, Games, GameDetail, PlayHistory, Settings, EditChild, AccountSettings
+      components/        ParentPinGate, CoachChat, GameCard, StatBar, AuthForm, TabBar...
     games/
       registry.js        Maps a game id to its ordered scene list
       engine/            Reusable scene engine (ScenePlayer, scene types, captions, timing, blow detector)
       game1-big-wave/    Scenes, hand drawn SVG art and the blow-candle mini game
     shared/
       components/        AppText, Button, Icon, Modal, Popup, Avatar, Blobs, CoverImage...
-      data/              games catalogue, avatars, insights, sessions, images
+      data/              games catalogue, avatars, sessions, images
       hooks/             useAuth, useProfiles, useChildGames, useCurrentChildId, useSettings, useLoad...
       services/          api, auth, pin, coach, demo, onboarding, firebase
       state/             persistedStore (tiny app wide store)
@@ -485,7 +484,7 @@ flowchart LR
     S2["Parent screens"] --> H
     H --> API["services/api.js"]
     API --> F[("Firestore<br/>children, sessions, PIN")]
-    API --> D["data/*.js<br/>games catalogue, insights"]
+    API --> D["data/*.js<br/>games catalogue"]
     API --> C["services/coach.js"]
     C --> W["Coach Worker"]
 ```
@@ -576,7 +575,6 @@ flowchart TB
     GATE --> TABS["Bottom tabs"]
     TABS --> DASH["Dashboard"]
     TABS --> GAMES["Games"]
-    TABS --> INS["Insights"]
     TABS --> SET["Settings"]
     DASH --> CHT["ChildTitleDropdown"]
     DASH --> STAT["StatBar and rings"]
@@ -587,10 +585,6 @@ flowchart TB
     GC --> GDET["GameDetail"]
     GDET --> TGL["ActiveToggle"]
     GDET --> CCH["CoachChat"]
-    INS --> IC["InsightCard"]
-    IC --> ID["InsightDetail"]
-    ID --> AI["AiInsightBlock"]
-    ID --> ACT["ActivitySuggestionCard"]
     SET --> AC["AccountRow, AvatarPicker, DangerZone"]
 ```
 
@@ -630,10 +624,8 @@ flowchart TB
     AD --> TABS["(tabs)"]
     TABS --> T1["/adult (dashboard)"]
     TABS --> T2["/adult/games"]
-    TABS --> T3["/adult/insights"]
     TABS --> T4["/adult/settings"]
     AD --> D1["/adult/game/[gameId]"]
-    AD --> D2["/adult/insight/[insightId]"]
     AD --> D3["/adult/child/[childId]"]
     AD --> D4["/adult/account"]
     AD --> D5["/adult/play-history"]
@@ -737,7 +729,7 @@ flowchart LR
 
 ## Data model
 
-Data is stored in **Cloud Firestore** as a tree owned by the parent. The game catalogue and the insights live in code for now.
+Data is stored in **Cloud Firestore** as a tree owned by the parent. The game catalogue lives in code.
 
 ```mermaid
 erDiagram
@@ -745,8 +737,6 @@ erDiagram
     CHILD ||--o{ SESSION : "plays"
     GAME ||--o{ SESSION : "is played in"
     CHILD }o--o{ GAME : "enabledGameIds"
-    CHILD ||--o{ INSIGHT : "receives"
-    GAME ||--o{ INSIGHT : "about"
     GAME ||--|{ SCENE : "is made of"
 
     PARENT {
@@ -785,16 +775,6 @@ erDiagram
         string parentNote
         bool comingSoon
     }
-    INSIGHT {
-        string id PK
-        string childId FK
-        string gameId FK
-        date date
-        string summary
-        string observed
-        object activitySuggestion
-        string aiDisclaimer
-    }
     SCENE {
         string id PK
         string type "story, still, video, game"
@@ -810,7 +790,6 @@ erDiagram
 | Child | Firestore | `parents/{uid}/children/{childId}` |
 | Session | Firestore | `parents/{uid}/children/{childId}/sessions/{sessionId}` |
 | Game | Code | `src/shared/data/games.js` |
-| Insight | Code (sample content for now) | `src/shared/data/insights.js` |
 | Scene | Code | `src/games/game1-big-wave/scenes.js` |
 | Settings and current child | Device | AsyncStorage via `persistedStore` |
 
@@ -920,7 +899,7 @@ flowchart LR
     P --> U1["Sign up, log in or use demo"]
     P --> U2["Add and edit children"]
     P --> U3["Enable or disable games per child"]
-    P --> U4["View dashboard, history and insights"]
+    P --> U4["View dashboard and play history"]
     P --> U5["Chat with the AI coach"]
     C --> U6["Browse All games"]
     C --> U7["Play a story game"]
@@ -1089,35 +1068,6 @@ Visual diagrams for the presentation are kept in `docs/diagrams/` as PDFs. The e
 | 13 | Tech stack | `docs/diagrams/13-tech-stack.pdf` | What it is written with |
 | 14 | Deployment | `docs/diagrams/14-deployment.pdf` | How it ships |
 
-## Presentation guide
-
-**Total: 15 minutes** (12 to 15 minutes talking, leave a little room for questions). Roughly one slide per minute. Each row says which parts of this README to draw from.
-
-| Time | Slide | Say | README section | Visual |
-|------|-------|-----|----------------|--------|
-| 0:00 to 1:00 | 1. Title and hook | "Small kids. Giant courage." One sentence on what Tiny Giants is | About the project | Collage mockup |
-| 1:00 to 2:30 | 2. Problem and audience | Kids can not name big feelings. Parents want safe, calm tools | The problem, Who it is for | Personas |
-| 2:30 to 4:00 | 3. Solution and features | Two sides, one account. Child plays, parent guides | Features | Screens mockup |
-| 4:00 to 5:30 | 4. Design | Moodboard, palette from Cami's world, 16px rule, landscape for kids | Design | Design mockup, palette |
-| 5:30 to 7:00 | 5. Live demo or video | Child home, All games, Play, blow the candle, parent dashboard | Features | Demo (use demo account) |
-| 7:00 to 8:30 | 6. Tech stack and architecture | Expo, Firebase, Cloudflare Worker, Gemini | Built with, System architecture | Diagram 1 and 13 |
-| 8:30 to 9:30 | 7. How components interact | Layers, the one data door, routes | How the components interact | Diagram 2, 6, 7 |
-| 9:30 to 10:30 | 8. Game engine | A game is a list of scenes, onDone contract | The game engine | Diagram 8, 12 |
-| 10:30 to 11:30 | 9. Data model | Parent, child, session, game. Why subcollections | Data model | ERD |
-| 11:30 to 12:30 | 10. Security and AI coach | PIN hash, rules, JWT verified Worker | Security, AI coach | Diagram 10, 11 |
-| 12:30 to 13:30 | 11. Challenges and testing | Blow detection, key safety, double advance bug | Challenges, Testing | Table |
-| 13:30 to 14:30 | 12. Future work | More games, real analytics, store release | Conclusion | Roadmap |
-| 14:30 to 15:00 | 13. Thank you | Tagline, questions | | Outro |
-
-**Likely questions and short answers**
-- *Why Expo and React Native?* One code base for iOS, Android and web, and fast iteration.
-- *Why a Worker for the AI?* An API key inside an app can be extracted. The Worker keeps it secret and checks who is asking.
-- *Is a child's voice recorded?* No. Only loudness is read, and the app works if the mic is refused.
-- *How do you keep data private?* Rules tie every document to the signed in parent's uid.
-- *Why is the catalogue in code?* It is identical for all users, changes with releases and keeps the child side fast.
-- *How would you add a new game?* Create a folder, write a scenes list, add one line to the registry, add one catalogue entry.
-- *What is real and what is sample data?* Accounts, children, game choices, PINs and play sessions are real in Firestore. The insight text is hand written sample content until a generation back end exists.
-
 ## Conclusion and future work
 
 **Highlights**
@@ -1131,7 +1081,7 @@ Visual diagrams for the presentation are kept in `docs/diagrams/` as PDFs. The e
 **Future improvements**
 - Finish *The Kind Detective* and *Memory Garden*
 - Replace the remaining placeholder video with final art, and consider adding voiceover and sound
-- Generate real insights from gameplay instead of sample content
+- Optional AI generated summaries of play, only after a careful safety and privacy review
 - More languages and voice options
 - Offline play
 - A store release through EAS Build and Submit
