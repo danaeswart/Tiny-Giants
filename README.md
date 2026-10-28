@@ -15,7 +15,11 @@
 
 <img src="docs/readme-images/qr.png" alt="QR code to open the Tiny Giants live prototype" width="180" />
 
-**Try it live:** [tiny-giants-178da.web.app](https://tiny-giants-178da.web.app/) (scan the QR code, then tap the demo button on the login page)
+**Website:** [tiny-giants-178da.web.app](https://tiny-giants-178da.web.app/) (scan the QR code or open the link, then tap the demo button on the login page)
+
+> **Using it on a phone?** For the best fit, hide your phone's top and bottom navigation bars in your device settings, or open the app in a desktop browser, where it shows inside a phone mockup. The browser mockup is recommended for the full width.
+
+**Video walkthrough:** [Watch it on Google Drive](https://drive.google.com/drive/folders/1gZN9aP9xyVn_cDK90764tRpzSBSoqo2v?usp=drive_link)
 
 <br/>
 
